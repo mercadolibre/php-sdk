@@ -1,2 +1,2 @@
-Meli4PHP Unofficial MercadoLibre PHP SDK (v.0.0.1)
+MeliPHP Unofficial MercadoLibre PHP SDK (v.0.0.1)
 ==========================

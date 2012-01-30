@@ -21,7 +21,7 @@ have is:
     ));
 
     // Search mp3
-	$search = $meli->api('/sites/#{siteId]/search',array(
+	$search = $meli->api('/sites/#{siteId}/search',array(
 		'q' => 'mp3',
 	));
 	    

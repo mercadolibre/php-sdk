@@ -10,7 +10,7 @@ $meli = new Meli(array(
 	'secret' 	=> '6dc8ac871858b34798bc2488200e503d',
 ));
 
-$search = $meli->api('/sites/#{siteId}/search',array(
+$search = $meli->get(false,'/sites/#{siteId}/search',array(
 	'q' => 'mp3',
 ));
 
@@ -24,10 +24,12 @@ $search = $meli->api('/sites/#{siteId}/search',array(
   <body>
     <h1>search mp3</h1>
 
+
 	<?php
-	foreach ($search['results'] as &$searchItem) {
-	   echo $searchItem['title']."<br>";
-	}
+
+		foreach ($search['results'] as &$searchItem) {
+		   echo $searchItem['title']."<br>";
+		}
 	?>
     
   </body>

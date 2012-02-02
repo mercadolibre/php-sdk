@@ -1,10 +1,10 @@
 <?php
 
 if (!function_exists('curl_init')) {
-  throw new Exception('MeliPHP needs the CURL PHP extension.');
+  throw new Exception('MeliPHP sdk needs the CURL PHP extension.');
 }
 if (!function_exists('json_decode')) {
-  throw new Exception('MeliPHP needs the JSON PHP extension.');
+  throw new Exception('MeliPHP sdk needs the JSON PHP extension.');
 }
 
 /**
@@ -26,7 +26,23 @@ class MeliApiException extends Exception
    */
   public function __construct($result) {
     $this->result = $result;
-    parent::__construct('Error', 0);
+
+    $code = isset($result['error_code']) ? $result['error_code'] : 0;
+
+    if (isset($result['error_description'])) {
+      // OAuth 2.0 Draft 10 style
+      $msg = $result['error_description'];
+    } else if (isset($result['error']) && is_array($result['error'])) {
+      // OAuth 2.0 Draft 00 style
+      $msg = $result['error']['message'];
+    } else if (isset($result['error_msg'])) {
+      // Rest server style
+      $msg = $result['error_msg'];
+    } else {
+      $msg = 'Unknown Error. Check getResult()';
+    }
+
+    parent::__construct($msg, $code);
   }
 
   /**
@@ -38,12 +54,50 @@ class MeliApiException extends Exception
     return $this->result;
   }
 
+  /**
+   * Returns the associated type for the error. This will default to
+   * 'Exception' when a type is not available.
+   *
+   * @return string
+   */
+  public function getType() {
+    if (isset($this->result['error'])) {
+      $error = $this->result['error'];
+      if (is_string($error)) {
+        // OAuth 2.0 Draft 10 style
+        return $error;
+      } else if (is_array($error)) {
+        // OAuth 2.0 Draft 00 style
+        if (isset($error['type'])) {
+          return $error['type'];
+        }
+      }
+    }
+
+    return 'Exception';
+  }
+
+  /**
+   * To make debugging easier.
+   *
+   * @return string The string representation of the error
+   */
+  public function __toString() {
+    $str = $this->getType() . ': ';
+    if ($this->code != 0) {
+      $str .= $this->code . ': ';
+    }
+    return $str . $this->message;
+  }
 }
 
 /**
  * Provides access to the MercadoLibre Platform.  This class provides
  * a majority of the functionality needed, but the class is abstract
- * because it is designed to be sub-classed.
+ * because it is designed to be sub-classed.  The subclass must
+ * implement the four abstract methods listed at the bottom of
+ * the file.
+ *
  * @author Pablo Moretti <pablomoretti@gmail.com>
  */
 abstract class BaseMeli
@@ -60,8 +114,15 @@ abstract class BaseMeli
     CURLOPT_CONNECTTIMEOUT => 10,
     CURLOPT_RETURNTRANSFER => true,
     CURLOPT_TIMEOUT        => 60,
-    CURLOPT_USERAGENT      => 'MeliPHP-sdk-0.0.1',
+    CURLOPT_USERAGENT      => 'meli-php-sdk-0.0.1',
   );
+
+
+  /**
+   * Maps aliases to MercadoLibre domains.
+   */
+  public static $API_DOMAIN = 'https://api.mercadolibre.com';
+
 
   /**
    * List of query parameters that get automatically dropped when rebuilding
@@ -73,21 +134,16 @@ abstract class BaseMeli
     'signed_request',
   );
 
-  /**
-   * Maps aliases to MercadoLibre domains.
-   */
-  public static $DOMAIN_MAP = array(
-    'api'       => 'https://api.mercadolibre.com/',
-  );
 
   /**
    * Maps country to MercadoLibre sites.
    */
-  public static $COUNTRY_MAP = array(
-    'ar'       => 'MLA',
-    'br'       => 'MLB',
-  );  
-
+  public static $COUNTRY_CONFIG = array(
+    'ar'       => array(
+						'SITE_ID' 	=> 'MLA',
+						'DOMAIN' 	=> 'mercadolibre.com.ar',
+				),
+  );
 
    /**
    * The Country ID.
@@ -115,7 +171,7 @@ abstract class BaseMeli
    *
    * @var integer
    */
-  protected $user;
+  protected $userId;
 
   /**
    * The data from the signed_request token.
@@ -156,6 +212,11 @@ abstract class BaseMeli
     $this->setCountryId($config['countryId']);
     $this->setAppId($config['appId']);
     $this->setAppSecret($config['secret']);
+
+    $state = $this->getPersistentData('state');
+    if (!empty($state)) {
+      $this->state = $this->getPersistentData('state');
+    }
   }
 
   /**
@@ -196,7 +257,16 @@ abstract class BaseMeli
    * @return string the Application ID
    */
   public function getSiteId() {
-  	return self::$COUNTRY_MAP[$this->countryId];
+  	return self::$COUNTRY_CONFIG[$this->countryId]['SITE_ID'];
+  }
+
+  /**
+   * Get the Domain ID
+   *
+   * @return string the domain
+   */
+  public function getDomain() {
+  	return self::$COUNTRY_CONFIG[$this->countryId]['DOMAIN']; 
   }
 
 
@@ -254,7 +324,328 @@ abstract class BaseMeli
     $this->accessToken = $access_token;
     return $this;
   }
- 
+
+  /**
+   * Determines the access token that should be used for API calls.
+   * The first time this is called, $this->accessToken is set equal
+   * to either a valid user access token, or it's set to the application
+   * access token if a valid user access token wasn't available.  Subsequent
+   * calls return whatever the first call returned.
+   *
+   * @return string The access token
+   */
+  public function getAccessToken() {
+    if ($this->accessToken !== null) {
+      // we've done this already and cached it.  Just return.
+      return $this->accessToken;
+    }
+
+    // first establish access token to be the application
+    // access token, in case we navigate to the /oauth/access_token
+    // endpoint, where SOME access token is required.
+    $this->setAccessToken($this->getApplicationAccessToken());
+    $user_access_token = $this->getUserAccessToken();
+    if ($user_access_token) {
+      $this->setAccessToken($user_access_token);
+    }
+
+    return $this->accessToken;
+  }
+
+  /**
+   * Determines and returns the user access token, first using
+   * the signed request if present, and then falling back on
+   * the authorization code if present.  The intent is to
+   * return a valid user access token, or false if one is determined
+   * to not be available.
+   *
+   * @return string A valid user access token, or false if one
+   *                could not be determined.
+   */
+  protected function getUserAccessToken() {
+    // first, consider a signed request if it's supplied.
+    // if there is a signed request, then it alone determines
+    // the access token.
+    $signed_request = $this->getSignedRequest();
+    if ($signed_request) {
+      // apps.Meli.com hands the access_token in the signed_request
+      if (array_key_exists('oauth_token', $signed_request)) {
+        $access_token = $signed_request['oauth_token'];
+        $this->setPersistentData('access_token', $access_token);
+        return $access_token;
+      }
+
+      // the JS SDK puts a code in with the redirect_uri of ''
+      if (array_key_exists('code', $signed_request)) {
+        $code = $signed_request['code'];
+        $access_token = $this->getAccessTokenFromCode($code, '');
+        if ($access_token) {
+          $this->setPersistentData('code', $code);
+          $this->setPersistentData('access_token', $access_token);
+          return $access_token;
+        }
+      }
+
+      // signed request states there's no access token, so anything
+      // stored should be cleared.
+      $this->clearAllPersistentData();
+      return false; // respect the signed request's data, even
+                    // if there's an authorization code or something else
+    }
+
+    $code = $this->getCode();
+    if ($code && $code != $this->getPersistentData('code')) {
+      $access_token = $this->getAccessTokenFromCode($code);
+      if ($access_token) {
+        $this->setPersistentData('code', $code);
+        $this->setPersistentData('access_token', $access_token);
+        return $access_token;
+      }
+
+      // code was bogus, so everything based on it should be invalidated.
+      $this->clearAllPersistentData();
+      return false;
+    }
+
+    // as a fallback, just return whatever is in the persistent
+    // store, knowing nothing explicit (signed request, authorization
+    // code, etc.) was present to shadow it (or we saw a code in $_REQUEST,
+    // but it's the same as what's in the persistent store)
+    return $this->getPersistentData('access_token');
+  }
+
+  /**
+   * Retrieve the signed request, either from a request parameter or,
+   * if not present, from a cookie.
+   *
+   * @return string the signed request, if available, or null otherwise.
+   */
+  public function getSignedRequest() {
+    if (!$this->signedRequest) {
+      if (isset($_REQUEST['signed_request'])) {
+        $this->signedRequest = $this->parseSignedRequest(
+          $_REQUEST['signed_request']);
+      } else if (isset($_COOKIE[$this->getSignedRequestCookieName()])) {
+        $this->signedRequest = $this->parseSignedRequest(
+          $_COOKIE[$this->getSignedRequestCookieName()]);
+      }
+    }
+    return $this->signedRequest;
+  }
+
+  /**
+   * Get the userId of the connected user, or 0
+   * if the MercadoLibre user is not connected.
+   *
+   * @return string the userId if available.
+   */
+  public function getUserId() {
+    if ($this->userId !== null) {
+      return $this->userId;
+    }
+
+    return $this->user = $this->getUserFromAvailableData();
+  }
+
+
+  /**
+   * Retrieves an access token for the given authorization code
+   * (previously generated from www.mercadolibre.com on behalf of
+   * a specific user).  The authorization code is sent to graph.Meli.com
+   * and a legitimate access token is generated provided the access token
+   * and the user for which it was generated all match, and the user is
+   * either logged in to Meli or has granted an offline access permission.
+   *
+   * @param string $code An authorization code.
+   * @return mixed An access token exchanged for the authorization code, or
+   *               false if an access token could not be generated.
+   */
+  protected function getAccessTokenFromCode($code, $redirect_uri = null) {
+    if (empty($code)) {
+      return false;
+    }
+
+    if ($redirect_uri === null) {
+      $redirect_uri = $this->getCurrentUrl();
+    }
+
+	$result = $this->post(false,'/oauth/token', array(
+                    'grant_type' 	=> 'authorization_code',
+					'code' 			=> $code,
+                    'client_id' 	=> $this->getAppId(),
+                    'client_secret' => $this-> getAppSecret(),
+					'redirect_uri' 	=> $redirect_uri,
+					));
+
+	return $result;
+   
+  }
+
+
+  /**
+   * Determines the connected user by first examining any signed
+   * requests, then considering an authorization code, and then
+   * falling back to any persistent store storing the user.
+   *
+   * @return integer The id of the connected Meli user,
+   *                 or 0 if no such user exists.
+   */
+  protected function getUserFromAvailableData() {
+
+	$userId = $this->getPersistentData('user_id', $default = 0);
+
+	if (isset($_REQUEST['code']) && isset($_REQUEST['state'])) {
+		
+		$accessToken = $this->getAccessTokenFromCode($_REQUEST['code']);
+
+		$this->setAccessToken($accessToken);
+
+		$user = $this->get(true,'/users/me');
+
+		$this->setPersistentData('user_id', $user['id']);
+
+		header("Location: " . $this->getCurrentUrl(),TRUE,302);
+		
+		exit(0);
+
+	}
+		
+
+   /*
+
+	 if ($userId) {
+
+	}
+
+
+    // if a signed request is supplied, then it solely determines
+    // who the user is.
+    $signed_request = $this->getSignedRequest();
+    if ($signed_request) {
+      if (array_key_exists('user_id', $signed_request)) {
+        $user = $signed_request['user_id'];
+        $this->setPersistentData('user_id', $signed_request['user_id']);
+        return $user;
+      }
+
+      // if the signed request didn't present a user id, then invalidate
+      // all entries in any persistent store.
+      $this->clearAllPersistentData();
+      return 0;
+    }
+
+    $user = $this->getPersistentData('user_id', $default = 0);
+    $persisted_access_token = $this->getPersistentData('access_token');
+
+    // use access_token to fetch user id if we have a user access_token, or if
+    // the cached access token has changed.
+    $access_token = $this->getAccessToken();
+    if ($access_token &&
+        $access_token != $this->getApplicationAccessToken() &&
+        !($user && $persisted_access_token == $access_token)) {
+      $user = $this->getUserFromAccessToken();
+      if ($user) {
+        $this->setPersistentData('user_id', $user);
+      } else {
+        $this->clearAllPersistentData();
+      }
+    }
+
+ 	*/
+
+    return $userId;
+  }
+
+  /**
+   * Get a Login URL for use with redirects. By default, full page redirect is
+   * assumed. If you are using the generated URL with a window.open() call in
+   * JavaScript, you can pass in display=popup as part of the $params.
+   *
+   * The parameters:
+   * - redirect_uri: the url to go to after a successful login
+   * - scope: comma separated list of requested extended perms
+   *
+   * @param array $params Provide custom parameters
+   * @return string The URL for the login flow
+   */
+  public function getLoginUrl($params=array()) {
+    $this->establishCSRFTokenState();
+
+	//auth.mercadolibre.com.ar/authorization?client_id=4459&response_type=code&redirect_uri=http://desa.com:8888/
+
+
+    // if 'scope' is passed as an array, convert to comma separated list
+    $scopeParams = isset($params['scope']) ? $params['scope'] : null;
+    if ($scopeParams && is_array($scopeParams)) {
+      $params['scope'] = implode(',', $scopeParams);
+    }
+
+    return $this->getUrl(
+      'auth',
+      '/authorization',
+      array_merge(array(
+                    'client_id' 	=> $this->getAppId(),
+					'redirect_uri' 	=> $this->getCurrentUrl(),
+                    'response_type' => 'code',
+                    'state' 		=> $this->state
+				),$params));
+  }
+
+  /**
+   * Get a Logout URL suitable for use with redirects.
+   *
+   * The parameters:
+   * - next: the url to go to after a successful logout
+   *
+   * @param array $params Provide custom parameters
+   * @return string The URL for the logout flow
+   */
+  public function getLogoutUrl($params=array()) {
+    return $this->getUrl(
+      'www',
+      'logout.php',
+      array_merge(array(
+        'next' => $this->getCurrentUrl(),
+        'access_token' => $this->getAccessToken(),
+      ), $params)
+    );
+  }
+
+  /**
+   * Get a login status URL to fetch the status from Meli.
+   *
+   * The parameters:
+   * - ok_session: the URL to go to if a session is found
+   * - no_session: the URL to go to if the user is not connected
+   * - no_user: the URL to go to if the user is not signed into Meli
+   *
+   * @param array $params Provide custom parameters
+   * @return string The URL for the logout flow
+   */
+  public function getLoginStatusUrl($params=array()) {
+    return $this->getUrl(
+      'www',
+      'extern/login_status.php',
+      array_merge(array(
+        'api_key' => $this->getAppId(),
+        'no_session' => $this->getCurrentUrl(),
+        'no_user' => $this->getCurrentUrl(),
+        'ok_session' => $this->getCurrentUrl(),
+        'session_version' => 3,
+      ), $params)
+    );
+  }
+
+
+
+  public function post($useAccessToken,$path,$params) {
+	return $this->execute('POST',$useAccessToken,$path,$params);
+  }
+
+  public function get($useAccessToken,$path,$params) {
+	return $this->execute('GET',$useAccessToken,$path,$params);
+  }
+
   /**
    * Make an API call.
    *
@@ -262,11 +653,106 @@ abstract class BaseMeli
    */
   public function api(/* polymorphic */) {
 	$args = func_get_args();
-	return call_user_func_array(array($this, '_api'), $args);
+	return call_user_func_array(array($this, '_graph'), $args);
   }
 
   /**
-   * Invoke the API.
+   * Constructs and returns the name of the cookie that
+   * potentially houses the signed request for the app user.
+   * The cookie is not set by the BaseMeli class, but
+   * it may be set by the JavaScript SDK.
+   *
+   * @return string the name of the cookie that would house
+   *         the signed request value.
+   */
+  protected function getSignedRequestCookieName() {
+    return 'fbsr_'.$this->getAppId();
+  }
+
+  /**
+   * Constructs and returns the name of the coookie that potentially contain
+   * metadata. The cookie is not set by the BaseMeli class, but it may be
+   * set by the JavaScript SDK.
+   *
+   * @return string the name of the cookie that would house metadata.
+   */
+  protected function getMetadataCookieName() {
+    return 'fbm_'.$this->getAppId();
+  }
+
+  /**
+   * Get the authorization code from the query parameters, if it exists,
+   * and otherwise return false to signal no authorization code was
+   * discoverable.
+   *
+   * @return mixed The authorization code, or false if the authorization
+   *               code could not be determined.
+   */
+  protected function getCode() {
+    if (isset($_REQUEST['code'])) {
+      if ($this->state !== null &&
+          isset($_REQUEST['state']) &&
+          $this->state === $_REQUEST['state']) {
+
+        // CSRF state has done its job, so clear it
+        $this->state = null;
+        $this->clearPersistentData('state');
+        return $_REQUEST['code'];
+      } else {
+        self::errorLog('CSRF state token does not match one provided.');
+        return false;
+      }
+    }
+
+    return false;
+  }
+
+  /**
+   * Retrieves the UID with the understanding that
+   * $this->accessToken has already been set and is
+   * seemingly legitimate.  It relies on Meli's Graph API
+   * to retrieve user information and then extract
+   * the user ID.
+   *
+   * @return integer Returns the UID of the Meli user, or 0
+   *                 if the Meli user could not be determined.
+   */
+  protected function getUserFromAccessToken() {
+    try {
+      $user_info = $this->api('/me');
+      return $user_info['id'];
+    } catch (MeliApiException $e) {
+      return 0;
+    }
+  }
+
+  /**
+   * Returns the access token that should be used for logged out
+   * users when no authorization code is available.
+   *
+   * @return string The application access token, useful for gathering
+   *                public information about users and applications.
+   */
+  protected function getApplicationAccessToken() {
+    return $this->appId.'|'.$this->appSecret;
+  }
+
+  /**
+   * Lays down a CSRF state token for this process.
+   *
+   * @return void
+   */
+  protected function establishCSRFTokenState() {
+    if ($this->state === null) {
+      $this->state = md5(uniqid(mt_rand(), true));
+      $this->setPersistentData('state', $this->state);
+    }
+  }
+
+
+
+  /**
+   * Invoke the Graph API.
    *
    * @param string $path The path (required)
    * @param string $method The http method (default 'GET')
@@ -275,50 +761,22 @@ abstract class BaseMeli
    * @return mixed The decoded response object
    * @throws MeliApiException
    */
-  protected function _api($path, $method = 'GET', $params = array()) {
-    if (is_array($method) && empty($params)) {
-      $params = $method;
-      $method = 'GET';
-    }
-    $params['method'] = $method; // method override as we always do a POST
+  protected function execute($method, $useAccessToken, $path, $params = array()) {
 
-	$path = str_replace("#{siteId}", $this->getSiteId(), $path);
+	if($useAccessToken){
+		$at = $this->getAccessToken();
+		$params['access_token'] = $at['access_token'];
+	}
 
-	$domainKey = 'api';
+	$path = str_replace('#{siteId}', $this->getSiteId(), $path);
 
-   	$result = json_decode($this->_oauthRequest(
-      $this->getUrl($domainKey, $path),
-      $params
-    ), true);
+	$url = self::$API_DOMAIN . $path;
+
+   	$result = json_decode($this->makeRequest($method, $url, $params), true);
 
    return $result;
-
   }
 
-  /**
-   * Make a OAuth Request.
-   *
-   * @param string $url The path (required)
-   * @param array $params The query/post data
-   *
-   * @return string The decoded response object
-   * @throws MeliApiException
-   */
-  protected function _oauthRequest($url, $params) {
-    
-	//if (!isset($params['access_token'])) {
-    //  $params['access_token'] = $this->getAccessToken();
-    //}
-
-    // json_encode all params values that are not strings
-    //foreach ($params as $key => $value) {
-    //  if (!is_string($value)) {
-    //    $params[$key] = json_encode($value);
-    //  }
-    //}
-
-    return $this->makeRequest($url, $params);
-  }
 
   /**
    * Makes an HTTP request. This method can be overridden by subclasses if
@@ -331,14 +789,24 @@ abstract class BaseMeli
    *
    * @return string The response text
    */
-  protected function makeRequest($url, $params, $ch=null) {
+  protected function makeRequest($method, $url, $params, $ch=null) {
     if (!$ch) {
       $ch = curl_init();
     }
 
     $opts = self::$CURL_OPTS;
 
-	$opts[CURLOPT_POSTFIELDS] = http_build_query($params, null, '&');
+	if($method == 'GET'){
+	    if ($params) {
+	      $url .= '?' . http_build_query($params, null, '&');
+	    }
+	}
+	else{
+		$opts[CURLOPT_CUSTOMREQUEST] = $method;
+	    if ($params) {
+			$opts[CURLOPT_POSTFIELDS] = http_build_query($params, null, '&');
+		}
+	}
     
 	$opts[CURLOPT_URL] = $url;
 
@@ -371,27 +839,164 @@ abstract class BaseMeli
   }
 
   /**
-   * Build the URL for given domain alias, path and parameters.
+   * Parses a signed_request and validates the signature.
    *
-   * @param $name string The name of the domain
-   * @param $path string Optional path (without a leading slash)
+   * @param string $signed_request A signed token
+   * @return array The payload inside it or null if the sig is wrong
+   */
+  protected function parseSignedRequest($signed_request) {
+    list($encoded_sig, $payload) = explode('.', $signed_request, 2);
+
+    // decode the data
+    $sig = self::base64UrlDecode($encoded_sig);
+    $data = json_decode(self::base64UrlDecode($payload), true);
+
+    if (strtoupper($data['algorithm']) !== 'HMAC-SHA256') {
+      self::errorLog('Unknown algorithm. Expected HMAC-SHA256');
+      return null;
+    }
+
+    // check sig
+    $expected_sig = hash_hmac('sha256', $payload,
+                              $this->getAppSecret(), $raw = true);
+    if ($sig !== $expected_sig) {
+      self::errorLog('Bad Signed JSON signature!');
+      return null;
+    }
+
+    return $data;
+  }
+ 
+  /**
+   * Build the URL for given subdomain, path and parameters.
+   *
+   * @param $name string The subdomain
+   * @param $path string Optional path (with slash)
    * @param $params array Optional query parameters
    *
    * @return string The URL for the given parameters
    */
-  protected function getUrl($name, $path='', $params=array()) {
-    $url = self::$DOMAIN_MAP[$name];
-    if ($path) {
-      if ($path[0] === '/') {
-        $path = substr($path, 1);
-      }
-      $url .= $path;
-    }
+  protected function getUrl($subdomain, $path='/', $params=array()) {
+    $url = $subdomain.'.'.$this->getDomain() . $path;
+  
     if ($params) {
       $url .= '?' . http_build_query($params, null, '&');
     }
 
+    return 'https://'.$url;
+  }
+
+  /**
+   * Build the URL for all APIs
+   *
+   * @param $path string Optional path (with slash)
+   * @param $params array Optional query parameters
+   *
+   * @return string The URL for the given parameters
+   */
+  protected function getAPIUrl($path, $params=array()) {
+    $url = 'https://api.mercadolibre.com/';
+    if ($params) {
+      $url .= '?' . http_build_query($params, null, '&');
+    }
     return $url;
+  }
+
+  /**
+   * Returns the Current URL, stripping it of known FB parameters that should
+   * not persist.
+   *
+   * @return string The current URL
+   */
+  protected function getCurrentUrl() {
+    if (isset($_SERVER['HTTPS']) &&
+        ($_SERVER['HTTPS'] == 'on' || $_SERVER['HTTPS'] == 1) ||
+        isset($_SERVER['HTTP_X_FORWARDED_PROTO']) &&
+        $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https') {
+      $protocol = 'https://';
+    }
+    else {
+      $protocol = 'http://';
+    }
+    $currentUrl = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+    $parts = parse_url($currentUrl);
+
+    $query = '';
+    if (!empty($parts['query'])) {
+      // drop known fb params
+      $params = explode('&', $parts['query']);
+      $retained_params = array();
+      foreach ($params as $param) {
+        if ($this->shouldRetainParam($param)) {
+          $retained_params[] = $param;
+        }
+      }
+
+      if (!empty($retained_params)) {
+        $query = '?'.implode($retained_params, '&');
+      }
+    }
+
+    // use port if non default
+    $port =
+      isset($parts['port']) &&
+      (($protocol === 'http://' && $parts['port'] !== 80) ||
+       ($protocol === 'https://' && $parts['port'] !== 443))
+      ? ':' . $parts['port'] : '';
+
+    // rebuild
+    return $protocol . $parts['host'] . $port . $parts['path'] . $query;
+  }
+
+  /**
+   * Returns true if and only if the key or key/value pair should
+   * be retained as part of the query string.  This amounts to
+   * a brute-force search of the very small list of Meli-specific
+   * params that should be stripped out.
+   *
+   * @param string $param A key or key/value pair within a URL's query (e.g.
+   *                     'foo=a', 'foo=', or 'foo'.
+   *
+   * @return boolean
+   */
+  protected function shouldRetainParam($param) {
+    foreach (self::$DROP_QUERY_PARAMS as $drop_query_param) {
+      if (strpos($param, $drop_query_param.'=') === 0) {
+        return false;
+      }
+    }
+
+    return true;
+  }
+
+  /**
+   * Analyzes the supplied result to see if it was thrown
+   * because the access token is no longer valid.  If that is
+   * the case, then we destroy the session.
+   *
+   * @param $result array A record storing the error message returned
+   *                      by a failed API call.
+   */
+  protected function throwAPIException($result) {
+    $e = new MeliApiException($result);
+    switch ($e->getType()) {
+      // OAuth 2.0 Draft 00 style
+      case 'OAuthException':
+        // OAuth 2.0 Draft 10 style
+      case 'invalid_token':
+        // REST server errors are just Exceptions
+      case 'Exception':
+        $message = $e->getMessage();
+        if ((strpos($message, 'Error validating access token') !== false) ||
+            (strpos($message, 'Invalid OAuth access token') !== false) ||
+            (strpos($message, 'An active access token must be used') !== false)
+        ) {
+          $this->destroySession();
+        }
+        break;
+    }
+
+    throw $e;
   }
 
 
@@ -411,4 +1016,129 @@ abstract class BaseMeli
     // @codeCoverageIgnoreEnd
   }
 
+  /**
+   * Base64 encoding that doesn't need to be urlencode()ed.
+   * Exactly the same as base64_encode except it uses
+   *   - instead of +
+   *   _ instead of /
+   *
+   * @param string $input base64UrlEncoded string
+   * @return string
+   */
+  protected static function base64UrlDecode($input) {
+    return base64_decode(strtr($input, '-_', '+/'));
+  }
+
+  /**
+   * Destroy the current session
+   */
+  public function destroySession() {
+    $this->accessToken = null;
+    $this->signedRequest = null;
+    $this->user = null;
+    $this->clearAllPersistentData();
+
+    // Javascript sets a cookie that will be used in getSignedRequest that we
+    // need to clear if we can
+    $cookie_name = $this->getSignedRequestCookieName();
+    if (array_key_exists($cookie_name, $_COOKIE)) {
+      unset($_COOKIE[$cookie_name]);
+      if (!headers_sent()) {
+        // The base domain is stored in the metadata cookie if not we fallback
+        // to the current hostname
+        $base_domain = '.'. $_SERVER['HTTP_HOST'];
+
+        $metadata = $this->getMetadataCookie();
+        if (array_key_exists('base_domain', $metadata) &&
+            !empty($metadata['base_domain'])) {
+          $base_domain = $metadata['base_domain'];
+        }
+
+        setcookie($cookie_name, '', 0, '/', $base_domain);
+      } else {
+        self::errorLog(
+          'There exists a cookie that we wanted to clear that we couldn\'t '.
+          'clear because headers was already sent. Make sure to do the first '.
+          'API call before outputing anything'
+        );
+      }
+    }
+  }
+
+  /**
+   * Parses the metadata cookie that our Javascript API set
+   *
+   * @return  an array mapping key to value
+   */
+  protected function getMetadataCookie() {
+    $cookie_name = $this->getMetadataCookieName();
+    if (!array_key_exists($cookie_name, $_COOKIE)) {
+      return array();
+    }
+
+    // The cookie value can be wrapped in "-characters so remove them
+    $cookie_value = trim($_COOKIE[$cookie_name], '"');
+
+    if (empty($cookie_value)) {
+      return array();
+    }
+
+    $parts = explode('&', $cookie_value);
+    $metadata = array();
+    foreach ($parts as $part) {
+      $pair = explode('=', $part, 2);
+      if (!empty($pair[0])) {
+        $metadata[urldecode($pair[0])] =
+          (count($pair) > 1) ? urldecode($pair[1]) : '';
+      }
+    }
+
+    return $metadata;
+  }
+
+  /**
+   * Each of the following four methods should be overridden in
+   * a concrete subclass, as they are in the provided Meli class.
+   * The Meli class uses PHP sessions to provide a primitive
+   * persistent store, but another subclass--one that you implement--
+   * might use a database, memcache, or an in-memory cache.
+   *
+   * @see Meli
+   */
+
+  /**
+   * Stores the given ($key, $value) pair, so that future calls to
+   * getPersistentData($key) return $value. This call may be in another request.
+   *
+   * @param string $key
+   * @param array $value
+   *
+   * @return void
+   */
+  abstract protected function setPersistentData($key, $value);
+
+  /**
+   * Get the data for $key, persisted by BaseMeli::setPersistentData()
+   *
+   * @param string $key The key of the data to retrieve
+   * @param boolean $default The default value to return if $key is not found
+   *
+   * @return mixed
+   */
+  abstract protected function getPersistentData($key, $default = false);
+
+  /**
+   * Clear the data with $key from the persistent storage
+   *
+   * @param string $key
+   * @return void
+   */
+  abstract protected function clearPersistentData($key);
+
+  /**
+   * Clear all data from the persistent storage
+   *
+   * @return void
+   */
+  abstract protected function clearAllPersistentData();
 }

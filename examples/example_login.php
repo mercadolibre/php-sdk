@@ -6,7 +6,7 @@ require '../src/meli.php';
 // Create our Application instance (replace this with your country, appId and secret).
 $meli = new Meli(array(
 	'countryId' => 'ar',
-	'appId'  	=> '4459',
+	'appId'  	=> '14459',
 	'secret' 	=> 'kKoqUtvm9NXx5EnhmPM4xzgM08HFzrBU',
 ));
 
@@ -14,9 +14,7 @@ $userId = $meli->getUserId();
 
 // Login or logout url will be needed depending on current user state.
 if ($userId) {
-  $logoutUrl = $meli->getLogoutUrl();
-} else {
-  $loginUrl = $meli->getLoginUrl();
+  $user = $meli->get(true,'/users/me');
 }
 
 ?>
@@ -24,18 +22,18 @@ if ($userId) {
 <html>
   <head>
 	<meta charset="UTF-8"/>
-    <title>MeliPHP SDK - Login</title>
+    <title>MeliPHP SDK - Example login</title>
   </head>
   <body>
-    <h1>Login</h1>
-
+    <h1>MeliPHP SDK - Example login</h1>
 
     <?php if ($userId): ?>
-      <a href="<?php echo $logoutUrl; ?>">Logout</a>
+    <p>Hello <?php echo $user['first_name']  ?> </p>
+      <a href="<?php echo $meli->getLogoutUrl(); ?>">Logout</a>
     <?php else: ?>
       <div>
-        Login using OAuth 2.0 handled by the PHP SDK:
-        <a href="<?php echo $loginUrl; ?>">Login with MercadoLibre</a>
+       <p> Login using OAuth 2.0 handled by the PHP SDK: </p>
+        <a href="<?php echo $meli->getLoginUrl(); ?>">Login with MercadoLibre</a>
       </div>
     <?php endif ?>
     

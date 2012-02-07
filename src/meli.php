@@ -25,7 +25,7 @@ class Meli extends BaseMeli
   }
 
   protected static $kSupportedKeys =
-    array('state', 'code', 'access_token', 'user_id');
+    array('access_token', 'user_id');
 
   /**
    * Provides the implementations of the inherited abstract

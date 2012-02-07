@@ -13,7 +13,7 @@ The [example_login][example_login]
 	
 	$meli = new Meli(array(
 		'countryId' => 'ar',
-		'appId'  	=> '4459',
+		'appId'  	=> '14459',
 		'secret' 	=> 'kKoqUtvm9NXx5EnhmPM4xzgM08HFzrBU',
 	));
 	

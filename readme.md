@@ -9,9 +9,8 @@ MeliPHP is licensed under the Apache Licence, Version 2.0
 Usage
 -----
 
-The [examples_login][examples_login]
+The [example_login][example_login]
 
-// Create our Application instance (replace this with your country, appId and secret).
 $meli = new Meli(array(
 	'countryId' => 'ar',
 	'appId'  	=> '4459',
@@ -25,7 +24,7 @@ if ($userId) {
   $user = $meli->get(true,'/users/me');
 }
 
-The [examples_search][examples_search]
+The [example_search][example_search]
 
 	    
 
@@ -39,5 +38,5 @@ $meli = new Meli(array(
 	'q' => 'mp3',
 	));
 
-[examples_login]: http://github.com/foocoders/meli-php/blob/master/examples/examples_login.php
-[examples_search]: http://github.com/foocoders/meli-php/blob/master/examples/example_search.php
+[example_login]: http://github.com/foocoders/meli-php/blob/master/examples/example_login.php
+[example_search]: http://github.com/foocoders/meli-php/blob/master/examples/example_search.php

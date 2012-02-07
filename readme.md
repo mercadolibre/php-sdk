@@ -8,31 +8,31 @@ MeliPHP is licensed under the Apache Licence, Version 2.0
 
 Usage
 -----
-
+	
 The [example_login][example_login]
-
-$meli = new Meli(array(
-	'countryId' => 'ar',
-	'appId'  	=> '4459',
-	'secret' 	=> 'kKoqUtvm9NXx5EnhmPM4xzgM08HFzrBU',
-));
-
-$userId = $meli->getUserId();
-
-// Login or logout url will be needed depending on current user state.
-if ($userId) {
-  $user = $meli->get(true,'/users/me');
-}
-
+	
+	$meli = new Meli(array(
+		'countryId' => 'ar',
+		'appId'  	=> '4459',
+		'secret' 	=> 'kKoqUtvm9NXx5EnhmPM4xzgM08HFzrBU',
+	));
+	
+	$userId = $meli->getUserId();
+	
+	// Login or logout url will be needed depending on current user state.
+	if ($userId) {
+	  $user = $meli->get(true,'/users/me');
+	}
+	
 The [example_search][example_search]
-
-	    
-
-$meli = new Meli(array(
-	'countryId' => 'ar',
-	'appId'  	=> '344617158898614',
-	'secret' 	=> '6dc8ac871858b34798bc2488200e503d',
-));
+	
+		    
+	
+	$meli = new Meli(array(
+		'countryId' => 'ar',
+		'appId'  	=> '344617158898614',
+		'secret' 	=> '6dc8ac871858b34798bc2488200e503d',
+	));
 
 	$search = $meli->get(false,'/sites/#{siteId}/search',array(
 	'q' => 'mp3',

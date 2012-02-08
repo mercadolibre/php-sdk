@@ -11,7 +11,6 @@ Usage
 
 The [examples_login][examples_login]
 
-// Create our Application instance (replace this with your country, appId and secret).
 $meli = new Meli(array(
 	'countryId' => 'ar',
 	'appId'  	=> '4459',
@@ -27,7 +26,6 @@ if ($userId) {
 
 The [examples_search][examples_search]
 
-	    
 
 $meli = new Meli(array(
 	'countryId' => 'ar',

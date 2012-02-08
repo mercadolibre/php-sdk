@@ -6,7 +6,7 @@ require '../src/meli.php';
 // Create our Application instance (replace this with your country, appId and secret).
 $meli = new Meli(array(
 	'countryId' => 'ar',
-	'appId'  	=> '14459',
+	'appId'  	=> '4459',
 	'secret' 	=> 'kKoqUtvm9NXx5EnhmPM4xzgM08HFzrBU',
 ));
 

@@ -6,8 +6,8 @@ require '../src/meli.php';
 // Create our Application instance (replace this with your country, appId and secret).
 $meli = new Meli(array(
 	'countryId' => 'ar',
-	'appId'  	=> '4459',
-	'secret' 	=> 'kKoqUtvm9NXx5EnhmPM4xzgM08HFzrBU',
+	'appId'  	=> getenv('MeliPHPAppId'),
+	'secret' 	=> getenv('MeliPHPSecret'),
 ));
 
 $userId = $meli->getUserId();

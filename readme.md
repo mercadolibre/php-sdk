@@ -6,36 +6,41 @@ MeliPHP is licensed under the Apache Licence, Version 2.0
 (http://www.apache.org/licenses/LICENSE-2.0.html)
 
 
-Usage
------
+Create your app
+---------------
 
-The [examples_login][examples_login]
+	http://en.mercadolibre.io/aplicaciones
 
-$meli = new Meli(array(
-	'countryId' => 'ar',
-	'appId'  	=> '4459',
-	'secret' 	=> 'kKoqUtvm9NXx5EnhmPM4xzgM08HFzrBU',
-));
+Examples
+--------
+	
+[example_login][example_login]
+	
+	$meli = new Meli(array(
+		'countryId' => 'ar',
+		'appId'  	=> '11111',
+		'secret' 	=> 'kKoqU3tvm9sw2NXx5EnhmPM4xzg3M08HFzrBU',
+	));
+	
+	$userId = $meli->getUserId();
+	
+	// Login or logout url will be needed depending on current user state.
+	if ($userId) {
+	  $user = $meli->get(true,'/users/me');
+	}
+	
+[example_search][example_search]
+		
+	$meli = new Meli(array(
+		'countryId' => 'ar',
+		'appId'  	=> '11111',
+		'secret' 	=> 'kKoqU3tvm9sw2NXx5EnhmPM4xzg3M08HFzrBU',
+	));
 
-$userId = $meli->getUserId();
-
-// Login or logout url will be needed depending on current user state.
-if ($userId) {
-  $user = $meli->get(true,'/users/me');
-}
-
-The [examples_search][examples_search]
-
-
-$meli = new Meli(array(
-	'countryId' => 'ar',
-	'appId'  	=> '344617158898614',
-	'secret' 	=> '6dc8ac871858b34798bc2488200e503d',
-));
 
 	$search = $meli->get(false,'/sites/#{siteId}/search',array(
 	'q' => 'mp3',
 	));
 
-[examples_login]: http://github.com/foocoders/meli-php/blob/master/examples/examples_login.php
-[examples_search]: http://github.com/foocoders/meli-php/blob/master/examples/example_search.php
+[example_login]: http://github.com/foocoders/meli-php/blob/master/examples/example_login.php
+[example_search]: http://github.com/foocoders/meli-php/blob/master/examples/example_search.php

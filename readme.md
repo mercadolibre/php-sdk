@@ -9,6 +9,9 @@ MeliPHP is licensed under the Apache Licence, Version 2.0
 Usage
 -----
 
+You need sign up your application [http://en.mercadolibre.io/aplicaciones](http://en.mercadolibre.io/aplicaciones)
+
+		// Try to put this code at the top
 		require '../src/meli.php';
 	
 		// Create our Application instance (replace this with your country, appId and secret).
@@ -17,8 +20,6 @@ Usage
 			'appId'  	=> getenv('MeliPHPAppId'),
 			'secret' 	=> getenv('MeliPHPSecret'),
 		));
-
-You can create your app in [http://en.mercadolibre.io/aplicaciones](http://en.mercadolibre.io/aplicaciones)
 
 
 Examples
@@ -34,8 +35,8 @@ Examples
 		  $user = $meli->get(true,'/users/me');
 		}
 
-	[full code](http://github.com/foocoders/meli-php/blob/master/examples/example_login.php) ,
-	[running](http://meliphp.phpfogapp.com/examples/example_login.php)
+	[Full code](http://github.com/foocoders/meli-php/blob/master/examples/example_login.php),
+	[View online](http://meliphp.phpfogapp.com/examples/example_login.php)
 
 * Search items
  	
@@ -45,10 +46,10 @@ Examples
 		'q' => $query,
 		));
 	
-	[full code](http://github.com/foocoders/meli-php/blob/master/examples/example_search.php)
-	[running](http://meliphp.phpfogapp.com/examples/example_search.php)
+	[Full code](http://github.com/foocoders/meli-php/blob/master/examples/example_search.php),
+	[View online](http://meliphp.phpfogapp.com/examples/example_search.php)
 
 * View item
 
-	[full code](http://github.com/foocoders/meli-php/blob/master/examples/example_item.php)
-	[running](http://meliphp.phpfogapp.com/examples/example_item.php)
+	[Full code](http://github.com/foocoders/meli-php/blob/master/examples/example_item.php)
+	[View online](http://meliphp.phpfogapp.com/examples/example_item.php)

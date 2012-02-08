@@ -16,9 +16,9 @@ You need sign up your application [http://en.mercadolibre.io/aplicaciones](http:
 	
 		// Create our Application instance (replace this with your country, appId and secret).
 		$meli = new Meli(array(
-			'countryId' => 'ar',
-			'appId'  	=> getenv('MeliPHPAppId'),
-			'secret' 	=> getenv('MeliPHPSecret'),
+			'countryId' 	=> 'ar',
+			'appId'  	=> 12345,
+			'secret' 	=> dsadsaDWFfs24DF34dgg43T3,
 		));
 
 

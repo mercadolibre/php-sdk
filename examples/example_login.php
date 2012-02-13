@@ -10,11 +10,11 @@ $meli = new Meli(array(
 	'secret' 	=> getenv('MeliPHPSecret'),
 ));
 
-$userId = $meli->getUserId();
+$userId = $meli->initConnect();
 
 // Login or logout url will be needed depending on current user state.
 if ($userId) {
-  $user = $meli->get(true,'/users/me');
+  $user = $meli->getWithAccessToken('/users/me');
 }
 
 ?>
@@ -26,7 +26,7 @@ if ($userId) {
   </head>
   <body>
     <h1>MeliPHP SDK - Example login</h1>
-
+    
     <?php if ($userId): ?>
     <p>Hello <?php echo $user['first_name']  ?> </p>
       <a href="<?php echo $meli->getLogoutUrl(); ?>">Logout</a>

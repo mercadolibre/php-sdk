@@ -22,12 +22,13 @@ Examples
 		'secret' 	=> 'kKoqU3tvm9sw2NXx5EnhmPM4xzg3M08HFzrBU',
 	));
 	
-	$userId = $meli->getUserId();
+	$userId = $meli->initConnect();
 	
 	// Login or logout url will be needed depending on current user state.
 	if ($userId) {
-	  $user = $meli->get(true,'/users/me');
+	  $user = $meli->getWithAccessToken('/users/me');
 	}
+
 	
 [example_search][example_search]
 		
@@ -38,8 +39,8 @@ Examples
 	));
 
 
-	$search = $meli->get(false,'/sites/#{siteId}/search',array(
-	'q' => 'mp3',
+	$search = $meli->get('/sites/#{siteId}/search',array(
+	'q' => $query,
 	));
 
 [example_login]: http://github.com/foocoders/meli-php/blob/master/examples/example_login.php

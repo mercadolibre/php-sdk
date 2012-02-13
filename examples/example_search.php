@@ -13,7 +13,7 @@ if(isset($_REQUEST['q'])){
 	
 	$query = $_REQUEST['q'];
 	
-	$search = $meli->get(false,'/sites/#{siteId}/search',array(
+	$search = $meli->get('/sites/#{siteId}/search',array(
 	'q' => $query,
 	));
 	

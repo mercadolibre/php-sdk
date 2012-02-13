@@ -1,4 +1,4 @@
-MeliPHP unofficial MercadoLibre PHP SDK (v.0.0.1)
+MeliPHP unofficial MercadoLibre PHP SDK (v.0.0.2)
 ==========================
 
 This repository contains the open source MeliPHP Unofficial PHP SDK that allows you to access MercadoLibre Platform from your PHP app. 

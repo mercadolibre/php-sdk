@@ -17,8 +17,8 @@ You need sign up your application [http://en.mercadolibre.io/aplicaciones](http:
 		// Create our Application instance (replace this with your country, appId and secret).
 		$meli = new Meli(array(
 			'countryId' 	=> 'ar',
-			'appId'  	=> 12345,
-			'secret' 	=> dsadsaDWFfs24DF34dgg43T3,
+			'appId'  		=> 12345,
+			'secret' 		=> dsadsaDWFfs24DF34dgg43T3,
 		));
 
 
@@ -29,13 +29,12 @@ Examples
 		
 		$userId = $meli->initConnect();
 		
-		// Login or logout url will be needed depending on current user state.
 		if ($userId) {
 		  $user = $meli->getWithAccessToken('/users/me');
 		}
 
-	[Full code](http://github.com/foocoders/meli-php/blob/master/examples/example_login.php),
-	[View online](http://meliphp.phpfogapp.com/examples/example_login.php)
+	[code](http://github.com/foocoders/meli-php/blob/master/examples/example_login.php),
+	[online](http://meliphp.phpfogapp.com/examples/example_login.php)
 
 * Search items
  	
@@ -45,11 +44,11 @@ Examples
 			'q' => $query,
 		));
 	
-	[Full code](http://github.com/foocoders/meli-php/blob/master/examples/example_search.php),
-	[View online](http://meliphp.phpfogapp.com/examples/example_search.php)
+	[code](http://github.com/foocoders/meli-php/blob/master/examples/example_search.php),
+	[online](http://meliphp.phpfogapp.com/examples/example_search.php)
 
 =======
 * View item
 
-	[Full code](http://github.com/foocoders/meli-php/blob/master/examples/example_item.php)
-	[View online](http://meliphp.phpfogapp.com/examples/example_item.php)
+	[code](http://github.com/foocoders/meli-php/blob/master/examples/example_item.php)
+	[online](http://meliphp.phpfogapp.com/examples/example_item.php)

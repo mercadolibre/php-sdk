@@ -1,4 +1,4 @@
-MeliPHP unofficial MercadoLibre PHP SDK (v.0.0.2)
+MeliPHP unofficial MercadoLibre PHP SDK (v.0.0.3)
 ==========================
 
 This repository contains the open source MeliPHP Unofficial PHP SDK that allows you to access MercadoLibre Platform from your PHP app. 
@@ -49,9 +49,9 @@ Examples
 =======
 * View item
 
- 	$itemId = $_REQUEST['item_id'];
-
-    $item = $meli -> get('/items/' . $itemId);
+	 	$itemId = $_REQUEST['item_id'];
+	
+	    $item = $meli -> get('/items/' . $itemId);
 
 	[code](http://github.com/foocoders/meli-php/blob/master/examples/example_item.php)
 	[online](http://meliphp.phpfogapp.com/examples/example_item.php)

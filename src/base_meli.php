@@ -165,12 +165,12 @@ abstract class BaseMeli {
     /**
      * Version.
      */
-    const VERSION = '0.0.2';
+    const VERSION = '0.0.3';
 
     /**
      * Default options for curl.
      */
-    public static $CURL_OPTS = array(CURLOPT_USERAGENT => 'MeliPHP-sdk-0.0.2', CURLOPT_CONNECTTIMEOUT => 10, CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 60);
+    public static $CURL_OPTS = array(CURLOPT_USERAGENT => 'MeliPHP-sdk-0.0.3', CURLOPT_CONNECTTIMEOUT => 10, CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 60);
 
     /**
      * Maps aliases to MercadoLibre domains.

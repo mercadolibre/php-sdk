@@ -8,6 +8,66 @@ if (!function_exists('json_decode')) {
 }
 
 /**
+ *
+ * @author Pablo Moretti <pablomoretti@gmail.com>
+ */
+class SimpleDiskCache {
+
+    private $basePath;
+
+    public function __construct() {
+        if (getenv('PHPSimpleDiskCachePath')) {
+            $this -> basePath = getenv('PHPSimpleDiskCache');
+        } else {
+            $this -> basePath = sys_get_temp_dir() . '/' . 'PHPSimpleDiskCache' . '/';
+        }
+    }
+
+    private function encodeFileName($data) {
+        return rtrim(strtr(base64_encode($data), '+/', '-_'), '=');
+    }
+
+    private function getPath($key) {
+
+        $keyMD5 = md5($key);
+
+        return $this -> basePath . (intval(substr($keyMD5, 0, 16)) % 100) . '/' . (intval(substr($keyMD5, 16, 32)) % 100) . '/';
+
+    }
+
+    public function get($key) {
+
+        $resource = $this -> getPath($key) . $this -> encodeFileName($key);
+
+        $data = unserialize(gzinflate(@file_get_contents($resource)));
+
+        if (time() < $data['expires']) {
+            return $data['content'];
+        }
+    }
+
+    public function put($key, $content, $ttl = 0) {
+
+        if ($ttl > 300) {
+
+            $expires = time() + $ttl;
+
+            $path = $this -> getPath($key);
+
+            @mkdir($path, 0777, true);
+
+            $resource = $path . $this -> encodeFileName($key);
+
+            $data = array('content' => $content, 'expires' => $expires);
+
+            file_put_contents($resource, gzdeflate(serialize($data)), FILE_APPEND | LOCK_EX);
+        }
+
+    }
+
+}
+
+/**
  * Thrown when an API call returns an exception.
  *
  * @author Pablo Moretti <pablomoretti@gmail.com>
@@ -110,7 +170,7 @@ abstract class BaseMeli {
     /**
      * Default options for curl.
      */
-    public static $CURL_OPTS = array(CURLOPT_CONNECTTIMEOUT => 10, CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 60, CURLOPT_USERAGENT => 'MeliPHP-sdk-0.0.2', );
+    public static $CURL_OPTS = array(CURLOPT_USERAGENT => 'MeliPHP-sdk-0.0.2', CURLOPT_CONNECTTIMEOUT => 10, CURLOPT_RETURNTRANSFER => true, CURLOPT_TIMEOUT => 60);
 
     /**
      * Maps aliases to MercadoLibre domains.
@@ -121,12 +181,7 @@ abstract class BaseMeli {
      * List of query parameters that get automatically dropped when rebuilding
      * the current URL.
      */
-    protected static $DROP_QUERY_PARAMS = array('code', 'state', 'meli-logout', );
-
-    /**
-     * Maps country to MercadoLibre sites.
-     */
-    protected static $COUNTRY_CONFIG = array('ar' => array('SITE_ID' => 'MLA', 'DOMAIN' => 'mercadolibre.com.ar', ), );
+    protected static $DROP_QUERY_PARAMS = array('code', 'meli-logout', );
 
     /**
      * The Country ID.
@@ -163,10 +218,7 @@ abstract class BaseMeli {
      */
     protected $userId;
 
-    /**
-     * A CSRF state variable to assist in the defense against CSRF attacks.
-     */
-    protected $state;
+    protected $app;
 
     /**
      * The OAuth access token received in exchange for a valid authorization
@@ -175,6 +227,26 @@ abstract class BaseMeli {
      * @var string
      */
     protected $accessToken = null;
+
+    protected $cache;
+
+    /**
+     * Set the Cache ID.
+     *
+     * @param
+     * @return BaseMeli
+     */
+    public function setCache($cache) {
+        $this -> $cache = $cache;
+        return $this;
+    }
+
+    public function getCache() {
+        if ($cache == null) {
+            $cache = new SimpleDiskCache();
+        }
+        return $cache;
+    }
 
     /**
      * Initialize a MercadoLibre Application.
@@ -187,14 +259,25 @@ abstract class BaseMeli {
      * @param array $config The application configuration
      */
     public function __construct($config) {
-        $this -> setCountryId($config['countryId']);
         $this -> setAppId($config['appId']);
         $this -> setAppSecret($config['secret']);
+        $this -> initApp($config['appId']);
+    }
 
-        $state = $this -> getPersistentData('state');
-        if (!empty($state)) {
-            $this -> state = $state;
+    public function initApp($appId) {
+        $appKey = '/applications/' . $appId;
+        $this -> app = $this -> getCache() -> get($appKey);
+        if ($this -> app == null) {
+            $this -> app -> get($appKey);
+            $this -> getCache() -> put($appKey, $this -> app, 60 * 60);
         }
+    }
+
+    public function getApp() {
+        if ($this -> cache == null) {
+            $this -> cache = new SimpleDiskCache();
+        }
+        return $this -> cache;
     }
 
     /**
@@ -254,7 +337,7 @@ abstract class BaseMeli {
      * @return string the Application ID
      */
     public function getSiteId() {
-        return self::$COUNTRY_CONFIG[$this -> countryId]['SITE_ID'];
+        return $this->app['site_id'];
     }
 
     /**
@@ -263,7 +346,8 @@ abstract class BaseMeli {
      * @return string the domain
      */
     public function getDomain() {
-        return self::$COUNTRY_CONFIG[$this -> countryId]['DOMAIN'];
+        $data = $this->get('/sites/'. $this->getSiteId() .'/searchUrl');
+        return  substr(strstr($data['url'], "."), 1,-1);
     }
 
     /**
@@ -334,7 +418,6 @@ abstract class BaseMeli {
      */
     public function initConnect() {
         $this -> initConnect = true;
-
         if ($this -> isLogin()) {
             $this -> setAccessToken($this -> getAccessTokenFromCode($this -> getCode()));
             $this -> setUserId($this -> getUserIdFromAccessToken());
@@ -509,18 +592,6 @@ abstract class BaseMeli {
     }
 
     /**
-     * Lays down a CSRF state token for this process.
-     *
-     * @return void
-     */
-    protected function establishCSRFTokenState() {
-        if ($this -> state === null) {
-            $this -> state = md5(uniqid(mt_rand(), true));
-            $this -> setPersistentData('state', $this -> state);
-        }
-    }
-
-    /**
      * Invoke the API.
      *
      * @param string $method The http method
@@ -567,6 +638,13 @@ abstract class BaseMeli {
         if ($method == 'GET') {
             if ($params) {
                 $url .= '?' . http_build_query($params, null, '&');
+
+                $body = $this -> getCache() -> get(str_replace(self::$API_DOMAIN, "", $url));
+
+                if ($body != null) {
+                    return $body;
+                }
+
             }
         } else {
             $opts[CURLOPT_CUSTOMREQUEST] = $method;
@@ -587,17 +665,59 @@ abstract class BaseMeli {
             $opts[CURLOPT_HTTPHEADER] = array('Expect:');
         }
 
+        //$opts[CURLOPT_HEADERFUNCTION] = array(&$this,'curlHeaderCallback');
+
         curl_setopt_array($ch, $opts);
 
-        $result = curl_exec($ch);
+        //curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // Return the response from the server
+        curl_setopt($ch, CURLOPT_HEADER, true);
+        // tells curl to include headers in response
 
-        if ($result === false) {
+        $content = curl_exec($ch);
+
+        $response = curl_getinfo($ch);
+
+        $startBody = false;
+
+        $data = split("\n", $content);
+
+        $headers = array();
+
+        $body = "";
+
+        foreach ($data as $line) {
+            if ((strlen($line) == 1 && ord($line) == 13) || $startBody) {
+                if ($startBody) {
+                    $body .= $line;
+                } else {
+                    $startBody = true;
+                }
+            } else {
+                if (ord(strpos($line, 'HTTP')) != 0) {
+                    $key = 'Status-Code';
+                    $value = intval(substr($line, 9, 3));
+                } else {
+                    list($key, $value) = explode(":", $line);
+                }
+                $headers[$key] = $value;
+            }
+        }
+
+        if ($method == 'GET' && isset($headers['Cache-Control'])) {
+
+            if (preg_match('/max-age=(.*)/', $headers['Cache-Control'], $matches)) {
+                $this -> getCache() -> put(str_replace(self::$API_DOMAIN, "", $url), $body, intval($matches[1]));
+            }
+
+        }
+
+        if ($content === false) {
             $e = new MeliApiException( array('error_code' => curl_errno($ch), 'error' => array('message' => curl_error($ch), 'type' => 'CurlException', ), ));
             curl_close($ch);
             throw $e;
         }
         curl_close($ch);
-        return $result;
+        return $body;
     }
 
     /**
@@ -629,7 +749,9 @@ abstract class BaseMeli {
      */
     protected function getUrlForAPI($path, $params = array()) {
 
-        $path = str_replace('#{siteId}', $this -> getSiteId(), $path);
+        if (strpos($path, '#{siteId}') !== false) {
+            $path = str_replace('#{siteId}', $this -> getSiteId(), $path);
+        }
 
         $url = self::$API_DOMAIN . $path;
         if ($params) {
@@ -645,6 +767,7 @@ abstract class BaseMeli {
      * @return string The current URL
      */
     protected function getCurrentUrl() {
+
         if (isset($_SERVER['HTTPS']) && ($_SERVER['HTTPS'] == 'on' || $_SERVER['HTTPS'] == 1) || isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https') {
             $protocol = 'https://';
         } else {

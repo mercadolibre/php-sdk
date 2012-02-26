@@ -2,9 +2,8 @@
 
 require '../src/meli.php';
 
-// Create our Application instance (replace this with your country, appId and secret).
+// Create our Application instance (replace this with your appId and secret).
 $meli = new Meli(array(
-	'countryId' => 'ar',
 	'appId'  	=> getenv('MeliPHPAppId'),
 	'secret' 	=> getenv('MeliPHPSecret'),
 ));
@@ -18,9 +17,6 @@ if(isset($_REQUEST['q'])){
 	));
 	
 }
-
-
-
 ?>
 <!doctype html>
 <html>

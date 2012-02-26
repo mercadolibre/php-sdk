@@ -268,7 +268,7 @@ abstract class BaseMeli {
         $appKey = '/applications/' . $appId;
         $this -> app = $this -> getCache() -> get($appKey);
         if ($this -> app == null) {
-            $this -> app -> get($appKey);
+            $this -> app = $this -> get($appKey);
             $this -> getCache() -> put($appKey, $this -> app, 60 * 60);
         }
     }

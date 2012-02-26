@@ -17,7 +17,7 @@ class SimpleDiskCache {
 
     public function __construct() {
         if (getenv('PHPSimpleDiskCachePath')) {
-            $this -> basePath = getenv('PHPSimpleDiskCache');
+            $this -> basePath = getenv('PHPSimpleDiskCachePath');
         } else {
             $this -> basePath = sys_get_temp_dir() . '/' . 'PHPSimpleDiskCache' . '/';
         }
@@ -679,7 +679,7 @@ abstract class BaseMeli {
 
         $startBody = false;
 
-        $data = split("\n", $content);
+        $data = explode("\n", $content);
 
         $headers = array();
 

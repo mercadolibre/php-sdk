@@ -237,7 +237,7 @@ abstract class BaseMeli {
      * @return BaseMeli
      */
     public function setCache($cache) {
-        $this -> $cache = $cache;
+        $this -> cache = $cache;
         return $this;
     }
 

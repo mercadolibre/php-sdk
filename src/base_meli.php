@@ -242,8 +242,8 @@ abstract class BaseMeli {
     }
 
     public function getCache() {
-        if ($cache == null) {
-            $cache = new SimpleDiskCache();
+        if ($this -> cache == null) {
+            $this -> cache = new SimpleDiskCache();
         }
         return $cache;
     }

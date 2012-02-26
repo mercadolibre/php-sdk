@@ -14,9 +14,8 @@ You need sign up your application [http://en.mercadolibre.io/aplicaciones](http:
 		// Try to put this code at the top
 		require '../src/meli.php';
 	
-		// Create our Application instance (replace this with your country, appId and secret).
+		// Create our Application instance (replace this with your appId and secret).
 		$meli = new Meli(array(
-			'countryId' 	=> 'ar',
 			'appId'  		=> 12345,
 			'secret' 		=> dsadsaDWFfs24DF34dgg43T3,
 		));
@@ -49,6 +48,10 @@ Examples
 
 =======
 * View item
+
+ 	$itemId = $_REQUEST['item_id'];
+
+    $item = $meli -> get('/items/' . $itemId);
 
 	[code](http://github.com/foocoders/meli-php/blob/master/examples/example_item.php)
 	[online](http://meliphp.phpfogapp.com/examples/example_item.php)

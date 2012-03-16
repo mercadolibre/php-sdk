@@ -55,3 +55,16 @@ Examples
 
 	[code](http://github.com/foocoders/meli-php/blob/master/examples/example_item.php)
 	[online](http://meliphp.phpfogapp.com/examples/example_item.php)
+
+=======
+* Questions
+
+		$user = $meli -> getWithAccessToken('/users/me');
+		
+		$unansweredQuestions = $meli -> getWithAccessToken('/questions/search', array('seller' => $user['id'], 'status' => 'UNANSWERED'));
+
+
+	[code](http://github.com/foocoders/meli-php/blob/master/examples/example_questions.php)
+	[online](http://meliphp.phpfogapp.com/examples/example_questions.php)
+
+

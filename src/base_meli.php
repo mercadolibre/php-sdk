@@ -337,7 +337,7 @@ abstract class BaseMeli {
      * @return string the Application ID
      */
     public function getSiteId() {
-        return $this->app['site_id'];
+        return $this -> app['site_id'];
     }
 
     /**
@@ -346,8 +346,8 @@ abstract class BaseMeli {
      * @return string the domain
      */
     public function getDomain() {
-        $data = $this->get('/sites/'. $this->getSiteId() .'/searchUrl');
-        return  substr(strstr($data['url'], "."), 1,-1);
+        $data = $this -> get('/sites/' . $this -> getSiteId() . '/searchUrl');
+        return substr(strstr($data['url'], "."), 1, -1);
     }
 
     /**
@@ -457,8 +457,10 @@ abstract class BaseMeli {
         if ($redirect_uri === null) {
             $redirect_uri = $this -> getCurrentUrl();
         }
+        
+        
 
-        $result = $this -> post('/oauth/token', array('grant_type' => 'authorization_code', 'code' => $code, 'client_id' => $this -> getAppId(), 'client_secret' => $this -> getAppSecret(), 'redirect_uri' => $redirect_uri, ));
+        $result = $this -> execute('POST', false, '/oauth/token', array('grant_type' => 'authorization_code', 'code' => $code, 'client_id' => $this -> getAppId(), 'client_secret' => $this -> getAppSecret(), 'redirect_uri' => $redirect_uri));
 
         return array('value' => $result['access_token'], 'expires' => time() + $result['expires_in'], 'scope' => $result['scope']);
 
@@ -509,11 +511,14 @@ abstract class BaseMeli {
         return $currentUrl;
     }
 
-    public function postWithAccessToken($path, $params) {
+    public function postWithAccessToken($path, $params = null) {
+        $params = ($params == null) ? null : json_encode($params);
+        
         return $this -> execute('POST', true, $path, $params);
     }
 
     public function post($path, $params = null) {
+        $params = ($params == null) ? null : json_encode($params);
         return $this -> execute('POST', false, $path, $params);
     }
 
@@ -526,18 +531,22 @@ abstract class BaseMeli {
     }
 
     public function putWithAccessToken($path, $params = null) {
+        $params = ($params == null) ? null : json_encode($params);
         return $this -> execute('PUT', true, $path, $params);
     }
 
     public function put($path, $params = null) {
+        $params = ($params == null) ? null : json_encode($params);
         return $this -> execute('PUT', false, $path, $params);
     }
 
     public function deleteWithAccessToken($path, $params = null) {
+        $params = ($params == null) ? null : json_encode($params);
         return $this -> execute('DELETE', true, $path, $params);
     }
 
     public function delete($path, $params = null) {
+        $params = ($params == null) ? null : json_encode($params);
         return $this -> execute('DELETE', false, $path, $params);
     }
 
@@ -604,12 +613,16 @@ abstract class BaseMeli {
      */
     protected function execute($method, $useAccessToken, $path, $params = array()) {
 
+        $getParams = array();
+
         if ($useAccessToken) {
             $accessToken = $this -> getAccessToken();
-            $params['access_token'] = $accessToken['value'];
+            $getParams['access_token'] = $accessToken['value'];
         }
 
-        $url = $this -> getUrlForAPI($path);
+        $url = $this -> getUrlForAPI($path, $getParams);
+        
+        
 
         $result = json_decode($this -> makeRequest($method, $url, $params), true);
 
@@ -637,34 +650,55 @@ abstract class BaseMeli {
 
         if ($method == 'GET') {
             if ($params) {
-                $url .= '?' . http_build_query($params, null, '&');
+                if (strpos($url, '?') !== false) {
+                    $url .= '&' . http_build_query($params, null, '&');
+                } else {
+                    $url .= '?' . http_build_query($params, null, '&');
+                }
 
-                $body = $this -> getCache() -> get(str_replace(self::$API_DOMAIN, "", $url));
+                $b = $this -> getCache() -> get(str_replace(self::$API_DOMAIN, "", $url));
 
-                if ($body != null) {
-                    return $body;
+                if ($b != null) {
+                    return $b;
                 }
 
             }
         } else {
+            
+            if($opts[CURLOPT_HTTPHEADER] == null){
+                $opts[CURLOPT_HTTPHEADER] = array();
+            }
+
             $opts[CURLOPT_CUSTOMREQUEST] = $method;
             if ($params) {
-                $opts[CURLOPT_POSTFIELDS] = http_build_query($params, null, '&');
+                
+                if (is_array($params)) {
+                    $opts[CURLOPT_POSTFIELDS] = http_build_query($params, null, '&');
+                } else {
+                    
+                    $opts[CURLOPT_POSTFIELDS] = $params;
+                    
+                    $opts[CURLOPT_HTTPHEADER] = array_merge($opts[CURLOPT_HTTPHEADER], array('Content-Type: application/json', 'Content-Length: ' . strlen($params)));
+                }
             }
+
         }
 
         $opts[CURLOPT_URL] = $url;
 
         // disable the 'Expect: 100-continue' behaviour. This causes CURL to wait
         // for 2 seconds if the server does not support this header.
-        if (isset($opts[CURLOPT_HTTPHEADER])) {
-            $existing_headers = $opts[CURLOPT_HTTPHEADER];
-            $existing_headers[] = 'Expect:';
-            $opts[CURLOPT_HTTPHEADER] = $existing_headers;
-        } else {
-            $opts[CURLOPT_HTTPHEADER] = array('Expect:');
-        }
+      //  if (isset($opts[CURLOPT_HTTPHEADER])) {
+      //      $existing_headers = $opts[CURLOPT_HTTPHEADER];
+       //     $existing_headers[] = 'Expect:';
+     //       $opts[CURLOPT_HTTPHEADER] = $existing_headers;
+      //  } else {
+       //     echo "--------------------------------------";
 
+      //      $opts[CURLOPT_HTTPHEADER] = array('Expect:');
+    //    }
+    
+        
         //$opts[CURLOPT_HEADERFUNCTION] = array(&$this,'curlHeaderCallback');
 
         curl_setopt_array($ch, $opts);
@@ -755,7 +789,13 @@ abstract class BaseMeli {
 
         $url = self::$API_DOMAIN . $path;
         if ($params) {
-            $url .= '?' . http_build_query($params, null, '&');
+
+            if (strpos($url, '?') !== false) {
+                $url .= '&' . http_build_query($params, null, '&');
+            } else {
+                $url .= '?' . http_build_query($params, null, '&');
+            }
+
         }
         return $url;
     }
@@ -766,7 +806,7 @@ abstract class BaseMeli {
      *
      * @return string The current URL
      */
-    protected function getCurrentUrl() {
+    public function getCurrentUrl() {
 
         if (isset($_SERVER['HTTPS']) && ($_SERVER['HTTPS'] == 'on' || $_SERVER['HTTPS'] == 1) || isset($_SERVER['HTTP_X_FORWARDED_PROTO']) && $_SERVER['HTTP_X_FORWARDED_PROTO'] == 'https') {
             $protocol = 'https://';

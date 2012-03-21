@@ -20,8 +20,6 @@ if ($userId) {
 
     }
 
-    $itemId = $_REQUEST['item_id'];
-
     $user = $meli -> getWithAccessToken('/users/me');
 
     $unansweredQuestions = $meli -> getWithAccessToken('/questions/search', array('seller' => $user['id'], 'status' => 'UNANSWERED'));

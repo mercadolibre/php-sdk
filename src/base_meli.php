@@ -24,7 +24,8 @@ class SimpleDiskCache {
     }
 
     private function encodeFileName($data) {
-        return rtrim(strtr(base64_encode($data), '+/', '-_'), '=');
+        return rtrim(md5(json_encode($data)));
+        /* return rtrim(strtr(base64_encode($data), '+/', '-_'), '='); */
     }
 
     private function getPath($key) {

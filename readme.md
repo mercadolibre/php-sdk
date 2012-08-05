@@ -9,7 +9,7 @@ MeliPHP is licensed under the Apache Licence, Version 2.0
 Usage
 -----
 
-You need sign up your application [http://en.mercadolibre.io/aplicaciones](http://en.mercadolibre.io/aplicaciones)
+You need sign up your application [http://applications.mercadolibre.com/](http://applications.mercadolibre.com/)
 
 		// Try to put this code at the top
 		require '../src/meli.php';

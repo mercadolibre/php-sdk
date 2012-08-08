@@ -182,7 +182,7 @@ abstract class BaseMeli {
      * List of query parameters that get automatically dropped when rebuilding
      * the current URL.
      */
-    protected static $DROP_QUERY_PARAMS = array('code', 'meli-logout', );
+    protected static $DROP_QUERY_PARAMS = array('code', 'meli-logout', 'meli-refresh' );
 
     /**
      * The Country ID.
@@ -224,6 +224,8 @@ abstract class BaseMeli {
     /**
      * The OAuth access token received in exchange for a valid authorization
      * code.  null means the access token has yet to be determined.
+     * The refresh token is used to get a new access token when it expires
+     * if the app has offline_access permission
      *
      * @var string
      */
@@ -398,13 +400,18 @@ abstract class BaseMeli {
         throw new Exception('You must execute method initConnect before get access token');
     }
 
-    public function refreshAccessToken() {
+    public function tokenNeedsRefresh() {
         $accessToken = $this -> getAccessToken();
         if ($accessToken != null) {
             return $accessToken['expires'] < time() + 1;
         }
         return false;
     }
+
+    public function doRefreshToken(){
+        $this -> setAccessToken( $this -> getAccessTokenFromRefreshToken() );
+    }
+
 
     public function isAccessTokenNotExpired() {
         return ($this -> getAccessToken() != null);
@@ -420,14 +427,15 @@ abstract class BaseMeli {
     public function initConnect() {
         $this -> initConnect = true;
         if ($this -> isLogin()) {
-            $this -> setAccessToken($this -> getAccessTokenFromCode($this -> getCode()));
+            $this -> setAccessToken($this -> getAccessTokenFromCode($this -> getCode()) );
             $this -> setUserId($this -> getUserIdFromAccessToken());
             $this -> reload();
         } else if ($this -> isLogout()) {
             $this -> destroySession();
             $this -> reload();
-        } else if ($this -> refreshAccessToken()) {
-            $this -> redirect($this -> getLoginUrl());
+        } else if ($this -> tokenNeedsRefresh()) {
+            $this -> setAccessToken($this -> getAccessTokenFromRefreshToken() );
+            $this -> setUserId($this -> getUserIdFromAccessToken());
         } else {
             return $this -> getUserId();
         }
@@ -460,12 +468,32 @@ abstract class BaseMeli {
         }
         
         
-
         $result = $this -> execute('POST', false, '/oauth/token', array('grant_type' => 'authorization_code', 'code' => $code, 'client_id' => $this -> getAppId(), 'client_secret' => $this -> getAppSecret(), 'redirect_uri' => $redirect_uri));
 
-        return array('value' => $result['access_token'], 'expires' => time() + $result['expires_in'], 'scope' => $result['scope']);
+        return array('value' => $result['access_token'], 'expires' => time() + $result['expires_in'], 'scope' => $result['scope'], 'refresh_token' => $result['refresh_token']);
 
     }
+
+    /**
+     * Retrieves an access token for the actual refresh token
+     *
+     * @return mixed An access token exchanged for the redresh token, or
+     *               false if an access token could not be generated.
+     */
+    public function getAccessTokenFromRefreshToken() {
+        $accessToken = $this -> getAccessToken();
+        if ($accessToken == null || !isset($accessToken['refresh_token'])) {
+            return false;
+        }
+        
+        $result = $this -> execute('POST', false, '/oauth/token', array(
+            'grant_type' => 'refresh_token', 
+            'client_id' => $this -> getAppId(), 
+            'client_secret' => $this -> getAppSecret(), 
+            'refresh_token' => $accessToken['refresh_token']));
+        return array('value' => $result['access_token'], 'expires' => time() + $result['expires_in'], 'scope' => $result['scope'], 'refresh_token' => $result['refresh_token']);
+    }
+
 
     /**
      * Get a Login URL for use with redirects.
@@ -623,8 +651,6 @@ abstract class BaseMeli {
 
         $url = $this -> getUrlForAPI($path, $getParams);
         
-        
-
         $result = json_decode($this -> makeRequest($method, $url, $params), true);
 
         return $result;

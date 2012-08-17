@@ -463,7 +463,7 @@ abstract class BaseMeli {
 
         $result = $this -> execute('POST', false, '/oauth/token', array('grant_type' => 'authorization_code', 'code' => $code, 'client_id' => $this -> getAppId(), 'client_secret' => $this -> getAppSecret(), 'redirect_uri' => $redirect_uri));
 
-        return array('value' => $result['access_token'], 'expires' => time() + $result['expires_in'], 'scope' => $result['scope']);
+        return array('value' => $result['access_token'], 'expires' => time() + $result['expires_in'], 'scope' => $result['scope'], 'refresh_token' => isset($result['refresh_token']) ? $result['refresh_token'] : null);
 
     }
 

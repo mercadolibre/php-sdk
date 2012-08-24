@@ -466,6 +466,17 @@ abstract class BaseMeli {
         return array('value' => $result['access_token'], 'expires' => time() + $result['expires_in'], 'scope' => $result['scope'], 'refresh_token' => isset($result['refresh_token']) ? $result['refresh_token'] : null);
 
     }
+    
+    public function getAccessTokenFromRefreshToken($refresh_token){
+        if (empty($refresh_token)){
+            return false;
+        }
+        
+        $result = $this -> execute('POST', false, '/oauth/token', array('grant_type' => 'refresh_token', 'client_id' => $this -> getAppId(), 'client_secret' => $this -> getAppSecret(), 'refresh_token' => $refresh_token));
+        
+        return array('value' => $result['access_token'], 'expires' => time() + $result['expires_in'], 'scope' => $result['scope'], 'refresh_token' => isset($result['refresh_token']) ? $result['refresh_token'] : null);
+
+    }
 
     /**
      * Get a Login URL for use with redirects.
@@ -666,7 +677,7 @@ abstract class BaseMeli {
             }
         } else {
             
-            if($opts[CURLOPT_HTTPHEADER] == null){
+            if(!isset($opts[CURLOPT_HTTPHEADER])){
                 $opts[CURLOPT_HTTPHEADER] = array();
             }
 

@@ -20,6 +20,7 @@ if(isset($_REQUEST['q'])){
 	'q' => $query,
 	'offset' => $paging,
 	));
+  $search = $search['json'];
 	
 }
 

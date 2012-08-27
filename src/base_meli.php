@@ -152,6 +152,64 @@ class MeliApiException extends Exception {
     }
 
 }
+class AuthorizationException extends MeliApiException {
+
+    /**
+     * Make a new API Exception with the given result.
+     *
+     * @param array $result The result from the API server
+     */
+    public function __construct($result) {
+        parent::__construct($result);
+
+    }
+
+    /**
+     * Return the associated result object returned by the API server.
+     *
+     * @return array The result from the API server
+     */
+    public function getResult() {
+        return $this -> result;
+    }
+
+    /**
+     * Returns the associated type for the error. This will default to
+     * 'Exception' when a type is not available.
+     *
+     * @return string
+     */
+    public function getType() {
+        if (isset($this -> result['error'])) {
+            $error = $this -> result['error'];
+            if (is_string($error)) {
+                // OAuth 2.0 Draft 10 style
+                return $error;
+            } else if (is_array($error)) {
+                // OAuth 2.0 Draft 00 style
+                if (isset($error['type'])) {
+                    return $error['type'];
+                }
+            }
+        }
+
+        return 'Exception';
+    }
+
+    /**
+     * To make debugging easier.
+     *
+     * @return string The string representation of the error
+     */
+    public function __toString() {
+        $str = $this -> getType() . ': ';
+        if ($this -> code != 0) {
+            $str .= $this -> code . ': ';
+        }
+        return $str . $this -> message;
+    }
+
+}
 
 /**
  * Provides access to the MercadoLibre Platform.  This class provides
@@ -179,10 +237,15 @@ abstract class BaseMeli {
     protected static $API_DOMAIN = 'https://api.mercadolibre.com';
 
     /**
+     * We need to know if We are in test mode
+     */
+    protected static $IS_MOCK = false;
+
+    /**
      * List of query parameters that get automatically dropped when rebuilding
      * the current URL.
      */
-    protected static $DROP_QUERY_PARAMS = array('code', 'meli-logout', );
+    protected static $DROP_QUERY_PARAMS = array('code', 'meli-logout', 'meli-refresh' );
 
     /**
      * The Country ID.
@@ -224,6 +287,8 @@ abstract class BaseMeli {
     /**
      * The OAuth access token received in exchange for a valid authorization
      * code.  null means the access token has yet to be determined.
+     * The refresh token is used to get a new access token when it expires
+     * if the app has offline_access permission
      *
      * @var string
      */
@@ -260,6 +325,11 @@ abstract class BaseMeli {
      * @param array $config The application configuration
      */
     public function __construct($config) {
+        if (isset($config['mockUrl'])) {
+            self::$API_DOMAIN = $config['mockUrl'];
+            self::$IS_MOCK = true;
+        }
+
         $this -> setAppId($config['appId']);
         $this -> setAppSecret($config['secret']);
         $this -> initApp($config['appId']);
@@ -268,8 +338,10 @@ abstract class BaseMeli {
     public function initApp($appId) {
         $appKey = '/applications/' . $appId;
         $this -> app = $this -> getCache() -> get($appKey);
+
         if ($this -> app == null) {
-            $this -> app = $this -> get($appKey);
+            $result = $this -> get($appKey);
+            $this -> app = $result ['json'];
             $this -> getCache() -> put($appKey, $this -> app, 60 * 60);
         }
     }
@@ -348,7 +420,7 @@ abstract class BaseMeli {
      */
     public function getDomain() {
         $data = $this -> get('/sites/' . $this -> getSiteId() . '/searchUrl');
-        return substr(strstr($data['url'], "."), 1, -1);
+        return substr(strstr($data['json']['url'], "."), 1, -1);
     }
 
     /**
@@ -398,13 +470,18 @@ abstract class BaseMeli {
         throw new Exception('You must execute method initConnect before get access token');
     }
 
-    public function refreshAccessToken() {
+    public function tokenNeedsRefresh() {
         $accessToken = $this -> getAccessToken();
         if ($accessToken != null) {
             return $accessToken['expires'] < time() + 1;
         }
         return false;
     }
+
+    public function doRefreshToken(){
+        $this -> setAccessToken( $this -> getAccessTokenFromRefreshToken() );
+    }
+
 
     public function isAccessTokenNotExpired() {
         return ($this -> getAccessToken() != null);
@@ -417,25 +494,31 @@ abstract class BaseMeli {
      *
      * @return string the userId if available.
      */
-    public function initConnect() {
+    public function initConnect($code = NULL) {
         $this -> initConnect = true;
-        if ($this -> isLogin()) {
-            $this -> setAccessToken($this -> getAccessTokenFromCode($this -> getCode()));
-            $this -> setUserId($this -> getUserIdFromAccessToken());
-            $this -> reload();
+        if (isset($code) || $this -> isLogin()) {
+            $this -> doAuthorize($code);
         } else if ($this -> isLogout()) {
             $this -> destroySession();
             $this -> reload();
-        } else if ($this -> refreshAccessToken()) {
-            $this -> redirect($this -> getLoginUrl());
+        } else if ($this -> tokenNeedsRefresh()) {
+            $this -> setAccessToken($this -> getAccessTokenFromRefreshToken() );
+            $this -> setUserId($this -> getUserIdFromAccessToken());
         } else {
             return $this -> getUserId();
         }
 
     }
 
+    public function doAuthorize($code) {
+        $this -> setAccessToken($this -> getAccessTokenFromCode(isset($code)?$code:$this -> getCode()) );
+        $this -> setUserId($this -> getUserIdFromAccessToken());
+        $this -> reload();
+    }
+
     protected function reload() {
-        $this -> redirect($this -> getCurrentUrl());
+        if (!self::$IS_MOCK)
+            $this -> redirect($this -> getCurrentUrl());
     }
 
     protected function redirect($url) {
@@ -460,12 +543,39 @@ abstract class BaseMeli {
         }
         
         
-
         $result = $this -> execute('POST', false, '/oauth/token', array('grant_type' => 'authorization_code', 'code' => $code, 'client_id' => $this -> getAppId(), 'client_secret' => $this -> getAppSecret(), 'redirect_uri' => $redirect_uri));
-
-        return array('value' => $result['access_token'], 'expires' => time() + $result['expires_in'], 'scope' => $result['scope']);
+        $json = $result['json'];
+        if (!isset($json) || isset($json['error'])) {
+            throw new AuthorizationException($result);
+        }
+        
+        return array('value' => $json['access_token'], 
+                        'expires' => time() + $json['expires_in'], 
+                        'scope' => $json['scope'], 
+                        'refresh_token' => isset($json['refresh_token']) ? $json['refresh_token'] : null);
 
     }
+
+    /**
+     * Retrieves an access token for the actual refresh token
+     *
+     * @return mixed An access token exchanged for the redresh token, or
+     *               false if an access token could not be generated.
+     */
+    public function getAccessTokenFromRefreshToken() {
+        $accessToken = $this -> getAccessToken();
+        if ($accessToken == null || !isset($accessToken['refresh_token'])) {
+            return false;
+        }
+        
+        $result = $this -> execute('POST', false, '/oauth/token', array(
+            'grant_type' => 'refresh_token', 
+            'client_id' => $this -> getAppId(), 
+            'client_secret' => $this -> getAppSecret(), 
+            'refresh_token' => $accessToken['refresh_token']));
+        return array('value' => $result['json']['access_token'], 'expires' => time() + $result['json']['expires_in'], 'scope' => $result['json']['scope'], 'refresh_token' => $result['json']['refresh_token']);
+    }
+
 
     /**
      * Get a Login URL for use with redirects.
@@ -484,8 +594,8 @@ abstract class BaseMeli {
         if ($scopeParams && is_array($scopeParams)) {
             $params['scope'] = implode(',', $scopeParams);
         }
-
-        return $this -> getUrl('auth', '/authorization', array_merge(array('client_id' => $this -> getAppId(), 'redirect_uri' => $this -> getCurrentUrl(), 'response_type' => 'code'), $params));
+        $redirectUri = isset($params['redirect_uri'])?$params['redirect_uri']:$this -> getCurrentUrl();
+        return $this -> getUrl('auth', '/authorization', array_merge(array('client_id' => $this -> getAppId(), 'redirect_uri' => $redirectUri, 'response_type' => 'code'), $params));
     }
 
     /**
@@ -595,6 +705,8 @@ abstract class BaseMeli {
     protected function getUserIdFromAccessToken() {
         try {
             $user = $this -> getWithAccessToken('/users/me');
+            if (!isset($user['id']))
+                return 0;
             return $user['id'];
         } catch (MeliApiException $e) {
             return 0;
@@ -622,12 +734,21 @@ abstract class BaseMeli {
         }
 
         $url = $this -> getUrlForAPI($path, $getParams);
+        $response = $this -> makeRequest($method, $url, $params);
+        //check if token needs refresh
+        if ($useAccessToken) {
+            $accessToken = $this -> getAccessToken();
+            if (isset($accessToken['refresh_token']) && $response['statusCode'] == 404) {
+                $this->doRefreshToken();
+                $accessToken = $this -> getAccessToken();
+                $getParams['access_token'] = $accessToken['value'];
+                $url = $this -> getUrlForAPI($path, $getParams);
+                $response = $this -> makeRequest($method, $url, $params);
+            }
+        }
         
-        
-
-        $result = json_decode($this -> makeRequest($method, $url, $params), true);
-
-        return $result;
+        $response['json'] = json_decode($response['body'], true);
+        return $response;
     }
 
     /**
@@ -648,7 +769,6 @@ abstract class BaseMeli {
         }
 
         $opts = self::$CURL_OPTS;
-
         if ($method == 'GET') {
             if ($params) {
                 if (strpos($url, '?') !== false) {
@@ -665,8 +785,7 @@ abstract class BaseMeli {
 
             }
         } else {
-            
-            if($opts[CURLOPT_HTTPHEADER] == null){
+            if(!isset($opts[CURLOPT_HTTPHEADER]) || $opts[CURLOPT_HTTPHEADER] == null){
                 $opts[CURLOPT_HTTPHEADER] = array();
             }
 
@@ -707,11 +826,11 @@ abstract class BaseMeli {
         //curl_setopt($ch, CURLOPT_RETURNTRANSFER, true); // Return the response from the server
         curl_setopt($ch, CURLOPT_HEADER, true);
         // tells curl to include headers in response
-
         $content = curl_exec($ch);
 
         $response = curl_getinfo($ch);
-
+        $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE); 
+        
         $startBody = false;
 
         $data = explode("\n", $content);
@@ -719,7 +838,6 @@ abstract class BaseMeli {
         $headers = array();
 
         $body = "";
-
         foreach ($data as $line) {
             if ((strlen($line) == 1 && ord($line) == 13) || $startBody) {
                 if ($startBody) {
@@ -737,7 +855,6 @@ abstract class BaseMeli {
                 $headers[$key] = $value;
             }
         }
-
         if ($method == 'GET' && isset($headers['Cache-Control'])) {
 
             if (preg_match('/max-age=(.*)/', $headers['Cache-Control'], $matches)) {
@@ -752,7 +869,7 @@ abstract class BaseMeli {
             throw $e;
         }
         curl_close($ch);
-        return $body;
+        return array('statusCode' => $httpCode, 'body' => $body, 'headers' => $headers);
     }
 
     /**
@@ -814,7 +931,7 @@ abstract class BaseMeli {
         } else {
             $protocol = 'http://';
         }
-        $currentUrl = $protocol . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+        $currentUrl = $protocol . $this->getHost() . $this->getRequestUri();
         $parts = parse_url($currentUrl);
 
         $query = '';
@@ -838,6 +955,14 @@ abstract class BaseMeli {
 
         // rebuild
         return $protocol . $parts['host'] . $port . $parts['path'] . $query;
+    }
+
+    public function getHost() {
+        return isset($_SERVER['HTTP_HOST'])?$_SERVER['HTTP_HOST']:'nohost';
+    }
+
+    public function getRequestUri() {
+        return isset($_SERVER['REQUEST_URI'])?$_SERVER['REQUEST_URI']:'/norequest';
     }
 
     /**

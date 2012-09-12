@@ -555,6 +555,7 @@ abstract class BaseMeli {
                         'refresh_token' => isset($json['refresh_token']) ? $json['refresh_token'] : null);
 
     }
+    
 
     /**
      * Retrieves an access token for the actual refresh token

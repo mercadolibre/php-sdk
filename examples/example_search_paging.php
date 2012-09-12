@@ -12,6 +12,7 @@ if(isset($_REQUEST['offset'])) {
 	$paging = $_REQUEST['offset'];
 }
 
+
 if(isset($_REQUEST['q'])){
 	
 	$query = $_REQUEST['q'];
@@ -21,7 +22,12 @@ if(isset($_REQUEST['q'])){
 	'offset' => $paging,
 	));
   $search = $search['json'];
-	
+	$currenciesJSON = $meli->get('/currencies');
+  $currenciesJSON = $currenciesJSON["json"];
+  $currencies = array();
+  foreach ($currenciesJSON as &$currency) {
+    $currencies[$currency["id"]] = $currency;
+  }
 }
 
 function add_or_change_parameter($parameter, $value) 
@@ -49,7 +55,7 @@ function add_or_change_parameter($parameter, $value)
   $output .= $parameter."=".urlencode($value); 
   return htmlentities($output); 
  } 
-echo $_REQUEST
+
 ?>
 <!doctype html>
 <html>
@@ -94,7 +100,7 @@ echo $_REQUEST
 	
 	<?php
 		foreach ($search['results'] as &$searchItem) {
-		   echo '<li><a href="' . $searchItem['permalink'] . '">'. $searchItem['title'].'</a></li>';
+		   echo '<li><a href="' . $searchItem['permalink'] . '">'. $searchItem['title'].'</a>&nbsp;'.$currencies[$searchItem["currency_id"]]["symbol"] .'&nbsp;'. number_format ( $searchItem["price"] , $currencies[$searchItem["currency_id"]]["decimal_places"] ).'</li>';
 		}
 	?>
     </ol>

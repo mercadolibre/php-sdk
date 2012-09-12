@@ -2,6 +2,15 @@
 
 require_once "base_meli.php";
 
+class SessionManager {
+
+    public function start() {
+        if (!session_id()) {
+            session_start();
+        }
+    }
+}
+
 /**
  * Extends the BaseMeli class with the intent of using
  * PHP sessions to store user ids and access tokens.
@@ -16,10 +25,10 @@ class Meli extends BaseMeli {
      * @param Array $config the application configuration.
      * @see BaseMeli::__construct in Meli.php
      */
-    public function __construct($config) {
-        if (!session_id()) {
-            session_start();
-        }
+    public function __construct($config, $sm = NULL) {
+        if (is_null($sm))
+            $sm = new SessionManager();
+        $sm->start();
         parent::__construct($config);
     }
 

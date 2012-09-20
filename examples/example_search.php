@@ -33,7 +33,7 @@ if(isset($_REQUEST['q'])){
     </form>
 	<ol>
 	<?php
-		foreach ($search['results'] as &$searchItem) {
+		foreach ($search['json']['results'] as &$searchItem) {
 		   echo '<li><a href="' . $searchItem['permalink'] . '">'. $searchItem['title'].'</a></li>';
 		}
 	?>

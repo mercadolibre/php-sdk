@@ -4,9 +4,10 @@ require '../src/meli.php';
 
 // Create our Application instance (replace this with your appId and secret).
 $meli = new Meli(array(
-	'appId'  	=> 2866,
-	'secret' 	=> "dzmBy00xCbc5vE1c0Is2VYAk22dJBHXa",
+  'appId'   => getenv('MeliPHPAppId'),
+  'secret'  => getenv('MeliPHPSecret'),
 ));
+
 $paging = "";
 if(isset($_REQUEST['offset'])) {
 	$paging = $_REQUEST['offset'];

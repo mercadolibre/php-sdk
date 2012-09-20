@@ -1,7 +1,18 @@
-MeliPHP Unofficial MercadoLibre PHP SDK (v.0.0.1)
+MeliPHP Unofficial MercadoLibre PHP SDK (v.0.0.4)
 ==========================
-First release
+New version with complex responses:
+- Now the API responses are arrays with "body", "json", "headers" and "statusCode"
+- SDK have tests!!! Now you can modify the SDK with less risk of breaking things
+
+MeliPHP Unofficial MercadoLibre PHP SDK (v.0.0.3)
+==========================
+General refactor
 
 MeliPHP Unofficial MercadoLibre PHP SDK (v.0.0.2)
 ==========================
 General refactor
+
+MeliPHP Unofficial MercadoLibre PHP SDK (v.0.0.1)
+==========================
+First release
+

@@ -1,7 +1,6 @@
 <?php
 
 require '../src/meli.php';
-
 // Create our Application instance (replace this with your appId and secret).
 $meli = new Meli( array('appId' => getenv('MeliPHPAppId'), 'secret' => getenv('MeliPHPSecret')));
 
@@ -22,7 +21,7 @@ if ($userId) {
 
     $user = $meli -> getWithAccessToken('/users/me');
 
-    $unansweredQuestions = $meli -> getWithAccessToken('/questions/search', array('seller' => $user['id'], 'status' => 'UNANSWERED'));
+    $unansweredQuestions = $meli -> getWithAccessToken('/questions/search', array('seller' => $user['json']['id'], 'status' => 'UNANSWERED'));
 
 }
 ?>
@@ -38,14 +37,14 @@ if ($userId) {
 		<?php if ($userId):
 		?>
 		<p>
-			Hello <?php echo $user['first_name']
+			Hello <?php echo $user['json']['first_name']
 			?>
 		</p>
 		<a href="<?php echo $meli -> getLogoutUrl();?>">Logout</a>
 		<h2> Unanswered Questions </h2>
 
 		<ul>
-			<?php foreach ($unansweredQuestions['questions'] as $question):
+			<?php foreach ($unansweredQuestions['json']['questions'] as $question):
 			?>
 
 			<li>

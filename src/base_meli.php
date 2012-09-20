@@ -706,9 +706,9 @@ abstract class BaseMeli {
     protected function getUserIdFromAccessToken() {
         try {
             $user = $this -> getWithAccessToken('/users/me');
-            if (!isset($user['id']))
+            if (!isset($user['json']['id']))
                 return 0;
-            return $user['id'];
+            return $user['json']['id'];
         } catch (MeliApiException $e) {
             return 0;
         }

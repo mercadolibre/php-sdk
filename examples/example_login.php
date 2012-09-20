@@ -27,7 +27,7 @@ if ($userId) {
     <h1>MeliPHP SDK - Example login</h1>
     
     <?php if ($userId): ?>
-    <p>Hello <?php echo $user['first_name']  ?> </p>
+    <p>Hello <?php echo $user['json']['first_name']  ?> </p>
       <a href="<?php echo $meli->getLogoutUrl(); ?>">Logout</a>
     <?php else: ?>
       <div>

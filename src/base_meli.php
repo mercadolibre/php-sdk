@@ -504,6 +504,7 @@ abstract class BaseMeli {
         } else if ($this -> tokenNeedsRefresh()) {
             $this -> setAccessToken($this -> getAccessTokenFromRefreshToken() );
             $this -> setUserId($this -> getUserIdFromAccessToken());
+            return $this -> getUserId();
         } else {
             return $this -> getUserId();
         }

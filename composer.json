@@ -1,0 +1,11 @@
+{
+    "name": "augustohp/meli",
+    "description": "MeliPHP Unofficial SDK to access MercadoLibre.",
+    "keywords": ["MercadoLibre","mercadolivre"],
+    "require-dev": {
+        "phpunit/phpunit": "@stable"
+    },
+    "autoload": {
+        "psr-0": { "Meli": "src" }
+    }
+}

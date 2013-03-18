@@ -1,12 +1,21 @@
 <?php
-require 'src/meli.php';
+
+require 'src/Meli/MeliApiException.php';
+require 'src/Meli/AuthorizationException.php';
+require 'src/Meli/SimpleDiskCache.php';
+require 'src/Meli/SessionManager.php';
+require 'src/Meli/Base.php';
+require 'src/Meli/Api.php';
+
+use Meli\Api as Meli;
+
 class FirstTest extends PHPUnit_Framework_TestCase {
 
     protected function setUp() {
         parent::setUp();
     }
     protected function getMeli() {
-	        $smMock = $this->getMock('SessionManager', array('start'));
+	        $smMock = $this->getMock('Meli\SessionManager', array('start'));
 	        $smMock::staticExpects($this->any())->method('start')->will($this->returnValue(0));
 			$meli = new Meli(array(
 				'appId'  	=> 123456,

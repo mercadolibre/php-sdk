@@ -1,21 +1,12 @@
 <?php
 
-require_once "base_meli.php";
-
-class SessionManager {
-
-    public function start() {
-        if (!session_id()) {
-            session_start();
-        }
-    }
-}
+namespace Meli;
 
 /**
- * Extends the BaseMeli class with the intent of using
+ * Extends the Base class with the intent of using
  * PHP sessions to store user ids and access tokens.
  */
-class Meli extends BaseMeli {
+class Api extends Base {
     /**
      * Identical to the parent constructor, except that
      * we start a PHP session to store the user ID and
@@ -23,7 +14,7 @@ class Meli extends BaseMeli {
      * we discover them.
      *
      * @param Array $config the application configuration.
-     * @see BaseMeli::__construct in Meli.php
+     * @see Base::__construct in Meli.php
      */
     public function __construct($config, $sm = NULL) {
         if (is_null($sm))

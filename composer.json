@@ -1,5 +1,5 @@
 {
-    "name": "augustohp/meli",
+    "name": "mercadolibre/meli",
     "description": "MeliPHP Unofficial SDK to access MercadoLibre.",
     "keywords": ["MercadoLibre","mercadolivre"],
     "require-dev": {

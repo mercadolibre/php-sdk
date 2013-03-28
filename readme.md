@@ -16,8 +16,8 @@ You need sign up your application [http://applications.mercadolibre.com/](http:/
 	
 		// Create our Application instance (replace this with your appId and secret).
 		$meli = new Meli(array(
-			'appId'  		=> 12345,
-			'secret' 		=> dsadsaDWFfs24DF34dgg43T3,
+			'appId'  		=> '12345',
+			'secret' 		=> 'dsadsaDWFfs24DF34dgg43T3',
 		));
 
 
@@ -32,8 +32,7 @@ Examples
 		  $user = $meli->getWithAccessToken('/users/me');
 		}
 
-	[code](http://github.com/foocoders/meli-php/blob/master/examples/example_login.php),
-	[online](http://meliphp.phpfogapp.com/examples/example_login.php)
+	[code](https://github.com/mercadolibre/php-sdk/blob/master/examples/example_login.php)
 
 * Search items
  	
@@ -43,8 +42,7 @@ Examples
 			'q' => $query,
 		));
 	
-	[code](http://github.com/foocoders/meli-php/blob/master/examples/example_search.php),
-	[online](http://meliphp.phpfogapp.com/examples/example_search.php)
+	[code](https://github.com/mercadolibre/php-sdk/blob/master/examples/example_search.php)
 
 =======
 * View item
@@ -53,8 +51,7 @@ Examples
 	
 	    $item = $meli -> get('/items/' . $itemId);
 
-	[code](http://github.com/foocoders/meli-php/blob/master/examples/example_item.php)
-	[online](http://meliphp.phpfogapp.com/examples/example_item.php)
+	[code](https://github.com/mercadolibre/php-sdk/blob/master/examples/example_item.php)
 
 =======
 * Questions
@@ -64,7 +61,6 @@ Examples
 		$unansweredQuestions = $meli -> getWithAccessToken('/questions/search', array('seller' => $user['id'], 'status' => 'UNANSWERED'));
 
 
-	[code](http://github.com/foocoders/meli-php/blob/master/examples/example_questions.php)
-	[online](http://meliphp.phpfogapp.com/examples/example_questions.php)
+	[code](https://github.com/mercadolibre/php-sdk/blob/master/examples/example_questions.php)
 
 

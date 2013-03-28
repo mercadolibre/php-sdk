@@ -12,7 +12,7 @@ Usage
 You need sign up your application [http://applications.mercadolibre.com/](http://applications.mercadolibre.com/)
 
 		// Try to put this code at the top
-		require '../src/meli.php';
+		require '/path/to/your/src/meli.php';
 	
 		// Create our Application instance (replace this with your appId and secret).
 		$meli = new Meli(array(

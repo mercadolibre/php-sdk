@@ -1,15 +1,9 @@
 <?php
 
-
 require '../src/meli.php';
 
-// Create our Application instance (replace this with your appId and secret).
-$meli = new Meli(array(
-	'appId'  	=> getenv('MeliPHPAppId'),
-	'secret' 	=> getenv('MeliPHPSecret'),
-));
+require 'config_examples.php';
 
-$userId = $meli->initConnect();
 
 // Login or logout url will be needed depending on current user state.
 if ($userId) {

@@ -810,15 +810,14 @@ abstract class BaseMeli {
 
         // disable the 'Expect: 100-continue' behaviour. This causes CURL to wait
         // for 2 seconds if the server does not support this header.
-      //  if (isset($opts[CURLOPT_HTTPHEADER])) {
-      //      $existing_headers = $opts[CURLOPT_HTTPHEADER];
-       //     $existing_headers[] = 'Expect:';
-     //       $opts[CURLOPT_HTTPHEADER] = $existing_headers;
-      //  } else {
-       //     echo "--------------------------------------";
-
-      //      $opts[CURLOPT_HTTPHEADER] = array('Expect:');
-    //    }
+      	//  if (isset($opts[CURLOPT_HTTPHEADER])) {
+      	//      $existing_headers = $opts[CURLOPT_HTTPHEADER];
+       	//     $existing_headers[] = 'Expect:';
+     	//       $opts[CURLOPT_HTTPHEADER] = $existing_headers;
+      	//  } else {
+       	//     echo "--------------------------------------";
+      	//      $opts[CURLOPT_HTTPHEADER] = array('Expect:');
+	    //  }
     
         
         //$opts[CURLOPT_HEADERFUNCTION] = array(&$this,'curlHeaderCallback');

@@ -63,4 +63,11 @@ Examples
 
 	[code](https://github.com/mercadolibre/php-sdk/blob/master/examples/example_questions.php)
 
+=======
+* Get the Access Token
 
+		$userId = $meli->initConnect();
+		
+		if ($userId) {
+		  $accessToken = $meli->getAccessToken();
+		}

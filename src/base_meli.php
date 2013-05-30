@@ -341,8 +341,10 @@ abstract class BaseMeli {
 
         if ($this -> app == null) {
             $result = $this -> get($appKey);
-            $this -> app = $result ['json'];
-            $this -> getCache() -> put($appKey, $this -> app, 60 * 60);
+            if ($result) {
+                $this -> app = $result ['json'];
+                $this -> getCache() -> put($appKey, $this -> app, 60 * 60);
+            }
         }
     }
 
@@ -828,6 +830,11 @@ abstract class BaseMeli {
         curl_setopt($ch, CURLOPT_HEADER, true);
         // tells curl to include headers in response
         $content = curl_exec($ch);
+        if ($content === false) {
+            $e = new MeliApiException( array('error_code' => curl_errno($ch), 'error' => array('message' => curl_error($ch), 'type' => 'CurlException', ), ));
+            curl_close($ch);
+            throw $e;
+        }
 
         $response = curl_getinfo($ch);
         $httpCode = curl_getinfo($ch, CURLINFO_HTTP_CODE); 
@@ -864,11 +871,6 @@ abstract class BaseMeli {
 
         }
 
-        if ($content === false) {
-            $e = new MeliApiException( array('error_code' => curl_errno($ch), 'error' => array('message' => curl_error($ch), 'type' => 'CurlException', ), ));
-            curl_close($ch);
-            throw $e;
-        }
         curl_close($ch);
         return array('statusCode' => $httpCode, 'body' => $body, 'headers' => $headers);
     }

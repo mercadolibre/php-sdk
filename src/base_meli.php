@@ -751,7 +751,36 @@ abstract class BaseMeli {
             }
         }
         
-        $response['json'] = json_decode($response['body'], true);
+        $response = $this -> addJsonToResponse( $response );
+        
+        return $response;
+    }
+
+    /**
+     * Gets the json data from $response['body'].
+     * This method can be overridden by subclasses.
+     *
+     * @param string $response The http response
+     *
+     * @return string The response text
+     */
+    protected function addJsonToResponse( $response ){
+        $body = trim( $response['body'] );
+        $jsonBegin = strpos( $body, '{' );
+        $jsonEnd = strrpos( $body, '}', $jsonBegin );
+        
+        if ( $jsonBegin === false || $jsonEnd === false ) {
+            //not found? default behavior then
+            $response['json'] = json_decode( $response['body'], true );
+        } else {
+            //json begin and end found? just decode that part
+            $json = substr( $body, $jsonBegin, $jsonEnd - $jsonBegin + 1 );
+        
+            $response['json'] = json_decode( $json, true );
+            //add the first part of the body here, just in case is needed
+            $response['moved-http-headers'] = substr( $body, 0, $jsonBegin );
+        }
+        
         return $response;
     }
 

@@ -24,9 +24,12 @@ if($_GET['code']) {
 		}
 	}
 	
-	echo '<pre>';
-		print_r($_SESSION);
-	echo '</pre>';
+	$params = array('access_token' => $_SESSION['access_token']);
+
+	$body = array('text' => 'Adding new description <strong>html</strong>');
+
+	$response = $meli->put('/items/MLB12343412/descriptions', $body, $params);
+	
 } else {
 	echo '<a href="' . $meli->getAuthUrl('http://localhost/PHPSDK/examples/example_login.php') . '">Login using MercadoLibre oAuth 2.0</a>';
 }

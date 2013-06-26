@@ -1,0 +1,11 @@
+TAP version 13
+ok 1 - InitSDKTest::testGetAuthUrl
+ok 2 - InitSDKTest::testAuthorize
+ok 3 - InitSDKTest::testRefreshAccessToken
+ok 4 - InitSDKTest::testGet
+ok 5 - InitSDKTest::testPost
+ok 6 - InitSDKTest::testPut
+ok 7 - InitSDKTest::testDelete
+ok 8 - InitSDKTest::testOptions
+ok 9 - InitSDKTest::testMakePath
+1..9

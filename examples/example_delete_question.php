@@ -24,9 +24,8 @@ if($_GET['code']) {
 		}
 	}
 	
-	echo '<pre>';
-		print_r($_SESSION);
-	echo '</pre>';
+	$meli->delete('/questions/12345678', array('access_token' => $_SESSION['access_token']));
+	
 } else {
 	echo '<a href="' . $meli->getAuthUrl('http://localhost/PHPSDK/examples/example_login.php') . '">Login using MercadoLibre oAuth 2.0</a>';
 }

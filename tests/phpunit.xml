@@ -1,0 +1,25 @@
+<phpunit colors="true" verbose="true" bootstrap="./bootstrap.php">
+    <testsuites>
+	    <testsuite name="meliSDKTest">
+	      <directory>meli.php</directory>
+	    </testsuite>
+  	</testsuites>
+
+    <filter>
+      <blacklist>
+        <directory suffix=".php">../*</directory>
+				<file>./bootstrap.php</file>
+      </blacklist>
+      <whitelist>
+        <directory suffix=".php">../MercadoLivre/meli.php</directory>
+      </whitelist>
+    </filter>
+    
+    <logging>
+        <log type="coverage-html" target="./_reports/coverage" charset="UTF-8" yui="true" highlight="true" />
+        <log type="coverage-xml" target="./_reports/xunit-coverage.xml" />
+        <log type="testdox-html" target="./_reports/xunit-results.testdox.html" />
+        <log type="tap" target="./_reports/xunit-results.tap" />
+        <log type="junit" target="./_reports/xunit-results.junit.xml" />
+    </logging>
+</phpunit>

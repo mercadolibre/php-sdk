@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<testsuites>
+  <testsuite name="meliSDKTest" tests="9" assertions="21" failures="0" errors="0" time="0.077214">
+    <testsuite name="InitSDKTest" file="/Library/WebServer/Documents/PHPSDK/tests/meli.php" tests="9" assertions="21" failures="0" errors="0" time="0.077214">
+      <testcase name="testGetAuthUrl" class="InitSDKTest" file="/Library/WebServer/Documents/PHPSDK/tests/meli.php" line="23" assertions="1" time="0.016495"/>
+      <testcase name="testAuthorize" class="InitSDKTest" file="/Library/WebServer/Documents/PHPSDK/tests/meli.php" line="32" assertions="3" time="0.016318"/>
+      <testcase name="testRefreshAccessToken" class="InitSDKTest" file="/Library/WebServer/Documents/PHPSDK/tests/meli.php" line="48" assertions="4" time="0.009329"/>
+      <testcase name="testGet" class="InitSDKTest" file="/Library/WebServer/Documents/PHPSDK/tests/meli.php" line="73" assertions="2" time="0.006567"/>
+      <testcase name="testPost" class="InitSDKTest" file="/Library/WebServer/Documents/PHPSDK/tests/meli.php" line="85" assertions="2" time="0.006257"/>
+      <testcase name="testPut" class="InitSDKTest" file="/Library/WebServer/Documents/PHPSDK/tests/meli.php" line="122" assertions="2" time="0.005767"/>
+      <testcase name="testDelete" class="InitSDKTest" file="/Library/WebServer/Documents/PHPSDK/tests/meli.php" line="141" assertions="2" time="0.005779"/>
+      <testcase name="testOptions" class="InitSDKTest" file="/Library/WebServer/Documents/PHPSDK/tests/meli.php" line="155" assertions="2" time="0.005980"/>
+      <testcase name="testMakePath" class="InitSDKTest" file="/Library/WebServer/Documents/PHPSDK/tests/meli.php" line="168" assertions="3" time="0.004722"/>
+    </testsuite>
+  </testsuite>
+</testsuites>

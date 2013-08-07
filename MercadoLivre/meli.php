@@ -84,7 +84,6 @@ class Meli {
 
         $opts = array(
             CURLOPT_POST => true,
-            CURLOPT_SSL_VERIFYPEER => false,
             CURLOPT_POSTFIELDS => $body
         );
     

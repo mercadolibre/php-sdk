@@ -206,8 +206,12 @@ class Meli {
      * @return mixed
      */
     public function delete($path, $params) {
-        $exec = $this->execute($path, null, $params);
-
+        $opts = array(
+            CURLOPT_CUSTOMREQUEST => "DELETE"
+        );
+        
+        $exec = $this->execute($path, $opts, $params);
+        
         return $exec;
     }
 

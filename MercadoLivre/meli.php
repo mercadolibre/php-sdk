@@ -23,6 +23,7 @@ class Meli {
         CURLOPT_SSL_VERIFYPEER => false,
         CURLOPT_CONNECTTIMEOUT => 10, 
         CURLOPT_RETURNTRANSFER => 1, 
+        CURLOPT_ENCODING => "utf-8",
         CURLOPT_TIMEOUT => 60
     );
 

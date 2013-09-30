@@ -242,17 +242,25 @@ class Meli {
      */
     public function execute($path, $opts = array(), $params = array()) {
         $uri = $this->make_path($path, $params);
+        $trace = debug_backtrace();
 
-        $ch = curl_init($uri);
-        curl_setopt_array($ch, self::$CURL_OPTS);
+        if (!in_array($trace[1]['function'], array('get','delete'))) {
+            $ch = curl_init($uri);
+            curl_setopt_array($ch, self::$CURL_OPTS);
 
-        if(!empty($opts))
-            curl_setopt_array($ch, $opts);
+            if(!empty($opts))
+                curl_setopt_array($ch, $opts);
 
-        $return["body"] = json_decode(curl_exec($ch));
-        $return["httpCode"] = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+            $return["body"] = json_decode(curl_exec($ch));
+            $return["httpCode"] = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
-        curl_close($ch);
+            curl_close($ch);
+        } else {
+            $return["body"] = json_decode(file_get_contents($uri));
+
+            if (preg_match_all("/\d+/", $http_response_header[0], $match))
+                $return["httpCode"] = $match[0][2];
+        }
         
         return $return;
     }

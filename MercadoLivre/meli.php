@@ -149,10 +149,11 @@ class Meli {
      * 
      * @param string $path
      * @param array $params
+     * @param boolean $assoc
      * @return mixed
      */
-    public function get($path, $params = null) {
-        $exec = $this->execute($path, null, $params);
+    public function get($path, $params = null, $assoc = false) {
+        $exec = $this->execute($path, null, $params, $assoc);
 
         return $exec;
     }
@@ -238,9 +239,10 @@ class Meli {
      * @param string $path
      * @param array $opts
      * @param array $params
+     * @param boolean $assoc
      * @return mixed
      */
-    public function execute($path, $opts = array(), $params = array()) {
+    public function execute($path, $opts = array(), $params = array(), $assoc = false) {
         $uri = $this->make_path($path, $params);
 
         $ch = curl_init($uri);
@@ -249,7 +251,7 @@ class Meli {
         if(!empty($opts))
             curl_setopt_array($ch, $opts);
 
-        $return["body"] = json_decode(curl_exec($ch));
+        $return["body"] = json_decode(curl_exec($ch), $assoc);
         $return["httpCode"] = curl_getinfo($ch, CURLINFO_HTTP_CODE);
 
         curl_close($ch);

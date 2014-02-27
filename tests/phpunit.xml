@@ -1,7 +1,7 @@
-<phpunit colors="true" verbose="true" bootstrap="./bootstrap.php">
+	<phpunit colors="true" verbose="true" bootstrap="./bootstrap.php">
     <testsuites>
 	    <testsuite name="meliSDKTest">
-	      <directory>meli.php</directory>
+	      <directory>Meli.php</directory>
 	    </testsuite>
   	</testsuites>
 
@@ -11,7 +11,7 @@
 				<file>./bootstrap.php</file>
       </blacklist>
       <whitelist>
-        <directory suffix=".php">../MercadoLivre/meli.php</directory>
+        <directory suffix=".php">../MercadoLivre/Meli.php</directory>
       </whitelist>
     </filter>
     

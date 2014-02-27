@@ -1,5 +1,12 @@
 TAP version 13
-ok 1 - InitSDKTest::testGetAuthUrl
+not ok 1 - Failure: InitSDKTest::testGetAuthUrl
+  ---
+  message: 'Failed asserting that two strings are equal.'
+  severity: fail
+  data:
+      got: 'http://auth.mercadolivre.com.br/authorization?client_id=123&response_type=code&redirect_uri=a+redirect_uri'
+      expected: 'https://auth.mercadolivre.com.br/authorization?client_id=123&response_type=code&redirect_uri=a+redirect_uri'
+  ...
 ok 2 - InitSDKTest::testAuthorize
 ok 3 - InitSDKTest::testRefreshAccessToken
 ok 4 - InitSDKTest::testGet

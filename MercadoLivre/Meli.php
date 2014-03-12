@@ -46,6 +46,13 @@ class Meli {
         $this->access_token = $access_token;
         $this->refresh_token = $refresh_token;
     }
+    /**
+     * Set ssl version in CURLOPT, defaults to 2
+     * @param int $version
+     */
+    public function setSslVersion($version = 2){
+        self::$CURL_OPTS[CURLOPT_SSLVERSION] = (int) $version;
+    }
 
     /**
      * Return an string with a complete Meli login url.

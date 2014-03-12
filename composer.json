@@ -1,5 +1,5 @@
 {
-    "name": "marcelojeff/php-sdk",
+    "name": "mercadolibre/php-sdk",
     "description": "Mercado Libre PHP SDK module",
     "type": "library",
     "autoload": {

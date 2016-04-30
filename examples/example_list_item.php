@@ -40,10 +40,10 @@ if($_GET['code']) {
 		"warranty" => "12 month by Ray Ban",
 		"pictures" => array(
 			array(
-				"source" => "http://upload.wikimedia.org/wikipedia/commons/f/fd/Ray_Ban_Original_Wayfarer.jpg"
+				"source" => "https://upload.wikimedia.org/wikipedia/commons/f/fd/Ray_Ban_Original_Wayfarer.jpg"
 			),
 			array(
-				"source" => "http://en.wikipedia.org/wiki/File:Teashades.gif"
+				"source" => "https://en.wikipedia.org/wiki/File:Teashades.gif"
 			)
 		)
 	);

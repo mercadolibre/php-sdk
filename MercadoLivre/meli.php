@@ -243,7 +243,9 @@ class Meli {
     public function execute($path, $opts = array(), $params = array()) {
         $uri = $this->make_path($path, $params);
         
-        $uri .= ( preg_match( '/\?/', $uri ) ? '&' : '?' ) . 'access_token=' . $this->access_token;
+        // if dont access uri
+        if( strripos($uri, self::$OAUTH_URL) === false )
+            $uri .= ( preg_match( '/\?/', $uri ) ? '&' : '?' ) . 'access_token=' . $this->access_token;
 
         $ch = curl_init($uri);
         curl_setopt_array($ch, self::$CURL_OPTS);

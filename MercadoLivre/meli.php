@@ -274,6 +274,6 @@ class Meli {
             $uri = $path;
         }
 
-        return $uri .  (count($params)) ? '?' . http_build_query($params) : '';
+        return $uri .  ((count($params)) ? '?' . http_build_query($params) : '');
     }
 }

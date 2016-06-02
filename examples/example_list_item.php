@@ -43,7 +43,7 @@ if($_GET['code']) {
 				"source" => "https://upload.wikimedia.org/wikipedia/commons/f/fd/Ray_Ban_Original_Wayfarer.jpg"
 			),
 			array(
-				"source" => "https://en.wikipedia.org/wiki/File:Teashades.gif"
+				"source" => "https://upload.wikimedia.org/wikipedia/commons/a/ab/Teashades.gif"
 			)
 		)
 	);

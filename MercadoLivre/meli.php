@@ -14,6 +14,7 @@ class Meli {
     protected static $API_ROOT_URL = "https://api.mercadolibre.com";
     protected static $AUTH_URL     = "http://auth.mercadolivre.com.br/authorization";
     protected static $OAUTH_URL    = "/oauth/token";
+    protected static $LOGOUT_URL     = "https://auth.mercadolibre.com.br/lgz/logout/cleanUp";
 
     /**
      * Configuration for CURL
@@ -47,6 +48,25 @@ class Meli {
         $this->refresh_token = $refresh_token;
     }
 
+    /**
+     * Return an string with a complete Meli logout url.
+     * NOTE: You can modify the $LOGOUT_URL to change the language of login
+     * 
+     * @todo (2014-10-20) Redirection from MercadoLire not working momentarily, so that the user will be anchored in MercadoLire.
+     * @param string $redirect_uri
+     * @return string
+     */
+    public function getLogoutUrl($redirect_uri) {
+        $this->redirect_uri = $redirect_uri;
+        $params = array(
+          "platform_id" => 'ml',
+          "main_platform" => 'ml',
+          "go" => $redirect_uri //todo: temporarily not work, we must solve
+            );
+        $logout_uri = self::$LOGOUT_URL."?".http_build_query($params);
+        return $logout_uri;
+    }
+    
     /**
      * Return an string with a complete Meli login url.
      * NOTE: You can modify the $AUTH_URL to change the language of login

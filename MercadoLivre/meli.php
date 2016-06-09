@@ -274,16 +274,6 @@ class Meli {
             $uri = $path;
         }
 
-        if(!empty($params)) {
-            $paramsJoined = array();
-
-            foreach($params as $param => $value) {
-               $paramsJoined[] = "$param=$value";
-            }
-            $params = '?'.implode('&', $paramsJoined);
-            $uri = $uri.$params;
-        }
-
-        return $uri;
+        return $uri .  ((count($params)) ? '?' . http_build_query($params) : '');
     }
 }

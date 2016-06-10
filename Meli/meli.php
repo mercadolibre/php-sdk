@@ -3,23 +3,37 @@
 class Meli {
 
 	/**
-	 * @version 1.0.0
+	 * @version 1.1.0
 	 */
-    const VERSION  = "1.0.0";
+    const VERSION  = "1.1.0";
 
     /**
      * @var $API_ROOT_URL is a main URL to access the Meli API's.
      * @var $AUTH_URL is a url to redirect the user for login.
      */
     protected static $API_ROOT_URL = "https://api.mercadolibre.com";
-    protected static $AUTH_URL     = "http://auth.mercadolivre.com.br/authorization";
     protected static $OAUTH_URL    = "/oauth/token";
+    public static $AUTH_URL = array(
+        "MLA" => "https://auth.mercadolibre.com.ar", // Argentina 
+        "MLB" => "https://auth.mercadolivre.com.br", // Brasil
+        "MCO" => "https://auth.mercadolibre.com.co", // Colombia
+        "MCR" => "https://auth.mercadolibre.com.cr", // Costa Rica
+        "MEC" => "https://auth.mercadolibre.com.ec", // Ecuador
+        "MLC" => "https://auth.mercadolibre.com.cl", // Chile
+        "MLM" => "https://auth.mercadolibre.com.mx", // Mexico
+        "MLU" => "https://auth.mercadolibre.com.uy", // Uruguay
+        "MLV" => "https://auth.mercadolibre.com.ve", // Venezuela
+        "MPA" => "https://auth.mercadolibre.com.pa", // Panama
+        "MPE" => "https://auth.mercadolibre.com.pe", // Peru
+        "MPT" => "https://auth.mercadolibre.com.pt", // Prtugal
+        "MRD" => "https://auth.mercadolibre.com.do"  // Dominicana
+    );
 
     /**
      * Configuration for CURL
      */
     public static $CURL_OPTS = array(
-        CURLOPT_USERAGENT => "MELI-PHP-SDK-1.0.0", 
+        CURLOPT_USERAGENT => "MELI-PHP-SDK-1.1.0", 
         CURLOPT_SSL_VERIFYPEER => true,
         CURLOPT_CONNECTTIMEOUT => 10, 
         CURLOPT_RETURNTRANSFER => 1, 
@@ -54,10 +68,10 @@ class Meli {
      * @param string $redirect_uri
      * @return string
      */
-    public function getAuthUrl($redirect_uri) {
+    public function getAuthUrl($redirect_uri, $auth_url) {
         $this->redirect_uri = $redirect_uri;
         $params = array("client_id" => $this->client_id, "response_type" => "code", "redirect_uri" => $redirect_uri);
-        $auth_uri = self::$AUTH_URL."?".http_build_query($params);
+        $auth_uri = $auth_url."/authorization?".http_build_query($params);
         return $auth_uri;
     }
 

@@ -1,5 +1,5 @@
 <?php
-require '../MercadoLivre/meli.php';
+require '../Meli/meli.php';
 
 $meli = new Meli('APP_ID', 'SECRET_KEY');
 

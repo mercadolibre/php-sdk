@@ -15,7 +15,7 @@ The first thing to do is to instance a ```Meli``` class. You'll need to give a `
 Include the lib meli in your project
 
 ```php
-require '/MercadoLivre/meli.php';
+require '/Meli/meli.php';
 ```
 Start the development!
 

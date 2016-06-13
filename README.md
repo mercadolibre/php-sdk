@@ -67,7 +67,7 @@ At this stage your are ready to make call to the API on behalf of the user.
 ```php
 $params = array('access_token' => $access_token);
 $result = $meli->get('/users/me', $params); 
-// If you wish , you can get an associative array with param $assoc = true Example:
+ #If you wish , you can get an associative array with param $assoc = true Example:
 $result = $meli->get('/users/me', $params, true); 
 ```
 

@@ -19,7 +19,7 @@ class Meli {
         "MCO" => "https://auth.mercadolibre.com.co", // Colombia
         "MCR" => "https://auth.mercadolibre.com.cr", // Costa Rica
         "MEC" => "https://auth.mercadolibre.com.ec", // Ecuador
-        "MLC" => "https://auth.mercadolibre.com.cl", // Chile
+        "MLC" => "https://auth.mercadolibre.cl", // Chile
         "MLM" => "https://auth.mercadolibre.com.mx", // Mexico
         "MLU" => "https://auth.mercadolibre.com.uy", // Uruguay
         "MLV" => "https://auth.mercadolibre.com.ve", // Venezuela

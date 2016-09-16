@@ -27,7 +27,6 @@ if($_GET['code']) {
 	// We construct the item to POST
 	$item = array(
 		"title" => "Rayban Gloss Black",
-		"subtitle" => "Some subtitle here",
 		"category_id" => "MLB1227",
 		"price" => 10,
 		"currency_id" => "BRL",

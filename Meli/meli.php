@@ -106,8 +106,9 @@ class Meli {
         if($request["httpCode"] == 200) {             
             $this->access_token = $request["body"]->access_token;
 
-            if($request["body"]->refresh_token)
+            if (property_exists($request["body"], 'refresh_token')) {
                 $this->refresh_token = $request["body"]->refresh_token;
+	    }
 
             return $request;
 
@@ -141,8 +142,9 @@ class Meli {
             if($request["httpCode"] == 200) {             
                 $this->access_token = $request["body"]->access_token;
 
-                if($request["body"]->refresh_token)
+                if (property_exists($request["body"], 'refresh_token')) {
                     $this->refresh_token = $request["body"]->refresh_token;
+                }
 
                 return $request;
 

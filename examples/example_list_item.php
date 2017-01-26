@@ -13,7 +13,7 @@ if($_GET['code']) {
 	// Now we create the sessions with the authenticated user
 	$_SESSION['access_token'] = $user['body']->access_token;
 	$_SESSION['expires_in'] = $user['body']->expires_in;
-	$_SESSION['refrsh_token'] = $user['body']->refresh_token;
+	$_SESSION['refresh_token'] = $user['body']->refresh_token;
 
 	// We can check if the access token in invalid checking the time
 	if($_SESSION['expires_in'] + time() + 1 < time()) {

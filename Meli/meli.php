@@ -200,7 +200,7 @@ class Meli {
      * @param array $params
      * @return mixed
      */
-    public function put($path, $body = null, $params) {
+    public function put($path, $body = null, $params = array()) {
         $body = json_encode($body);
         $opts = array(
             CURLOPT_HTTPHEADER => array('Content-Type: application/json'),

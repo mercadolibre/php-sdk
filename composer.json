@@ -1,0 +1,23 @@
+{
+    "name": "meli/meli",
+    "description": "This is the official PHP SDK for MercadoLibre's Platform",
+    "type": "library",
+    "keywords": [
+        "Mercadolibre",
+        "php sdk"
+    ],
+    "license": "",
+    "minimum-stability": "stable",
+    "require": {},
+    "require-dev": {
+        "phpunit/phpunit": "^6.1"
+    },
+    "autoload": {
+        "psr-4": {
+            "Meli\\": "Meli"
+        }
+    },
+    "scripts": {
+        "test": "phpunit --verbose"
+    }
+}

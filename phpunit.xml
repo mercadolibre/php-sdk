@@ -1,0 +1,14 @@
+<phpunit bootstrap="vendor/autoload.php" 
+    colors="true" 
+    verbose="true">
+  <testsuites>
+    <testsuite name="meli">
+      <directory>tests/</directory>
+    </testsuite>
+  </testsuites>
+    <filter>
+        <whitelist>
+            <directory suffix=".php">Meli</directory>
+        </whitelist>
+    </filter>
+</phpunit>

@@ -4,8 +4,10 @@ This is the official PHP SDK for MercadoLibre's Platform.
 
 ## How do I install it?
 
-       clone repository
-       https://github.com/mercadolibre/php-sdk.git
+```bash
+$ composer require meli/meli
+$ composer dumpautoload -o // optional
+```
 
 ## How do I use it?
 
@@ -15,12 +17,18 @@ The first thing to do is to instance a ```Meli``` class. You'll need to give a `
 Include the lib meli in your project
 
 ```php
-require '/Meli/meli.php';
+<?php
+
+require 'vendor/autoload.php';
+
+use \Meli\Meli;
 ```
 Start the development!
 
 ### Create an instance of Meli class
+
 Simple like this
+
 ```php
 $meli = new Meli('1234', 'a secret');
 ```
@@ -65,7 +73,7 @@ At this stage your are ready to make call to the API on behalf of the user.
 #### Making GET calls
 
 ```php
-$params = array('access_token' => $access_token);
+$params = ['access_token' => $access_token];
 $result = $meli->get('/users/me', $params); 
  #If you wish , you can get an associative array with param $assoc = true Example:
 $result = $meli->get('/users/me', $params, true); 

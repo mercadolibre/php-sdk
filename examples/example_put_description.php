@@ -1,35 +1,44 @@
 <?php
-session_start('teste');
 
-require '../Meli/meli.php';
+session_start('test');
 
-$meli = new Meli('APP_ID', 'SECRET_KEY');
+require 'vendor/autoload.php';
 
-if($_GET['code']) {
-	
+use \Meli\Meli;
+
+
+$meli = new Meli('', '');
+
+if ($_GET['code']) {
+
 	// If the code was in get parameter we authorize
-	$user = $meli->authorize($_GET['code'], 'http://localhost/PHPSDK/examples/example_login.php');
-	
-	// Now we create the sessions with the authenticated user
-	$_SESSION['access_token'] = $user['body']->access_token;
-	$_SESSION['expires_in'] = $user['body']->expires_in;
-	$_SESSION['refrsh_token'] = $user['body']->refresh_token;
+	$user = $meli->authorize($_GET['code'], 'http://somecallbackurl');
 
+	// Now we create the sessions with the authenticated user
+	$_SESSION['access_token'] 	= $user['body']->access_token;
+	$_SESSION['expires_in'] = $user['body']->expires_in;
+	$_SESSION['refrsh_token'] 	= $user['body']->refresh_token;
 	// We can check if the access token in invalid checking the time
-	if($_SESSION['expires_in'] + time() + 1 < time()) {
+	if ($_SESSION['expires_in'] + time() + 1 < time()) {
 		try {
-		    print_r($meli->refreshAccessToken());
+			echo '<pre>' . print_r($meli->refreshAccessToken(), true) . '</pre>';
 		} catch (Exception $e) {
-		  	echo "Exception: ",  $e->getMessage(), "\n";
+		  	echo 'Exception: ' . $e->getMessage();
 		}
 	}
-	
-	$params = array('access_token' => $_SESSION['access_token']);
 
-	$body = array('text' => 'Adding new description <strong>html</strong>');
+	$params = [
+		'access_token' => $_SESSION['access_token']
+	];
 
-	$response = $meli->put('/items/MLB12343412/descriptions', $body, $params);
-	
+	$body = [
+		'text' => 'Adding new description <strong>html</strong>'
+	];
+
+	$response = $meli->put('/items/ID_PRODUCT/descriptions', $body, $params);
+
+	echo '<pre>' . print_r($response, true) . '</pre>';
+
 } else {
-	echo '<a href="' . $meli->getAuthUrl('http://localhost/PHPSDK/examples/example_login.php', Meli::$AUTH_URL['MLB']) . '">Login using MercadoLibre oAuth 2.0</a>';
+	echo '<a href="' . $meli->getAuthUrl('http://somecallbackurl', Meli::$AUTH_URL['MLV']) . '">Login using MercadoLibre oAuth 2.0</a>'; //  Don't forget to set the autentication URL of your country.
 }

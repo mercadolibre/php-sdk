@@ -1,5 +1,5 @@
 <?php
-require_once '../MercadoLivre/meli.php';
+require_once '../MercadoLivre/Meli.php';
 
 class InitSDKTest extends PHPUnit_Framework_TestCase
 {				
@@ -15,7 +15,7 @@ class InitSDKTest extends PHPUnit_Framework_TestCase
     public function setUp() {
 
     	self::$meli = $this->getMock(
-	          'Meli', array('execute'), array($this->client_id, $this->client_secret, $this->access_token, $this->refresh_token)
+	          'MercadoLivre\Meli', array('execute'), array($this->client_id, $this->client_secret, $this->access_token, $this->refresh_token)
 	        );
 
     }
@@ -61,7 +61,7 @@ class InitSDKTest extends PHPUnit_Framework_TestCase
 
 			$this->refresh_token = null;
 			self::$meli = $this->getMock(
-	          'Meli', array('execute'), array($this->client_id, $this->client_secret, $this->access_token, $this->refresh_token)
+	          'MercadoLivre\Meli', array('execute'), array($this->client_id, $this->client_secret, $this->access_token, $this->refresh_token)
 	        );
 
 			$reponse = self::$meli->refreshAccessToken();

@@ -11,7 +11,7 @@ class Meli {
 	/**
 	 * @version 2.0.0
 	 */
-    const VERSION  = "2.0.0";
+    const VERSION = "2.0.0";
 
     /**
      * @var $API_ROOT_URL is a main URL to access the Meli API's.
@@ -26,7 +26,7 @@ class Meli {
         "MCO" => "https://auth.mercadolibre.com.co", // Colombia
         "MCR" => "https://auth.mercadolibre.com.cr", // Costa Rica
         "MEC" => "https://auth.mercadolibre.com.ec", // Ecuador
-        "MLC" => "https://auth.mercadolibre.cl",     // Chile
+        "MLC" => "https://auth.mercadolibre.cl", // Chile
         "MLM" => "https://auth.mercadolibre.com.mx", // Mexico
         "MLU" => "https://auth.mercadolibre.com.uy", // Uruguay
         "MLV" => "https://auth.mercadolibre.com.ve", // Venezuela
@@ -85,7 +85,7 @@ class Meli {
             'redirect_uri'  => $redirect_uri
         ];
 
-        $auth_uri = $auth_url. '/authorization?' .http_build_query($params);
+        $auth_uri = $auth_url . '/authorization?' . http_build_query($params);
 
         return $auth_uri;
     }
@@ -100,7 +100,7 @@ class Meli {
      */
     public function authorize($code, $redirect_uri) {
 
-        if($redirect_uri)
+        if ($redirect_uri)
             $this->redirect_uri = $redirect_uri;
 
         $body = [
@@ -118,7 +118,7 @@ class Meli {
 
         $request = $this->execute(self::$OAUTH_URL, $opts);
 
-        if($request["httpCode"] == 200) {
+        if ($request["httpCode"] == 200) {
 
             $this->access_token = $request["body"]->access_token;
 
@@ -141,7 +141,7 @@ class Meli {
      */
     public function refreshAccessToken() {
 
-        if($this->refresh_token) {
+        if ($this->refresh_token) {
 
              $body = [
                 "grant_type"    => "refresh_token",
@@ -157,7 +157,7 @@ class Meli {
 
             $request = $this->execute(self::$OAUTH_URL, $opts);
 
-            if($request["httpCode"] == 200) {
+            if ($request["httpCode"] == 200) {
 
                 $this->access_token = $request["body"]->access_token;
 
@@ -295,7 +295,7 @@ class Meli {
 
         curl_setopt_array($ch, self::$CURL_OPTS);
 
-        if(!empty($opts))
+        if (!empty($opts))
             curl_setopt_array($ch, $opts);
 
         $return["body"]     = json_decode(curl_exec($ch), $assoc);
@@ -319,27 +319,27 @@ class Meli {
 
             if (!preg_match("/^\//", $path)) {
 
-                $path = '/'.$path;
+                $path = '/' . $path;
             }
 
-            $uri = self::$API_ROOT_URL.$path;
+            $uri = self::$API_ROOT_URL . $path;
 
         } else {
 
             $uri = $path;
         }
 
-        if(!empty($params)) {
+        if (!empty($params)) {
 
             $paramsJoined = [];
 
-            foreach($params as $param => $value) {
+            foreach ($params as $param => $value) {
 
-               $paramsJoined[] = $param.'='.$value;
+               $paramsJoined[] = $param . '=' . $value;
             }
 
-            $params = '?'.implode('&', $paramsJoined);
-            $uri = $uri.$params;
+            $params = '?' . implode('&', $paramsJoined);
+            $uri = $uri . $params;
         }
 
         return $uri;

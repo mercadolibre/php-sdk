@@ -40,11 +40,11 @@ class Meli {
      * Configuration for CURL
      */
     public static $CURL_OPTS = [
-        CURLOPT_USERAGENT => "MELI-PHP-SDK-1.1.0",
-        CURLOPT_SSL_VERIFYPEER => true,
-        CURLOPT_CONNECTTIMEOUT => 10,
-        CURLOPT_RETURNTRANSFER => 1,
-        CURLOPT_TIMEOUT => 60
+        CURLOPT_USERAGENT       => "MELI-PHP-SDK-2.0.0",
+        CURLOPT_SSL_VERIFYPEER  => true,
+        CURLOPT_CONNECTTIMEOUT  => 10,
+        CURLOPT_RETURNTRANSFER  => 1,
+        CURLOPT_TIMEOUT         => 60
     ];
 
     protected $client_id;
@@ -127,11 +127,9 @@ class Meli {
 
             return $request;
 
-        } else {
-
-            return $request;
-
         }
+        
+        return $request;
     }
 
     /**
@@ -291,17 +289,17 @@ class Meli {
 
         $uri = $this->make_path($path, $params);
 
-        $ch = curl_init($uri);
+        $curlExe = curl_init($uri);
 
-        curl_setopt_array($ch, self::$CURL_OPTS);
+        curl_setopt_array($curlExe, self::$CURL_OPTS);
 
         if (!empty($opts))
-            curl_setopt_array($ch, $opts);
+            curl_setopt_array($curlExe, $opts);
 
-        $return["body"]     = json_decode(curl_exec($ch), $assoc);
-        $return["httpCode"] = curl_getinfo($ch, CURLINFO_HTTP_CODE);
+        $return["body"]     = json_decode(curl_exec($curlExe), $assoc);
+        $return["httpCode"] = curl_getinfo($curlExe, CURLINFO_HTTP_CODE);
 
-        curl_close($ch);
+        curl_close($curlExe);
 
         return $return;
     }

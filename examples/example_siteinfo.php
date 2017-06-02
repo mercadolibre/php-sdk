@@ -12,4 +12,4 @@ $result = $meli->get('/sites/MLV', $params); //  Don't forget to set the autenti
 // If you wish , you can get an associative array with param $assoc = true
 // $result = $meli->get('/sites/MLV', $params, true);
 
-echo '<pre>'.print_r($result,true).'</pre>';
+echo '<pre>' . print_r($result, true) . '</pre>';

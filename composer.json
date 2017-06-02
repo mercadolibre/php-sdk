@@ -1,0 +1,18 @@
+{
+    "name": "mercadolibre/php-sdk",
+    "description": "This is the official PHP SDK for MercadoLibre's Platform.",
+    "authors": [
+        {
+            "name": "Guido Contreras Woda",
+            "email": "guiwoda@gmail.com"
+        }
+    ],
+    "minimum-stability": "stable",
+    "require": {},
+    "require-dev": {
+	    "phpunit/phpunit": "@stable"
+    },
+	"autoload": {
+		"classmap": ["MercadoLivre"]
+	}
+}

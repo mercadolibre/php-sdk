@@ -19,9 +19,9 @@ if($_GET['code']) {
 	// We can check if the access token in invalid checking the time
 	if($_SESSION['expires_in'] + time() + 1 < time()) {
 		try {
-			print_r($meli->refreshAccessToken());
+			echo '<pre>'.print_r($meli->refreshAccessToken(),true).'</pre>';
 		} catch (Exception $e) {
-			echo "Exception: ",  $e->getMessage(), "\n";
+			echo 'Exception: '. $e->getMessage() ;
 		}
 	}
 	// We construct the item to POST

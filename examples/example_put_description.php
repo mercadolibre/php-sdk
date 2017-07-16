@@ -28,7 +28,7 @@ if($_GET['code']) {
 
 	$body = array('text' => 'Adding new description <strong>html</strong>');
 
-	$response = $meli->put('/items/MLB12343412/descriptions', $body, $params);
+	$response = $meli->put('/items/MLB12343412/description', $body, $params);
 	
 } else {
 	echo '<a href="' . $meli->getAuthUrl('http://localhost/PHPSDK/examples/example_login.php', Meli::$AUTH_URL['MLB']) . '">Login using MercadoLibre oAuth 2.0</a>';

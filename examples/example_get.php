@@ -1,7 +1,12 @@
 <?php
 require '../Meli/meli.php';
 
-$meli = new Meli('3331309901577719', 'Q8yipQGFimWHshcs4e69KZRn4pXpQpL2');
+$appId = getenv('App_ID');
+$secretKey = getenv('Secret_Key');
+$redirectURI = getenv('Redirect_URI');
+
+$meli = new Meli($appId, $secretKey);
+$redirectURI = $redirectURI;
 
 $params = array();
 

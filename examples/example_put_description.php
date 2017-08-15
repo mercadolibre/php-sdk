@@ -3,12 +3,17 @@ session_start('teste');
 
 require '../Meli/meli.php';
 
-$meli = new Meli('3331309901577719', 'Q8yipQGFimWHshcs4e69KZRn4pXpQpL2');
+$appId = getenv('App_ID');
+$secretKey = getenv('Secret_Key');
+$redirectURI = getenv('Redirect_URI');
+
+$meli = new Meli($appId, $secretKey);
+$redirectURI = $redirectURI;
 
 if($_GET['code']) {
 	
 	// If the code was in get parameter we authorize
-	$user = $meli->authorize($_GET['code'], 'http://localhost/PHPSDK/examples/example_login.php');
+	$user = $meli->authorize($_GET['code'], $redirectURI);
 	
 	// Now we create the sessions with the authenticated user
 	$_SESSION['access_token'] = $user['body']->access_token;
@@ -31,5 +36,5 @@ if($_GET['code']) {
 	$response = $meli->put('/items/MLB12343412/descriptions', $body, $params);
 	
 } else {
-	echo '<a href="' . $meli->getAuthUrl('http://localhost/PHPSDK/examples/example_login.php', Meli::$AUTH_URL['MLB']) . '">Login using MercadoLibre oAuth 2.0</a>';
+	echo '<a href="' . $meli->getAuthUrl($redirectURI, Meli::$AUTH_URL['MLB']) . '">Login using MercadoLibre oAuth 2.0</a>';
 }

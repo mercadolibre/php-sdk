@@ -1,0 +1,31 @@
+{
+    "name": "Mercado Libre PHP SDK",
+    "description": "The official PHP SDK for Mercado Libre's Platform.",
+    "website": "http://developers.mercadolibre.com/",
+    "repository": "https://github.com/diazmartin/php-sdk",
+    "logo": "http://developers.mercadolibre.com/wp-content/themes/newDevelopersTheme/images/LogoDevelopers_Lato.png",
+    "success_url": "/",
+    "keywords": [
+        "API",
+        "PHP",
+        "Mercado Libre",
+        "SDK",
+        "meli",
+        "integration",
+        "e-commerce"
+    ],
+    "buildpacks": [{
+        "url": "heroku/php"
+    }],
+    "env": {
+        "App_ID": {
+            "description": "Enter the App ID of the application you just created"
+        },
+        "Secret_Key": {
+            "description": "Enter the Secret Key of the application you just created"
+        },
+        "Redirect_URI": {
+            "description": "URL to which the user will be redirected once authenticated. The address must contain https: //"
+        }
+    }
+}

@@ -3,7 +3,7 @@ session_start('teste');
 
 require '../Meli/meli.php';
 
-$meli = new Meli('APP_ID', 'SECRET_KEY', $_SESSION['access_token'], $_SESSION['refresh_token']);
+$meli = new Meli('3331309901577719', 'Q8yipQGFimWHshcs4e69KZRn4pXpQpL2', $_SESSION['access_token'], $_SESSION['refresh_token']);
 
 if($_GET['code'] || $_SESSION['access_token']) {
 

@@ -3,7 +3,7 @@ session_start('teste');
 
 require '../Meli/meli.php';
 
-$meli = new Meli('APP_ID', 'SECRET_KEY');
+$meli = new Meli('3331309901577719', 'Q8yipQGFimWHshcs4e69KZRn4pXpQpL2');
 
 if($_GET['code']) {
 	

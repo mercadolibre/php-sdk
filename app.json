@@ -25,8 +25,7 @@
             "description": "Enter it's Secret Key."
         },
         "Redirect_URI": {
-            "description": "Enter the url of your application, where your the users will be redirected after Login. To start, use https://{yourappname}.herokuapp.com.
-            Note you'll need to update this value for your app as well, through the My Apps dashboard: https://developers.mercadolibre.com.ar/apps/home."
+            "description": "Your application url. Use https://{yourappname}.herokuapp.com. Note you'll need to update this value for your app as well, through your My Apps dashboard: https://developers.mercadolibre.com.ar/apps/home."
         }
     }
 }

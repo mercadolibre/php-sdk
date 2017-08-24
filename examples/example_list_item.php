@@ -2,13 +2,9 @@
 session_start();
 
 require '../Meli/meli.php';
-
-$appId = getenv('App_ID');
-$secretKey = getenv('Secret_Key');
-$redirectURI = getenv('Redirect_URI');
+require '../configApp.php';
 
 $meli = new Meli($appId, $secretKey);
-$redirectURI = $redirectURI;
 
 if($_GET['code']) {
 
@@ -31,7 +27,7 @@ if($_GET['code']) {
 
 	// We construct the item to POST
 	$item = array(
-		"title" => "Rayban Gloss Black",
+		"title" => "Test Item - Por favor, no ofertar",
 		"category_id" => "MLB1227",
 		"price" => 10,
 		"currency_id" => "BRL",
@@ -39,9 +35,9 @@ if($_GET['code']) {
 		"buying_mode" => "buy_it_now",
 		"listing_type_id" => "bronze",
 		"condition" => "new",
-		"description" => "Item:, <strong> Ray-Ban WAYFARER Gloss Black RB2140 901 </strong> Model: RB2140. Size: 50mm. Name: WAYFARER. Color: Gloss Black. Includes Ray-Ban Carrying Case and Cleaning Cloth. New in Box",
+		"description" => "This is a test description. This item was listed with Mercado Libre's PHP SDK.",
 		"video_id" => "RXWn6kftTHY",
-		"warranty" => "12 month by Ray Ban",
+		"warranty" => "12 month",
 		"pictures" => array(
 			array(
 				"source" => "https://upload.wikimedia.org/wikipedia/commons/f/fd/Ray_Ban_Original_Wayfarer.jpg"

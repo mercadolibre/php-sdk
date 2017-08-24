@@ -48,7 +48,7 @@ This is a 2 step process.
 First get the link to redirect the user. This is very easy! Just:
 
 ```php
-$redirectUrl = $meli->getAuthUrl("http://somecallbackurl",Meli::$AUTH_URL['MLB']); //  Don't forget to set the autentication URL of your country.
+$redirectUrl = $meli->getAuthUrl("http://somecallbackurl",Meli::$AUTH_URL['MLB']); //  Don't forget to change the $AUTH_URL value to match your user's Site Id.
 ```
 
 This will give you the url to redirect the user. You need to specify a callback url which will be the one that the user will redirected after a successfull authrization process.

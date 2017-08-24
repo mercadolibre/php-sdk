@@ -1,13 +1,16 @@
 <?php
 
-/* Esto es un comentario multilínea y otra lína de comentarios */
+/* Go to My Apps dashboard: https://developers.mercadolibre.com.ar/apps/home, and get the information you need in order to the following enviroment variables */
+
+/* Your Application Id */
 $appId = getenv('App_ID');
 
-/* Esto es un comentario multilínea y otra lína de comentarios */
+/* Your Secret Key */
 $secretKey = getenv('Secret_Key');
 
-/* Esto es un comentario multilínea y otra lína de comentarios */
+/* The Redirect url */
 $redirectURI = getenv('Redirect_URI');
 
-/* Esto es un comentario multilínea y otra lína de comentarios */
-$countryApp = 'MLA';
+/* The site id of the country where your application will work.
+If you don't know your site_id go to our sites resources: https://api.mercadolibre.com/sites  */
+$siteId = 'MLA';

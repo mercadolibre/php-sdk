@@ -19,13 +19,14 @@
     }],
     "env": {
         "App_ID": {
-            "description": "Enter the App ID of the application you just created"
+            "description": "Enter the Application Id of the app you want to deploy."
         },
         "Secret_Key": {
-            "description": "Enter the Secret Key of the application you just created"
+            "description": "Enter it's Secret Key."
         },
         "Redirect_URI": {
-            "description": "URL to which the user will be redirected once authenticated. The address must contain https: //"
+            "description": "Enter the url of your application, where your the users will be redirected after Login. To start, use https://{yourappname}.herokuapp.com.
+            Note you'll need to update this value for your app as well, through the My Apps dashboard: https://developers.mercadolibre.com.ar/apps/home."
         }
     }
 }

@@ -2,7 +2,7 @@
     "name": "Mercado Libre PHP SDK",
     "description": "The official PHP SDK for Mercado Libre's Platform.",
     "website": "http://developers.mercadolibre.com/",
-    "repository": "https://github.com/diazmartin/php-sdk",
+    "repository": "https://github.com/fsolari/php-sdk",
     "logo": "http://developers.mercadolibre.com/wp-content/themes/newDevelopersTheme/images/LogoDevelopers_Lato.png",
     "success_url": "/",
     "keywords": [

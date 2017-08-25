@@ -2,13 +2,9 @@
 session_start('teste');
 
 require '../Meli/meli.php';
-
-$appId = getenv('App_ID');
-$secretKey = getenv('Secret_Key');
-$redirectURI = getenv('Redirect_URI');
+require '../configApp.php';
 
 $meli = new Meli($appId, $secretKey);
-$redirectURI = $redirectURI;
 
 if($_GET['code']) {
 	

@@ -1,7 +1,7 @@
 # MercadoLibre's PHP SDK
 
 This is the official PHP SDK for MercadoLibre's Platform.
-[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/diazmartin/php-sdk)
+[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/fsolari/php-sdk)
 
 ## How do I install it?
 
@@ -48,7 +48,7 @@ This is a 2 step process.
 First get the link to redirect the user. This is very easy! Just:
 
 ```php
-$redirectUrl = $meli->getAuthUrl("http://somecallbackurl",Meli::$AUTH_URL['MLB']); //  Don't forget to set the autentication URL of your country.
+$redirectUrl = $meli->getAuthUrl("http://somecallbackurl",Meli::$AUTH_URL['MLB']); //  Don't forget to change the $AUTH_URL value to match your user's Site Id.
 ```
 
 This will give you the url to redirect the user. You need to specify a callback url which will be the one that the user will redirected after a successfull authrization process.

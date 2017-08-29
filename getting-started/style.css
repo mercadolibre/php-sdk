@@ -232,6 +232,7 @@ code {
     padding-left: 15px;
     padding-right: 15px;
     width: 75%;
+    margin-bottom: 80px;
 }
 
 .row {
@@ -319,6 +320,18 @@ code {
     min-height: 1px;
     padding-left: 15px;
     padding-right: 15px;
+}
+
+.row-info {
+    padding: 20px 5px;
+    border-bottom: 1px solid #ccc;
+}
+
+.row-info:hover {
+    color: #333;
+    background-color: #e8e8e8;
+    border-color: #adadad;
+    text-decoration: none;
 }
 
 footer {

@@ -1,5 +1,6 @@
 <?php
 session_start();
+require 'Meli/meli.php';
 require 'configApp.php';
 
 $domain = $_SERVER['HTTP_HOST'];
@@ -80,8 +81,48 @@ $appName = explode('.', $domain)[0];
         <div class="row">
             <div class="col-sm-6 col-md-6">
                 <h3>oAuth</h3>
-                <p>First authenticate yourself. Authentication is the key to get the most ouf Mercado Libre's API.
-                    <p><a class="btn" href="../examples/example_login.php">Authenticate</a></p>
+                <p>First authenticate yourself. Authentication is the key to get the most ouf Mercado Libre's API.</p>                
+
+                <?php
+                $meli = new Meli($appId, $secretKey);
+
+                if($_GET['code'] || $_SESSION['access_token']) {
+
+                    // If code exist and session is empty
+                    if($_GET['code'] && !($_SESSION['access_token'])) {
+                        // If the code was in get parameter we authorize
+                        $user = $meli->authorize($_GET['code'], $redirectURI);
+
+                        // Now we create the sessions with the authenticated user
+                        $_SESSION['access_token'] = $user['body']->access_token;
+                        $_SESSION['expires_in'] = time() + $user['body']->expires_in;
+                        $_SESSION['refresh_token'] = $user['body']->refresh_token;
+                    } else {
+                        // We can check if the access token in invalid checking the time
+                        if($_SESSION['expires_in'] < time()) {
+                            try {
+                                // Make the refresh proccess
+                                $refresh = $meli->refreshAccessToken();
+
+                                // Now we create the sessions with the new parameters
+                                $_SESSION['access_token'] = $refresh['body']->access_token;
+                                $_SESSION['expires_in'] = time() + $refresh['body']->expires_in;
+                                $_SESSION['refresh_token'] = $refresh['body']->refresh_token;
+                            } catch (Exception $e) {
+                                echo "Exception: ",  $e->getMessage(), "\n";
+                            }
+                        }
+                    }
+
+                    echo '<pre>';
+                        print_r($_SESSION);
+                    echo '</pre>';
+
+                } else {
+                    echo '<p><a alt="Login using MercadoLibre oAuth 2.0" class="btn" href="' . $meli->getAuthUrl($redirectURI, Meli::$AUTH_URL[$siteId]) . '">Authenticate</a></p>';
+                }
+                ?>
+
             </div>
             <div class="col-sm-6 col-md-6">
                 <h3>Get site data</h3>
@@ -99,21 +140,20 @@ $appName = explode('.', $domain)[0];
 
         <div class="row">
             <h3>Your Credentials</h3>
-            <div class="col-sm-3 col-md-3">
-                <b>App_Id:</b> $appId;
+            <div class="row-info col-sm-3 col-md-3">
+                <b>App_Id: </b><?php echo $appId; ?>
             </div>
-            <div class="col-sm-3 col-md-3">
-                <b>Secret_Key: </b><?php echo $secretKey ?>
+            <div class="row-info col-sm-3 col-md-3">
+                <b>Secret_Key: </b><?php echo $secretKey; ?>
             </div>
-            <div class="col-sm-3 col-md-3">
-                <b>Redirect_URI: </b><?php echo $redirectURI ?>
+            <div class="row-info col-sm-3 col-md-3">
+                <b>Redirect_URI: </b><?php echo $redirectURI; ?>
             </div>
-            <div class="col-sm-3 col-md-3">
+            <div class="row-info col-sm-3 col-md-3">
                 <b>Site_Id: </b><?php echo $siteId; ?>
             </div>
         </div>
         <hr>
-
     </main>
 </body>
 
@@ -123,48 +163,3 @@ $appName = explode('.', $domain)[0];
 
 
 
-
-
-
-<?php
-require 'Meli/meli.php';
-
-
-$meli = new Meli($appId, $secretKey);
-
-if($_GET['code'] || $_SESSION['access_token']) {
-
-	// If code exist and session is empty
-	if($_GET['code'] && !($_SESSION['access_token'])) {
-		// If the code was in get parameter we authorize
-		$user = $meli->authorize($_GET['code'], $redirectURI);
-		
-		// Now we create the sessions with the authenticated user
-		$_SESSION['access_token'] = $user['body']->access_token;
-		$_SESSION['expires_in'] = time() + $user['body']->expires_in;
-		$_SESSION['refresh_token'] = $user['body']->refresh_token;
-	} else {
-		// We can check if the access token in invalid checking the time
-		if($_SESSION['expires_in'] < time()) {
-			try {
-				// Make the refresh proccess
-				$refresh = $meli->refreshAccessToken();
-
-				// Now we create the sessions with the new parameters
-				$_SESSION['access_token'] = $refresh['body']->access_token;
-				$_SESSION['expires_in'] = time() + $refresh['body']->expires_in;
-				$_SESSION['refresh_token'] = $refresh['body']->refresh_token;
-			} catch (Exception $e) {
-			  	echo "Exception: ",  $e->getMessage(), "\n";
-			}
-		}
-	}
-
-	echo '<pre>';
-		print_r($_SESSION);
-	echo '</pre>';
-	
-} else {
-	echo '<a href="' . $meli->getAuthUrl($redirectURI, Meli::$AUTH_URL[$siteId]) . '">Login using MercadoLibre oAuth 2.0</a>';
-}
-?>

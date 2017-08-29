@@ -1,6 +1,9 @@
 <?php
 session_start();
 require 'configApp.php';
+
+$domain = $_SERVER['HTTP_HOST'];
+$appName = explode('.', $domain)[0];
 ?>
 
 <!DOCTYPE html>
@@ -52,12 +55,16 @@ require 'configApp.php';
             </div>
             <div class="col-md-6">
                 <h3>Next steps</h3>
-                <p>To start, <a href="https://developers.mercadolibre.com.ar/apps/home">go to your My Apps dashboard</a> and update your application's <b>redirect URI</b>, to match the one Heroku is running.
-                    <br>
-                    <br> If you deployed this app by deploying the Heroku Button, then in a command line shell, run:
-                    <p><code>git clone https://github.com/mercadolibre/php-sdk.git </code> - this will create a local copy of the source code for the app</p>
-                    <p><code>cd php-sdk </code> - change directory into the local source code repository</p>
-                    <p><code>heroku git:remote -a <your-app-name> </code> - associate the Heroku app with the repository</p>
+                <p>To start, <a href="https://developers.mercadolibre.com.ar/apps/home">go to your My Apps dashboard</a> and update your application's <b>redirect URI</b> to 
+                <code><?php echo 'http://'.$domain; ?></code>, to match the one Heroku is running.
+                    <br />
+                    <br /> If you deployed this app by deploying the Heroku Button, you need to clone the aplication in your computer to develop, then in a command line shell, run:
+                    <br />
+                    <code>heroku git:clone -a <?php echo $appName; ?></code>
+                    <br />
+                    (This will create a local copy of the source and associate the Heroku app with your local repository)</p>
+                    <p>You can edit this lines and deploy with heroku-cli, you can use the offical Heroku's guide <a target="_blank" href="https://devcenter.heroku.com/articles/git">https://devcenter.heroku.com/articles/git</a></p>
+                    <p>Remember you need to change your country in the config file called <b>configApp.php</b></p>
                     <p>You'll now be set up to run the app locally, or deploy changes to Heroku.</p>
             </div>
         </div>
@@ -111,3 +118,53 @@ require 'configApp.php';
 </body>
 
 </html>
+
+
+
+
+
+
+
+
+<?php
+require 'Meli/meli.php';
+
+
+$meli = new Meli($appId, $secretKey);
+
+if($_GET['code'] || $_SESSION['access_token']) {
+
+	// If code exist and session is empty
+	if($_GET['code'] && !($_SESSION['access_token'])) {
+		// If the code was in get parameter we authorize
+		$user = $meli->authorize($_GET['code'], $redirectURI);
+		
+		// Now we create the sessions with the authenticated user
+		$_SESSION['access_token'] = $user['body']->access_token;
+		$_SESSION['expires_in'] = time() + $user['body']->expires_in;
+		$_SESSION['refresh_token'] = $user['body']->refresh_token;
+	} else {
+		// We can check if the access token in invalid checking the time
+		if($_SESSION['expires_in'] < time()) {
+			try {
+				// Make the refresh proccess
+				$refresh = $meli->refreshAccessToken();
+
+				// Now we create the sessions with the new parameters
+				$_SESSION['access_token'] = $refresh['body']->access_token;
+				$_SESSION['expires_in'] = time() + $refresh['body']->expires_in;
+				$_SESSION['refresh_token'] = $refresh['body']->refresh_token;
+			} catch (Exception $e) {
+			  	echo "Exception: ",  $e->getMessage(), "\n";
+			}
+		}
+	}
+
+	echo '<pre>';
+		print_r($_SESSION);
+	echo '</pre>';
+	
+} else {
+	echo '<a href="' . $meli->getAuthUrl($redirectURI, Meli::$AUTH_URL[$siteId]) . '">Login using MercadoLibre oAuth 2.0</a>';
+}
+?>

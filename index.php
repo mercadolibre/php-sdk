@@ -55,8 +55,8 @@ $appName = explode('.', $domain)[0];
             </div>
             <div class="col-md-6">
                 <h3>Next steps</h3>
-                <p>To start, <a href="https://developers.mercadolibre.com.ar/apps/home">go to your My Apps dashboard</a> and update your application's <b>redirect URI</b> to 
-                <code><?php echo 'http://'.$domain; ?></code>, to match the one Heroku is running.
+                <p>To start, <a href="https://developers.mercadolibre.com.ar/apps/home">go to your My Apps dashboard</a> and update your application's <b>redirect URI</b> to <br />
+                <code><?php echo 'https://'.$domain; ?></code>, to match the one Heroku is running.
                     <br />
                     <br /> If you deployed this app by deploying the Heroku Button, you need to clone the aplication in your computer to develop, then in a command line shell, run:
                     <br />

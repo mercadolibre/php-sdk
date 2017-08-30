@@ -25,7 +25,7 @@
             "description": "Enter it's Secret Key."
         },
         "Redirect_URI": {
-            "description": "Your application url. Use https://{yourappname}.herokuapp.com. Note you'll need to update this value for your app as well, through your My Apps dashboard"
+            "description": "Your application url. Use https://{yourappname}.herokuapp.com. Note you'll need to update this value for your app as well, through your My Apps dashboard."
         }
     }
 }

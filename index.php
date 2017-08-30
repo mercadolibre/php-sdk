@@ -56,15 +56,14 @@ $appName = explode('.', $domain)[0];
                 </div>
                 <div class="col-md-6">
                     <h3>Next steps</h3>
-                    <p>To start, <a href="https://developers.mercadolibre.com.ar/apps/home">go to your My Apps dashboard</a> and update your application's <b>redirect URI</b> to <br />
-                        <code><?php echo 'https://'.$domain; ?></code>, to match the one Heroku is running.
+                    <p>To start, <a href="https://developers.mercadolibre.com.ar/apps/home">go to your My Apps dashboard</a> and update your application's <b>redirect URI</b> to match the one Heroku is running: <br />
+                        <code><?php echo 'https://'.$domain; ?></code>.
                         <br />
-                        <br /> If you deployed this app by deploying the Heroku Button, you need to clone the aplication in your computer to develop, then in a command line shell, run:
+                        <br /> If you deployed this app by the Heroku Button, you need to clone this aplication to your computer by running the following on a command line shell:
                         <br />
                         <code>heroku git:clone -a <?php echo $appName; ?></code>
-                        <br /> (This will create a local copy of the source and associate the Heroku app with your local repository)</p>
-                    <p>You can edit this lines and deploy with heroku-cli, you can use the offical Heroku's guide <a target="_blank" href="https://devcenter.heroku.com/articles/git">https://devcenter.heroku.com/articles/git</a></p>
-                    <p>Remember you need to change your country in the config file called <b>configApp.php</b></p>
+                        <br /> This will create a local copy of the source code, and associate the Heroku app with your local repository.</p>
+                    <p>Follow the offical Heroku's guide <a target="_blank" href="https://devcenter.heroku.com/articles/git">https://devcenter.heroku.com/articles/git</a> to deploy using the Heroku cli.</p>
                     <p>You'll now be set up to run the app locally, or deploy changes to Heroku.</p>
                 </div>
             </div>
@@ -127,7 +126,7 @@ $appName = explode('.', $domain)[0];
 
                 </div>
                 <div class="col-sm-6 col-md-6">
-                    <h3>Get site data</h3>
+                    <h3>Get site</h3>
                     <p>Make a simple GET to <a href="https://api.mercadolibre.com/sites">sites resource</a> with your <b>$site_id</b> to obtain information about a a site. Like id, name, currencies, categories, and other settings.</p>
                     <p><a class="btn" href="../examples/example_get.php">GET</a></p>
                 </div>
@@ -137,7 +136,10 @@ $appName = explode('.', $domain)[0];
                 <div class="col-md-6">
                     <h3>Publish an Item</h3>
                     <p>
-                        Remember to modify this file in your directory. <br /> The text example push this values:
+                        This is a example of how to list an item in <b>MLA</b> (Argentina).
+                       <br /> <b>You need to be authenticated to make it work.</b>
+                       <br /> To be able to list an item in another country, <a href="https://github.com/fsolari/php-sdk/blob/master/examples/example_list_item.php">please update this file</a>, with values according to the site Id where your app works, like <b>category_id</b> and <b>currency</b>.
+                     <br />
                     </p>
                     <pre class="pre-item">
 "title" => "Test Item - Por favor, no ofertar",
@@ -226,7 +228,7 @@ $appName = explode('.', $domain)[0];
                     } else if($_GET['code']) {
                         echo '<p><a alt="Publish Item" class="btn" href="/?code='.$_GET['code'].'&publish_item=ok">Publish Item</a></p>';
                     } else {
-                        echo '<p><a alt="Publish Item" class="btn disable" href="#">Publish Item</a> (Authenticate first) </p>';
+                        echo '<p><a alt="Publish Item" class="btn disable" href="#">Publish Item</a> </p>';
                     }
                     ?>
 

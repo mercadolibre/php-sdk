@@ -189,10 +189,7 @@ ul ul {
 }
 
 pre {
-    white-space: pre-wrap;
-    white-space: -moz-pre-wrap;
-    white-space: -pre-wrap;
-    white-space: -o-pre-wrap;
+    white-space: pre;
     word-wrap: break-word;
     color: black;
     font-weight: bold;
@@ -211,6 +208,9 @@ code {
     border-radius: 4px;
 }
 
+.pre-item {
+    height: 150px;
+}
 .header {
     background-color: #ffeb70;
     text-align: center;

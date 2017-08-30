@@ -1,11 +1,14 @@
 <?php
 require '../Meli/meli.php';
+require '../configApp.php';
 
-$meli = new Meli('APP_ID', 'SECRET_KEY');
+$meli = new Meli($appId, $secretKey);
 
 $params = array();
 
-$result = $meli->get('/sites/MLB', $params);
+$url = '/sites/' . $siteId;
+
+$result = $meli->get($url, $params);
 
 echo '<pre>';
 print_r($result);

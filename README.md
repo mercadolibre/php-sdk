@@ -1,6 +1,26 @@
-# MercadoLibre's PHP SDK
+<h1 align="center">
+  <a href="http://developers.mercadolibre.com/es/">
+    <img src="https://user-images.githubusercontent.com/1153516/29861072-689ec57e-8d3e-11e7-8368-dd923543258f.jpg" alt="Mercado Libre Developers" width="230"></a>
+  </a>
+  <br>
+  MercadoLibre's PHP SDK
+  <br>
+</h1>
 
-This is the official PHP SDK for MercadoLibre's Platform.
+<h4 align="center">This is the official PHP SDK for MercadoLibre's Platform.</h4>
+
+<p align="center">
+  <a href="https://heroku.com/deploy?template=https://github.com/mercadolibre/php-sdk">
+    <img src="https://www.herokucdn.com/deploy/button.svg" alt="Deploy">
+  </a>
+</p>
+
+<p align="center">
+  <a href="https://heroku.com/deploy?template=https://github.com/mercadolibre/php-sdk">
+    <img src="https://user-images.githubusercontent.com/1153516/29859906-9453b50c-8d3a-11e7-88b6-ab354d4a4908.png">
+  </a>
+</p>
+
 
 ## How do I install it?
 
@@ -47,7 +67,7 @@ This is a 2 step process.
 First get the link to redirect the user. This is very easy! Just:
 
 ```php
-$redirectUrl = $meli->getAuthUrl("http://somecallbackurl",Meli::$AUTH_URL['MLB']); //  Don't forget to set the autentication URL of your country.
+$redirectUrl = $meli->getAuthUrl("http://somecallbackurl",Meli::$AUTH_URL['MLB']); //  Don't forget to change the $AUTH_URL value to match your user's Site Id.
 ```
 
 This will give you the url to redirect the user. You need to specify a callback url which will be the one that the user will redirected after a successfull authrization process.

@@ -2,15 +2,16 @@
 session_start('teste');
 
 require '../Meli/meli.php';
+require '../configApp.php';
 
-$meli = new Meli('APP_ID', 'SECRET_KEY', $_SESSION['access_token'], $_SESSION['refresh_token']);
+$meli = new Meli($appId, $secretKey);
 
 if($_GET['code'] || $_SESSION['access_token']) {
 
 	// If code exist and session is empty
 	if($_GET['code'] && !($_SESSION['access_token'])) {
 		// If the code was in get parameter we authorize
-		$user = $meli->authorize($_GET['code'], 'http://localhost/PHPSDK/examples/example_login.php');
+		$user = $meli->authorize($_GET['code'], $redirectURI);
 		
 		// Now we create the sessions with the authenticated user
 		$_SESSION['access_token'] = $user['body']->access_token;
@@ -38,5 +39,5 @@ if($_GET['code'] || $_SESSION['access_token']) {
 	echo '</pre>';
 	
 } else {
-	echo '<a href="' . $meli->getAuthUrl('http://localhost/PHPSDK/examples/example_login.php', Meli::$AUTH_URL['MLB']) . '">Login using MercadoLibre oAuth 2.0</a>';
+	echo '<a href="' . $meli->getAuthUrl($redirectURI, Meli::$AUTH_URL[$siteId]) . '">Login using MercadoLibre oAuth 2.0</a>';
 }

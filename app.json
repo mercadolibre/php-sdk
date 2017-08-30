@@ -1,0 +1,31 @@
+{
+    "name": "Mercado Libre PHP SDK",
+    "description": "The official PHP SDK for Mercado Libre's Platform.",
+    "website": "http://developers.mercadolibre.com/",
+    "repository": "https://github.com/mercadolibre/php-sdk",
+    "logo": "https://mercadolibredevsite.s3.amazonaws.com/wp-content/uploads/2017/08/29205159/dev.jpg",
+    "success_url": "/",
+    "keywords": [
+        "API",
+        "PHP",
+        "Mercado Libre",
+        "SDK",
+        "meli",
+        "integration",
+        "e-commerce"
+    ],
+    "buildpacks": [{
+        "url": "heroku/php"
+    }],
+    "env": {
+        "App_ID": {
+            "description": "Enter the Application Id of the app you want to deploy. If you don't have an app yet, register a new one: http://applications.mercadolibre.com"
+        },
+        "Secret_Key": {
+            "description": "Enter it's Secret Key."
+        },
+        "Redirect_URI": {
+            "description": "Your application url. Use https://{yourappname}.herokuapp.com. Note you'll need to update this value for your app as well, through your My Apps dashboard."
+        }
+    }
+}

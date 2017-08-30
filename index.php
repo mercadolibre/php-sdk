@@ -141,7 +141,7 @@ $appName = explode('.', $domain)[0];
                     </p>
                     <pre class="pre-item">
 "title" => "Test Item - Por favor, no ofertar",
-"category_id" => "MLA388316",
+"category_id" => "MLA3530",
 "price" => 10,
 "currency_id" => "ARS",
 "available_quantity" => 1,
@@ -152,6 +152,9 @@ $appName = explode('.', $domain)[0];
 "video_id" => "RXWn6kftTHY",
 "warranty" => "12 month",
 "pictures" => array(
+    array(
+        "source" => "https://mercadolibredevsite.s3.amazonaws.com/wp-content/uploads/2017/08/29205159/dev.jpg"
+    ),
     array(
         "source" => "https://upload.wikimedia.org/wikipedia/commons/f/fd/Ray_Ban_Original_Wayfarer.jpg"
     ),
@@ -186,7 +189,7 @@ $appName = explode('.', $domain)[0];
                         // We construct the item to POST
                         $item = array(
                             "title" => "Test Item - Por favor, no ofertar",
-                            "category_id" => "MLA388316",
+                            "category_id" => "MLA3530",
                             "price" => 10,
                             "currency_id" => "ARS",
                             "available_quantity" => 1,

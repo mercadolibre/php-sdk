@@ -1,5 +1,4 @@
 <h1 align="center">
-  <br>
 <img src="https://user-images.githubusercontent.com/1153516/29861072-689ec57e-8d3e-11e7-8368-dd923543258f.jpg" alt="Mercado Libre Developers" width="300"></a>
   <br>
   MercadoLibre's PHP SDK
@@ -8,9 +7,11 @@
 
 <h4 align="center">This is the official PHP SDK for MercadoLibre's Platform.</h4>
 
-
-[![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/diazmartin/php-sdk)
-<p align="center"></p>
+<p align="center">
+  <a href="https://heroku.com/deploy?template=https://github.com/diazmartin/php-sdk">
+    <img src="https://www.herokucdn.com/deploy/button.svg" alt="Deploy">
+  </a>
+</p>
 
 <p align="center"><img src="https://user-images.githubusercontent.com/1153516/29859906-9453b50c-8d3a-11e7-88b6-ab354d4a4908.png"></p>
 

@@ -4,6 +4,8 @@ This is the official PHP SDK for MercadoLibre's Platform.
 
 [![Deploy](https://www.herokucdn.com/deploy/button.png)](https://heroku.com/deploy?template=https://github.com/diazmartin/php-sdk)
 
+<p align="center"><img src="https://user-images.githubusercontent.com/1153516/29859906-9453b50c-8d3a-11e7-88b6-ab354d4a4908.png"></p>
+
 
 ## How do I install it?
 

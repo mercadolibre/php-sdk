@@ -70,14 +70,14 @@ $appName = explode('.', $domain)[0];
             </div>
 
             <div class="row">
-                    <h3>Examples</h3>
-                    <p>
-                        Check the following examples, they will help you to start working with our API!
-                    </p>
-                    <p>
-                        Note that these examples work for MLA(Argentina) by default. If you'd like to try them in your own country, please, <a href="https://github.com/fsolari/php-sdk/blob/master/configApp.php#L16">update this line</a> in your project,
-                        with your own <b>$site_id</b> before executing them.
-                    </p>
+                <h3>Examples</h3>
+                <p>
+                    Check the following examples, they will help you to start working with our API!
+                </p>
+                <p>
+                    Note that these examples work for MLA(Argentina) by default. If you'd like to try them in your own country, please, <a href="https://github.com/fsolari/php-sdk/blob/master/configApp.php#L16">update this line</a> in your project, with
+                    your own <b>$site_id</b> before executing them.
+                </p>
             </div>
             <hr>
             <div class="row">
@@ -85,7 +85,7 @@ $appName = explode('.', $domain)[0];
                     <h3>oAuth</h3>
                     <p>First authenticate yourself. Authentication is the key to get the most ouf Mercado Libre's API.</p>
 
-                <?php
+                    <?php
                     $meli = new Meli($appId, $secretKey);
 
                     if($_GET['code'] || $_SESSION['access_token']) {
@@ -123,7 +123,7 @@ $appName = explode('.', $domain)[0];
                     } else {
                         echo '<p><a alt="Login using MercadoLibre oAuth 2.0" class="btn" href="' . $meli->getAuthUrl($redirectURI, Meli::$AUTH_URL[$siteId]) . '">Authenticate</a></p>';
                     }
-                ?>
+                    ?>
 
                 </div>
                 <div class="col-sm-6 col-md-6">
@@ -137,10 +137,9 @@ $appName = explode('.', $domain)[0];
                 <div class="col-md-6">
                     <h3>Publish an Item</h3>
                     <p>
-                        Remember to modify this file in your directory. <br />
-                        The text example push this values:
+                        Remember to modify this file in your directory. <br /> The text example push this values:
                     </p>
-                    <pre>
+                    <pre class="pre-item">
 "title" => "Test Item - Por favor, no ofertar",
 "category_id" => "MLA388316",
 "price" => 10,
@@ -161,78 +160,79 @@ $appName = explode('.', $domain)[0];
     )
 )
                     </pre>
-                    
 
+                    <?php
+                    $meli = new Meli($appId, $secretKey);
 
+                    if($_GET['code'] && $_GET['publish_item']) {
 
+                        // If the code was in get parameter we authorize
+                        $user = $meli->authorize($_GET['code'], $redirectURI);
 
+                        // Now we create the sessions with the authenticated user
+                        $_SESSION['access_token'] = $user['body']->access_token;
+                        $_SESSION['expires_in'] = $user['body']->expires_in;
+                        $_SESSION['refresh_token'] = $user['body']->refresh_token;
 
+                        // We can check if the access token in invalid checking the time
+                        if($_SESSION['expires_in'] + time() + 1 < time()) {
+                            try {
+                                print_r($meli->refreshAccessToken());
+                            } catch (Exception $e) {
+                                echo "Exception: ",  $e->getMessage(), "\n";
+                            }
+                        }
 
+                        // We construct the item to POST
+                        $item = array(
+                            "title" => "Test Item - Por favor, no ofertar",
+                            "category_id" => "MLA388316",
+                            "price" => 10,
+                            "currency_id" => "ARS",
+                            "available_quantity" => 1,
+                            "buying_mode" => "buy_it_now",
+                            "listing_type_id" => "bronze",
+                            "condition" => "new",
+                            "description" => "This is a test description. This item was listed with Mercado Libre's PHP SDK.",
+                            "video_id" => "RXWn6kftTHY",
+                            "warranty" => "12 month",
+                            "pictures" => array(
+                                array(
+                                    "source" => "https://mercadolibredevsite.s3.amazonaws.com/wp-content/uploads/2017/08/29205159/dev.jpg"
+                                ),
+                                array(
+                                    "source" => "https://upload.wikimedia.org/wikipedia/commons/f/fd/Ray_Ban_Original_Wayfarer.jpg"
+                                ),
+                                array(
+                                    "source" => "https://upload.wikimedia.org/wikipedia/commons/a/ab/Teashades.gif"
+                                )
+                            )
+                        );
+                        
+                        $response = $meli->post('/items', $item, array('access_token' => $_SESSION['access_token']));
 
-<?php
-$meli = new Meli($appId, $secretKey);
+                        // We call the post request to list a item
+                        echo "<h4>Response</h4>";
+                        echo '<pre class="pre-item">';
+                        print_r ($response);
+                        echo '</pre>';
 
-if($_GET['code'] && $_GET['publish_item']) {
+                        echo "<h4>Link at the Item recently created</h4>";
+                        echo '<a target="_blank" href="'.$response["body"]->permalink.'">'.$response["body"]->permalink.'</a><br />';
 
-	// If the code was in get parameter we authorize
-	$user = $meli->authorize($_GET['code'], $redirectURI);
+                    } else if($_GET['code']) {
+                        echo '<p><a alt="Publish Item" class="btn" href="/?code='.$_GET['code'].'&publish_item=ok">Publish Item</a></p>';
+                    } else {
+                        echo '<p><a alt="Publish Item" class="btn disable" href="#">Publish Item</a> (Authenticate first) </p>';
+                    }
+                    ?>
 
-	// Now we create the sessions with the authenticated user
-	$_SESSION['access_token'] = $user['body']->access_token;
-	$_SESSION['expires_in'] = $user['body']->expires_in;
-	$_SESSION['refresh_token'] = $user['body']->refresh_token;
-
-	// We can check if the access token in invalid checking the time
-	if($_SESSION['expires_in'] + time() + 1 < time()) {
-		try {
-			print_r($meli->refreshAccessToken());
-		} catch (Exception $e) {
-			echo "Exception: ",  $e->getMessage(), "\n";
-		}
-	}
-
-	// We construct the item to POST
-	$item = array(
-		"title" => "Test Item - Por favor, no ofertar 2",
-		"category_id" => "MLA388316",
-		"price" => 10,
-		"currency_id" => "ARS",
-		"available_quantity" => 1,
-		"buying_mode" => "buy_it_now",
-		"listing_type_id" => "bronze",
-		"condition" => "new",
-		"description" => "This is a test description. This item was listed with Mercado Libre's PHP SDK.",
-		"video_id" => "RXWn6kftTHY",
-		"warranty" => "12 month",
-		"pictures" => array(
-			array(
-				"source" => "https://upload.wikimedia.org/wikipedia/commons/f/fd/Ray_Ban_Original_Wayfarer.jpg"
-			),
-			array(
-				"source" => "https://upload.wikimedia.org/wikipedia/commons/a/ab/Teashades.gif"
-			)
-		)
-	);
-	
-	// We call the post request to list a item
-	echo '<pre class="pre-item">';
-    $responsePublish = $meli->post('/items', $item, array('access_token' => $_SESSION['access_token']));
-    // print_r($meli->post('/items', $item, array('access_token' => $_SESSION['access_token']))
-    print_r ($responsePublish);
-    echo '</pre>';
-
-    echo $responsePublish["body"]->permalink;
-} else {
-    echo '<a href="/?code='.$_GET['code'].'&publish_item=ok">Publish Item</a>';
-    echo $_GET['code'];
-}
-?>
                 </div>
 
                 <div class="col-md-6">
-                        <h3>Get started!</h3>
-                        <p>Now you know how easy it is to get information from our API. Check the rest of the examples on the SDK, and modify them as you like in order to List an item, update it, and other actions.</p>
-                        <p><a class="btn" href="https://github.com/mercadolibre/php-sdk/tree/master/examples">More examples</a></p>
+                    <h3>Get started!</h3>
+                    <p>Now you know how easy it is to get information from our API. Check the rest of the examples on the SDK, and modify them as you like in order to List an item, update it, and other actions.</p>
+                    <p><a class="btn" href="https://github.com/mercadolibre/php-sdk/tree/master/examples">More examples</a></p>
                 </div>
             </div>
 

@@ -175,6 +175,10 @@ p {
     text-decoration: none;
 }
 
+.disable {
+    pointer-events: none;
+}
+
 .text-center {
     text-align: center;
 }
@@ -194,6 +198,7 @@ pre {
     color: black;
     font-weight: bold;
     background: #f3f3f3;
+    font-size: 12px;
 }
 
 pre code {
@@ -224,6 +229,10 @@ code {
 
 .header h2 {
     font-weight: lighter;
+}
+
+h4 {
+    margin: 25px 0 2px;
 }
 
 .container {

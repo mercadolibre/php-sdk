@@ -13,7 +13,11 @@
   </a>
 </p>
 
-<p align="center"><img src="https://user-images.githubusercontent.com/1153516/29859906-9453b50c-8d3a-11e7-88b6-ab354d4a4908.png"></p>
+<p align="center">
+  <a href="https://heroku.com/deploy?template=https://github.com/diazmartin/php-sdk">
+    <img src="https://user-images.githubusercontent.com/1153516/29859906-9453b50c-8d3a-11e7-88b6-ab354d4a4908.png">
+  </a>
+</p>
 
 
 ## How do I install it?

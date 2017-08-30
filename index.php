@@ -217,7 +217,8 @@ $appName = explode('.', $domain)[0];
                         print_r ($response);
                         echo '</pre>';
 
-                        echo "<h4>Link at the Item recently created</h4>";
+                        echo "<h4>Success! Your test item was listed!</h4>";
+                        echo "<p>Go to the permalink to see how it's looking in our site.</p>";
                         echo '<a target="_blank" href="'.$response["body"]->permalink.'">'.$response["body"]->permalink.'</a><br />';
 
                     } else if($_GET['code']) {

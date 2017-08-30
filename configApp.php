@@ -13,4 +13,4 @@ $redirectURI = getenv('Redirect_URI');
 
 /* The site id of the country where your application will work.
 If you don't know your site_id go to our sites resources: https://api.mercadolibre.com/sites  */
-$siteId = 'MLA';
+$siteId = 'MLB';

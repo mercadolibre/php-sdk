@@ -74,7 +74,7 @@ $appName = explode('.', $domain)[0];
                     Check the following examples, they will help you to start working with our API!
                 </p>
                 <p>
-                    Note that these examples work for MLA(Argentina) by default. If you'd like to try them in your own country, please, <a href="https://github.com/fsolari/php-sdk/blob/master/configApp.php#L16">update this line</a> in your project, with
+                    Note that these examples work for MLB(Brasil) by default. If you'd like to try them in your own country, please, <a href="https://github.com/fsolari/php-sdk/blob/master/configApp.php#L16">update this line</a> in your project, with
                     your own <b>$site_id</b> before executing them.
                 </p>
             </div>
@@ -136,34 +136,32 @@ $appName = explode('.', $domain)[0];
                 <div class="col-md-6">
                     <h3>Publish an Item</h3>
                     <p>
-                        This is a example of how to list an item in <b>MLA</b> (Argentina).
+                        This is a example of how to list an item in <b>MLB</b> (Brasil).
                        <br /> <b>You need to be authenticated to make it work.</b>
                        <br /> To be able to list an item in another country, <a href="https://github.com/fsolari/php-sdk/blob/master/examples/example_list_item.php">please update this file</a>, with values according to the site Id where your app works, like <b>category_id</b> and <b>currency</b>.
                      <br />
                     </p>
                     <pre class="pre-item">
-"title" => "Test Item - Por favor, no ofertar",
-"category_id" => "MLA3530",
-"price" => 10,
-"currency_id" => "ARS",
-"available_quantity" => 1,
-"buying_mode" => "buy_it_now",
-"listing_type_id" => "bronze",
-"condition" => "new",
-"description" => "This is a test description. This item was listed with Mercado Libre's PHP SDK.",
-"video_id" => "RXWn6kftTHY",
-"warranty" => "12 month",
-"pictures" => array(
-    array(
-        "source" => "https://mercadolibredevsite.s3.amazonaws.com/wp-content/uploads/2017/08/29205159/dev.jpg"
-    ),
-    array(
-        "source" => "https://upload.wikimedia.org/wikipedia/commons/f/fd/Ray_Ban_Original_Wayfarer.jpg"
-    ),
-    array(
-        "source" => "https://upload.wikimedia.org/wikipedia/commons/a/ab/Teashades.gif"
+"title" => "Item De Teste - Por Favor, Não Ofertar! --kc:off",
+        "category_id" => "MLB1227",
+        "price" => 10,
+        "currency_id" => "BRL",
+        "available_quantity" => 1,
+        "buying_mode" => "buy_it_now",
+        "listing_type_id" => "bronze",
+        "condition" => "new",
+        "description" => "Item de Teste. Mercado Livre's PHP SDK.",
+        "video_id" => "RXWn6kftTHY",
+        "warranty" => "12 month",
+        "pictures" => array(
+            array(
+                "source" => "https://upload.wikimedia.org/wikipedia/commons/f/fd/Ray_Ban_Original_Wayfarer.jpg"
+            ),
+            array(
+                "source" => "https://upload.wikimedia.org/wikipedia/commons/a/ab/Teashades.gif"
+            )
+        )
     )
-)
                     </pre>
 
                     <?php
@@ -190,29 +188,26 @@ $appName = explode('.', $domain)[0];
 
                         // We construct the item to POST
                         $item = array(
-                            "title" => "Test Item - Por favor, no ofertar",
-                            "category_id" => "MLA3530",
-                            "price" => 10,
-                            "currency_id" => "ARS",
-                            "available_quantity" => 1,
-                            "buying_mode" => "buy_it_now",
-                            "listing_type_id" => "bronze",
-                            "condition" => "new",
-                            "description" => "This is a test description. This item was listed with Mercado Libre's PHP SDK.",
-                            "video_id" => "RXWn6kftTHY",
-                            "warranty" => "12 month",
-                            "pictures" => array(
-                                array(
-                                    "source" => "https://mercadolibredevsite.s3.amazonaws.com/wp-content/uploads/2017/08/29205159/dev.jpg"
-                                ),
-                                array(
-                                    "source" => "https://upload.wikimedia.org/wikipedia/commons/f/fd/Ray_Ban_Original_Wayfarer.jpg"
-                                ),
-                                array(
-                                    "source" => "https://upload.wikimedia.org/wikipedia/commons/a/ab/Teashades.gif"
-                                )
-                            )
-                        );
+                            "title" => "Item De Teste - Por Favor, Não Ofertar! --kc:off",
+        "category_id" => "MLB1227",
+        "price" => 10,
+        "currency_id" => "BRL",
+        "available_quantity" => 1,
+        "buying_mode" => "buy_it_now",
+        "listing_type_id" => "bronze",
+        "condition" => "new",
+        "description" => "Item de Teste. Mercado Livre's PHP SDK.",
+        "video_id" => "RXWn6kftTHY",
+        "warranty" => "12 month",
+        "pictures" => array(
+            array(
+                "source" => "https://upload.wikimedia.org/wikipedia/commons/f/fd/Ray_Ban_Original_Wayfarer.jpg"
+            ),
+            array(
+                "source" => "https://upload.wikimedia.org/wikipedia/commons/a/ab/Teashades.gif"
+            )
+        )
+    );
                         
                         $response = $meli->post('/items', $item, array('access_token' => $_SESSION['access_token']));
 

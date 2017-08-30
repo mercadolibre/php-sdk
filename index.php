@@ -62,7 +62,7 @@ $appName = explode('.', $domain)[0];
                         <br /> If you deployed this app by the Heroku Button, you need to clone this aplication to your computer by running the following on a command line shell:
                         <br />
                         <code>heroku git:clone -a <?php echo $appName; ?></code>
-                        <br /> This will create a local copy of the source code, and associate the Heroku app with your local repository</p>
+                        <br /> This will create a local copy of the source code, and associate the Heroku app with your local repository.</p>
                     <p>Follow the offical Heroku's guide <a target="_blank" href="https://devcenter.heroku.com/articles/git">https://devcenter.heroku.com/articles/git</a> to deploy using the Heroku cli.</p>
                     <p>You'll now be set up to run the app locally, or deploy changes to Heroku.</p>
                 </div>

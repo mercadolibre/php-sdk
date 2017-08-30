@@ -1,5 +1,5 @@
 <h1 align="center">
-  <a href="http://developers.mercadolibre.com/es/">
+  <a target="_blank" href="http://developers.mercadolibre.com/es/">
     <img src="https://user-images.githubusercontent.com/1153516/29861072-689ec57e-8d3e-11e7-8368-dd923543258f.jpg" alt="Mercado Libre Developers" width="200"></a>
   </a>
   <br>

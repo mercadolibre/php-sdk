@@ -35,13 +35,13 @@ class InitSDKTest extends PHPUnit_Framework_TestCase
              ->with($this->equalTo('/oauth/token'))
              ->will($this->returnCallback('getAuthorizeMock'));
 
-			$reponse = self::$meli->authorize('a code', $this->redirect_uri);
+			$response = self::$meli->authorize('a code', $this->redirect_uri);
 
-			$this->assertEquals(200, $reponse['httpCode']);
+			$this->assertEquals(200, $response['httpCode']);
 
-			$reponse = self::$meli->authorize('a code', $this->redirect_uri);
+			$response = self::$meli->authorize('a code', $this->redirect_uri);
 
-			$this->assertEquals(400, $reponse['httpCode']);
+			$this->assertEquals(400, $response['httpCode']);
 
 		}
 
@@ -51,22 +51,22 @@ class InitSDKTest extends PHPUnit_Framework_TestCase
              ->with($this->equalTo('/oauth/token'))
              ->will($this->returnCallback('getAuthorizeMock'));
 
-			$reponse = self::$meli->refreshAccessToken();
+			$response = self::$meli->refreshAccessToken();
 
-			$this->assertEquals(200, $reponse['httpCode']);
+			$this->assertEquals(200, $response['httpCode']);
 
-			$reponse = self::$meli->refreshAccessToken();
+			$response = self::$meli->refreshAccessToken();
 
-			$this->assertEquals(400, $reponse['httpCode']);
+			$this->assertEquals(400, $response['httpCode']);
 
 			$this->refresh_token = null;
 			self::$meli = $this->getMock(
 	          'Meli', array('execute'), array($this->client_id, $this->client_secret, $this->access_token, $this->refresh_token)
 	        );
 
-			$reponse = self::$meli->refreshAccessToken();
+			$response = self::$meli->refreshAccessToken();
 
-			$this->assertEquals('Offline-Access is not allowed.', $reponse['error']);
+			$this->assertEquals('Offline-Access is not allowed.', $response['error']);
 		}
 
 		#requests tests
@@ -76,9 +76,9 @@ class InitSDKTest extends PHPUnit_Framework_TestCase
              ->with($this->equalTo('/sites/MLB'))
              ->will($this->returnCallback('getSimpleCurl'));
 	       	
-	       	$reponse = self::$meli->get('/sites/MLB');
+	       	$response = self::$meli->get('/sites/MLB');
 
-			$this->assertEquals(200, $reponse['httpCode']);
+			$this->assertEquals(200, $response['httpCode']);
 
 		}
 
@@ -113,9 +113,9 @@ class InitSDKTest extends PHPUnit_Framework_TestCase
 
             $params = array('access_token' => $this->access_token);
 	       	
-	       	$reponse = self::$meli->post('/items', $body, $params);
+	       	$response = self::$meli->post('/items', $body, $params);
 
-			$this->assertEquals(200, $reponse['httpCode']);
+			$this->assertEquals(200, $response['httpCode']);
 
 		}
 
@@ -132,9 +132,9 @@ class InitSDKTest extends PHPUnit_Framework_TestCase
 
             $params = array('access_token' => $this->access_token);
 	       	
-	       	$reponse = self::$meli->put('/items/MLB123', $body, $params);
+	       	$response = self::$meli->put('/items/MLB123', $body, $params);
 
-			$this->assertEquals(200, $reponse['httpCode']);
+			$this->assertEquals(200, $response['httpCode']);
 
 		}
 
@@ -146,9 +146,9 @@ class InitSDKTest extends PHPUnit_Framework_TestCase
 
             $params = array('access_token' => $this->access_token);
 	       	
-	       	$reponse = self::$meli->delete('/questions/123', $params);
+	       	$response = self::$meli->delete('/questions/123', $params);
 
-			$this->assertEquals(200, $reponse['httpCode']);
+			$this->assertEquals(200, $response['httpCode']);
 
 		}
 
@@ -158,9 +158,9 @@ class InitSDKTest extends PHPUnit_Framework_TestCase
              ->with($this->equalTo('/sites/MLB'))
              ->will($this->returnCallback('getSimpleCurl'));
 	       	
-	       	$reponse = self::$meli->options('/sites/MLB');
+	       	$response = self::$meli->options('/sites/MLB');
 
-			$this->assertEquals(200, $reponse['httpCode']);
+			$this->assertEquals(200, $response['httpCode']);
 
 		}
 
@@ -171,17 +171,17 @@ class InitSDKTest extends PHPUnit_Framework_TestCase
 				'ids' => 'MLB123,MLB321'
 			);
 
-	       	$reponse = self::$meli->make_path('/items', $params);
+	       	$response = self::$meli->make_path('/items', $params);
 			
-			$this->assertEquals('https://api.mercadolibre.com/items?access_token=a access_token&ids=MLB123,MLB321', $reponse);
+			$this->assertEquals('https://api.mercadolibre.com/items?access_token=a access_token&ids=MLB123,MLB321', $response);
 
-			$reponse = self::$meli->make_path('items', $params);
+			$response = self::$meli->make_path('items', $params);
 			
-			$this->assertEquals('https://api.mercadolibre.com/items?access_token=a access_token&ids=MLB123,MLB321', $reponse);
+			$this->assertEquals('https://api.mercadolibre.com/items?access_token=a access_token&ids=MLB123,MLB321', $response);
 
-			$reponse = self::$meli->make_path('https://api.mercadolibre.com/items', $params);
+			$response = self::$meli->make_path('https://api.mercadolibre.com/items', $params);
 			
-			$this->assertEquals('https://api.mercadolibre.com/items?access_token=a access_token&ids=MLB123,MLB321', $reponse);
+			$this->assertEquals('https://api.mercadolibre.com/items?access_token=a access_token&ids=MLB123,MLB321', $response);
 			
 		}
 

@@ -1,5 +1,5 @@
 <?php
-require_once '../MercadoLivre/meli.php';
+require_once '../Meli/meli.php';
 
 class InitSDKTest extends PHPUnit_Framework_TestCase
 {				
@@ -22,7 +22,7 @@ class InitSDKTest extends PHPUnit_Framework_TestCase
     	#auth_url tests
 		public function testGetAuthUrl() {
 
-			$redirect_uri = self::$meli->getAuthUrl($this->redirect_uri);
+			$redirect_uri = self::$meli->getAuthUrl($this->redirect_uri, 'https://auth.mercadolivre.com.br');
 
 			$this->assertEquals('https://auth.mercadolivre.com.br/authorization?client_id='.$this->client_id.'&response_type=code&redirect_uri='.urlencode($this->redirect_uri), $redirect_uri);
 

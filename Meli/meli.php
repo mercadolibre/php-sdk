@@ -179,7 +179,7 @@ class Meli {
      * @param array $params
      * @return mixed
      */
-    public function post($path, $body = null, $params = array()) {
+    public function post($path, $body = null, $params = array(), $queue = false) {
         $body = json_encode($body);
         $opts = array(
             CURLOPT_HTTPHEADER => array('Content-Type: application/json'),
@@ -187,7 +187,11 @@ class Meli {
             CURLOPT_POSTFIELDS => $body
         );
         
-        $exec = $this->execute($path, $opts, $params);
+        if ($queue) {
+            $this->queue($path, $opts, $params);
+        } else {
+            $exec = $this->execute($path, $opts, $params);
+        }
 
         return $exec;
     }
@@ -200,7 +204,7 @@ class Meli {
      * @param array $params
      * @return mixed
      */
-    public function put($path, $body = null, $params = array()) {
+    public function put($path, $body = null, $params = array(), $queue = false) {
         $body = json_encode($body);
         $opts = array(
             CURLOPT_HTTPHEADER => array('Content-Type: application/json'),
@@ -208,7 +212,11 @@ class Meli {
             CURLOPT_POSTFIELDS => $body
         );
         
-        $exec = $this->execute($path, $opts, $params);
+        if ($queue) {
+            $this->queue($path, $opts, $params);
+        } else {
+            $exec = $this->execute($path, $opts, $params);
+        }
 
         return $exec;
     }
@@ -220,12 +228,16 @@ class Meli {
      * @param array $params
      * @return mixed
      */
-    public function delete($path, $params) {
+    public function delete($path, $params, $queue = false) {
         $opts = array(
             CURLOPT_CUSTOMREQUEST => "DELETE"
         );
         
-        $exec = $this->execute($path, $opts, $params);
+        if ($queue) {
+            $this->queue($path, $opts, $params);
+        } else {
+            $exec = $this->execute($path, $opts, $params);
+        }
         
         return $exec;
     }
@@ -271,6 +283,57 @@ class Meli {
         curl_close($ch);
         
         return $return;
+    }
+
+    /**
+     * Queue a request to be executed later
+     * 
+     * @param string $path
+     * @param array $opts
+     * @param array $params
+     * @param boolean $assoc
+     */
+    public function queue($path, $opts = array(), $params = array(), $assoc = false) {
+        $this->queue[] = compact('path', 'opts', 'params', 'assoc');
+    }
+
+    /**
+     * Executes all queued requests and returns the json body and headers
+     * 
+     * @return mixed
+     */
+    public function executeQueued() {
+        $mh = curl_multi_init();
+        $handles = array();
+        
+        foreach ($this->queue as $request) {
+            $uri = $this->make_path($request['path'], $request['params']);
+            $ch = curl_init($uri);
+            $handles[] = $ch;
+            curl_setopt_array($ch, self::$CURL_OPTS);
+            if(!empty($request['opts'])) {
+                curl_setopt_array($ch, $request['opts']);
+            }
+            curl_multi_add_handle($mh, $ch);
+        }
+
+        $running = null;
+        do {
+            curl_multi_exec($mh, $running);
+        } while ($running);
+
+        $responses = array();
+        foreach ($handles as $ch) {
+            curl_multi_remove_handle($mh, $ch);
+            $responses[] = array(
+                'body' => curl_multi_getcontent($ch),
+                'httpCode' => curl_getinfo($ch, CURLINFO_HTTP_CODE)
+            );
+        }
+        curl_multi_close($mh);
+        $this->queue = array();
+        
+        return $responses;
     }
 
     /**

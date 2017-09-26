@@ -2,266 +2,285 @@
 require_once '../Meli/meli.php';
 
 class InitSDKTest extends PHPUnit_Framework_TestCase
-{				
-
+{
 	protected static $meli;
 
 	protected $client_id = '123';
-    protected $client_secret = 'a secret';
-    protected $redirect_uri = 'a redirect_uri';
-    protected $access_token = 'a access_token';
-    protected $refresh_token = 'a refresh_token';
+	protected $client_secret = 'a secret';
+	protected $redirect_uri = 'a redirect_uri';
+	protected $access_token = 'a access_token';
+	protected $refresh_token = 'a refresh_token';
 
-    public function setUp() {
+	public function setUp()
+	{
 
-    	self::$meli = $this->getMock(
-	          'Meli', array('execute'), array($this->client_id, $this->client_secret, $this->access_token, $this->refresh_token)
-	        );
+		self::$meli = $this->getMock(
+			'Meli',
+			array('execute'),
+			array($this->client_id, $this->client_secret, $this->access_token, $this->refresh_token)
+		);
 
-    }
+	}
     	#auth_url tests
-		public function testGetAuthUrl() {
+	public function testGetAuthUrl()
+	{
 
-			$redirect_uri = self::$meli->getAuthUrl($this->redirect_uri, 'https://auth.mercadolivre.com.br');
+		$redirect_uri = self::$meli->getAuthUrl($this->redirect_uri, 'https://auth.mercadolivre.com.br');
 
-			$this->assertEquals('https://auth.mercadolivre.com.br/authorization?client_id='.$this->client_id.'&response_type=code&redirect_uri='.urlencode($this->redirect_uri), $redirect_uri);
+		$this->assertEquals('https://auth.mercadolivre.com.br/authorization?client_id=' . $this->client_id . '&response_type=code&redirect_uri=' . urlencode($this->redirect_uri), $redirect_uri);
 
-		}
+	}
 
 		#auth tests
-		public function testAuthorize() {
-			self::$meli->expects($this->any())
-             ->method('execute')
-             ->with($this->equalTo('/oauth/token'))
-             ->will($this->returnCallback('getAuthorizeMock'));
+	public function testAuthorize()
+	{
+		self::$meli->expects($this->any())
+			->method('execute')
+			->with($this->equalTo('/oauth/token'))
+			->will($this->returnCallback('getAuthorizeMock'));
 
-			$reponse = self::$meli->authorize('a code', $this->redirect_uri);
+		$response = self::$meli->authorize('a code', $this->redirect_uri);
 
-			$this->assertEquals(200, $reponse['httpCode']);
+		$this->assertEquals(200, $response['httpCode']);
 
-			$reponse = self::$meli->authorize('a code', $this->redirect_uri);
+		$response = self::$meli->authorize('a code', $this->redirect_uri);
 
-			$this->assertEquals(400, $reponse['httpCode']);
+		$this->assertEquals(400, $response['httpCode']);
 
-		}
+	}
 
-		public function testRefreshAccessToken() {
-			self::$meli->expects($this->any())
-             ->method('execute')
-             ->with($this->equalTo('/oauth/token'))
-             ->will($this->returnCallback('getAuthorizeMock'));
+	public function testRefreshAccessToken()
+	{
+		self::$meli->expects($this->any())
+			->method('execute')
+			->with($this->equalTo('/oauth/token'))
+			->will($this->returnCallback('getAuthorizeMock'));
 
-			$reponse = self::$meli->refreshAccessToken();
+		$response = self::$meli->refreshAccessToken();
 
-			$this->assertEquals(200, $reponse['httpCode']);
+		$this->assertEquals(200, $response['httpCode']);
 
-			$reponse = self::$meli->refreshAccessToken();
+		$response = self::$meli->refreshAccessToken();
 
-			$this->assertEquals(400, $reponse['httpCode']);
+		$this->assertEquals(400, $response['httpCode']);
 
-			$this->refresh_token = null;
-			self::$meli = $this->getMock(
-	          'Meli', array('execute'), array($this->client_id, $this->client_secret, $this->access_token, $this->refresh_token)
-	        );
+		$this->refresh_token = null;
+		self::$meli = $this->getMock(
+			'Meli',
+			array('execute'),
+			array($this->client_id, $this->client_secret, $this->access_token, $this->refresh_token)
+		);
 
-			$reponse = self::$meli->refreshAccessToken();
+		$response = self::$meli->refreshAccessToken();
 
-			$this->assertEquals('Offline-Access is not allowed.', $reponse['error']);
-		}
+		$this->assertEquals('Offline-Access is not allowed.', $response['error']);
+	}
 
 		#requests tests
-		public function testGet() {
-			self::$meli->expects($this->any())
-             ->method('execute')
-             ->with($this->equalTo('/sites/MLB'))
-             ->will($this->returnCallback('getSimpleCurl'));
-	       	
-	       	$reponse = self::$meli->get('/sites/MLB');
+	public function testGet()
+	{
+		self::$meli->expects($this->any())
+			->method('execute')
+			->with($this->equalTo('/sites/MLB'))
+			->will($this->returnCallback('getSimpleCurl'));
 
-			$this->assertEquals(200, $reponse['httpCode']);
+		$response = self::$meli->get('/sites/MLB');
 
-		}
+		$this->assertEquals(200, $response['httpCode']);
 
-		public function testPost() {
-			self::$meli->expects($this->any())
-             ->method('execute')
-             ->with($this->equalTo('/items'))
-             ->will($this->returnCallback('getSimpleCurl'));
+	}
 
-            $body = array(
-            	"condition" => "new", 
-            	"warranty" => "60 dias", 
-            	"currency_id" => "BRL", 
-            	"accepts_mercadopago" => true, 
-            	"description" => "Lindo Ray_Ban_Original_Wayfarer", 
-            	"listing_type_id" => "bronze", 
-            	"title" => "oculos Ray Ban Aviador  Que Troca As Lentes  Lancamento!", 
-            	"available_quantity" => 64, 
-            	"price" => 289, 
-            	"subtitle" => "Acompanha 3 Pares De Lentes!! Compra 100% Segura", 
-            	"buying_mode" => "buy_it_now", 
-            	"category_id" => "MLB5125", 
-            	"pictures" => array(
-            		array(
-            			"source" => "http://upload.wikimedia.org/wikipedia/commons/f/fd/Ray_Ban_Original_Wayfarer.jpg"
-            		), 
-            		array(
-            			"source" => "http://en.wikipedia.org/wiki/File:Teashades.gif"
-            		)
-            	)
-            );
+	public function testPost()
+	{
+		self::$meli->expects($this->any())
+			->method('execute')
+			->with($this->equalTo('/items'))
+			->will($this->returnCallback('getSimpleCurl'));
 
-            $params = array('access_token' => $this->access_token);
-	       	
-	       	$reponse = self::$meli->post('/items', $body, $params);
+		$body = array(
+			"condition" => "new",
+			"warranty" => "60 dias",
+			"currency_id" => "BRL",
+			"accepts_mercadopago" => true,
+			"description" => "Lindo Ray_Ban_Original_Wayfarer",
+			"listing_type_id" => "bronze",
+			"title" => "oculos Ray Ban Aviador  Que Troca As Lentes  Lancamento!",
+			"available_quantity" => 64,
+			"price" => 289,
+			"subtitle" => "Acompanha 3 Pares De Lentes!! Compra 100% Segura",
+			"buying_mode" => "buy_it_now",
+			"category_id" => "MLB5125",
+			"pictures" => array(
+				array(
+					"source" => "http://upload.wikimedia.org/wikipedia/commons/f/fd/Ray_Ban_Original_Wayfarer.jpg"
+				),
+				array(
+					"source" => "http://en.wikipedia.org/wiki/File:Teashades.gif"
+				)
+			)
+		);
 
-			$this->assertEquals(200, $reponse['httpCode']);
+		$params = array('access_token' => $this->access_token);
 
-		}
+		$response = self::$meli->post('/items', $body, $params);
 
-		public function testPut() {
-			self::$meli->expects($this->any())
-             ->method('execute')
-             ->with($this->equalTo('/items/MLB123'))
-             ->will($this->returnCallback('getSimpleCurl'));
+		$this->assertEquals(200, $response['httpCode']);
 
-            $body = array(
-            	"available_quantity" => 10, 
-            	"price" => 280, 
-            );
+	}
 
-            $params = array('access_token' => $this->access_token);
-	       	
-	       	$reponse = self::$meli->put('/items/MLB123', $body, $params);
+	public function testPut()
+	{
+		self::$meli->expects($this->any())
+			->method('execute')
+			->with($this->equalTo('/items/MLB123'))
+			->will($this->returnCallback('getSimpleCurl'));
 
-			$this->assertEquals(200, $reponse['httpCode']);
+		$body = array(
+			"available_quantity" => 10,
+			"price" => 280,
+		);
 
-		}
+		$params = array('access_token' => $this->access_token);
 
-		public function testDelete() {
-			self::$meli->expects($this->any())
-             ->method('execute')
-             ->with($this->equalTo('/questions/123'))
-             ->will($this->returnCallback('getSimpleCurl'));
+		$response = self::$meli->put('/items/MLB123', $body, $params);
 
-            $params = array('access_token' => $this->access_token);
-	       	
-	       	$reponse = self::$meli->delete('/questions/123', $params);
+		$this->assertEquals(200, $response['httpCode']);
 
-			$this->assertEquals(200, $reponse['httpCode']);
+	}
 
-		}
+	public function testDelete()
+	{
+		self::$meli->expects($this->any())
+			->method('execute')
+			->with($this->equalTo('/questions/123'))
+			->will($this->returnCallback('getSimpleCurl'));
 
-		public function testOptions() {
-			self::$meli->expects($this->any())
-             ->method('execute')
-             ->with($this->equalTo('/sites/MLB'))
-             ->will($this->returnCallback('getSimpleCurl'));
-	       	
-	       	$reponse = self::$meli->options('/sites/MLB');
+		$params = array('access_token' => $this->access_token);
 
-			$this->assertEquals(200, $reponse['httpCode']);
+		$response = self::$meli->delete('/questions/123', $params);
 
-		}
+		$this->assertEquals(200, $response['httpCode']);
+
+	}
+
+	public function testOptions()
+	{
+		self::$meli->expects($this->any())
+			->method('execute')
+			->with($this->equalTo('/sites/MLB'))
+			->will($this->returnCallback('getSimpleCurl'));
+
+		$response = self::$meli->options('/sites/MLB');
+
+		$this->assertEquals(200, $response['httpCode']);
+
+	}
 
 		#makePath tests
-		public function testMakePath() {
-			$params = array(
-				'access_token' => 'a access_token',
-				'ids' => 'MLB123,MLB321'
-			);
+	public function testMakePath()
+	{
+		$params = array(
+			'access_token' => 'a access_token',
+			'ids' => 'MLB123,MLB321'
+		);
 
-	       	$reponse = self::$meli->make_path('/items', $params);
-			
-			$this->assertEquals('https://api.mercadolibre.com/items?access_token=a access_token&ids=MLB123,MLB321', $reponse);
+		$response = self::$meli->make_path('/items', $params);
 
-			$reponse = self::$meli->make_path('items', $params);
-			
-			$this->assertEquals('https://api.mercadolibre.com/items?access_token=a access_token&ids=MLB123,MLB321', $reponse);
+		$this->assertEquals('https://api.mercadolibre.com/items?access_token=a access_token&ids=MLB123,MLB321', $response);
 
-			$reponse = self::$meli->make_path('https://api.mercadolibre.com/items', $params);
-			
-			$this->assertEquals('https://api.mercadolibre.com/items?access_token=a access_token&ids=MLB123,MLB321', $reponse);
-			
-		}
+		$response = self::$meli->make_path('items', $params);
 
-		
-    public function tearDown() {
+		$this->assertEquals('https://api.mercadolibre.com/items?access_token=a access_token&ids=MLB123,MLB321', $response);
+
+		$response = self::$meli->make_path('https://api.mercadolibre.com/items', $params);
+
+		$this->assertEquals('https://api.mercadolibre.com/items?access_token=a access_token&ids=MLB123,MLB321', $response);
+
+	}
+
+
+	public function tearDown()
+	{
 		parent::tearDown();
-    }
+	}
 }
-
 
 #Mock requests
 $code = 0;
-function getAuthorizeMock() {
+function getAuthorizeMock()
+{
 	global $code;
 	$code++;
 
-	if($code == 1) {
+	if ($code == 1) {
 		$body = array(
-			'access_token' => 'a access_token', 
+			'access_token' => 'a access_token',
 			'token_type' => 'bearer',
 			'expires_in' => '10800',
 			'scope' => 'offline_access read write',
-			'refresh_token' => 'a refresh_token' 
+			'refresh_token' => 'a refresh_token'
 		);
-		$return['body'] = (object) $body;
+		$return['body'] = (object)$body;
 		$return['httpCode'] = 200;
-	} else {
+	}
+	else {
 		$body = array(
 			'message' => 'Error validating grant. Your authorization code or refresh token may be expired or it was already used.',
 			'error' => 'invalid_grant',
 			'status' => 400,
 			'cause' => array()
 		);
-		$return['body'] = (object) $body;
+		$return['body'] = (object)$body;
 		$return['httpCode'] = 400;
 	}
-	
+
 	return $return;
 }
 
 
 $refresh = 0;
-function getRefreshTokenMock() {
+function getRefreshTokenMock()
+{
 	global $refresh;
 	$refresh++;
 
-	if($refresh == 1) {
+	if ($refresh == 1) {
 		$body = array(
-			'access_token' => 'a access_token', 
+			'access_token' => 'a access_token',
 			'token_type' => 'bearer',
 			'expires_in' => '10800',
 			'scope' => 'offline_access read write',
-			'refresh_token' => 'a refresh_token' 
+			'refresh_token' => 'a refresh_token'
 		);
-		$return['body'] = (object) $body;
+		$return['body'] = (object)$body;
 		$return['httpCode'] = 200;
-	} else if($refresh == 2) {
+	}
+	else if ($refresh == 2) {
 		$body = array(
 			'message' => 'Error validating grant. Your authorization code or refresh token may be expired or it was already used.',
 			'error' => 'invalid_grant',
 			'status' => 400,
 			'cause' => array()
 		);
-		$return['body'] = (object) $body;
-		$return['httpCode'] = 400;
-	} else {
-		$body = array(
-			'message' => 'Error validating grant. Your authorization code or refresh token may be expired or it was already used.',
-			'error' => 'invalid_grant',
-			'status' => 400,
-			'cause' => array()
-		);
-		$return['body'] = (object) $body;
+		$return['body'] = (object)$body;
 		$return['httpCode'] = 400;
 	}
-	
+	else {
+		$body = array(
+			'message' => 'Error validating grant. Your authorization code or refresh token may be expired or it was already used.',
+			'error' => 'invalid_grant',
+			'status' => 400,
+			'cause' => array()
+		);
+		$return['body'] = (object)$body;
+		$return['httpCode'] = 400;
+	}
+
 	return $return;
 }
 
-function getSimpleCurl() {
+function getSimpleCurl()
+{
 	$return['body'] = 'null';
 	$return['httpCode'] = 200;
 

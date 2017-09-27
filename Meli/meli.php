@@ -191,9 +191,9 @@ class Meli {
             $this->queue($path, $opts, $params);
         } else {
             $exec = $this->execute($path, $opts, $params);
+            return $exec;
         }
 
-        return $exec;
     }
 
     /**
@@ -216,9 +216,9 @@ class Meli {
             $this->queue($path, $opts, $params);
         } else {
             $exec = $this->execute($path, $opts, $params);
+            return $exec;
         }
 
-        return $exec;
     }
 
     /**
@@ -237,9 +237,9 @@ class Meli {
             $this->queue($path, $opts, $params);
         } else {
             $exec = $this->execute($path, $opts, $params);
+            return $exec;
         }
         
-        return $exec;
     }
 
     /**

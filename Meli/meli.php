@@ -45,6 +45,7 @@ class Meli {
     protected $redirect_uri;
     protected $access_token;
     protected $refresh_token;
+    protected $queue = array();
 
     /**
      * Constructor method. Set all variables to connect in Meli
@@ -305,6 +306,10 @@ class Meli {
     public function executeQueued() {
         $mh = curl_multi_init();
         $handles = array();
+
+        if (empty($this->queue)) {
+            return false;
+        }
         
         foreach ($this->queue as $request) {
             $uri = $this->make_path($request['path'], $request['params']);

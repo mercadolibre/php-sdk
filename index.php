@@ -74,7 +74,7 @@ $appName = explode('.', $domain)[0];
                     Check the following examples, they will help you to start working with our API!
                 </p>
                 <p>
-                    Note that these examples work for MLB(Brasil) by default. If you'd like to try them in your own country, please, <a href="https://github.com/fsolari/php-sdk/blob/master/configApp.php#L16">update this line</a> in your project, with
+                    Note that these examples work for MLB(Brasil) by default. If you'd like to try them in your own country, please, <a href="https://github.com/mercadolibre/php-sdk/blob/master/configApp.php#L16">update this line</a> in your project, with
                     your own <b>$site_id</b> before executing them.
                 </p>
             </div>
@@ -138,7 +138,7 @@ $appName = explode('.', $domain)[0];
                     <p>
                         This is a example of how to list an item in <b>MLB</b> (Brasil).
                        <br /> <b>You need to be authenticated to make it work.</b>
-                       <br /> To be able to list an item in another country, <a href="https://github.com/fsolari/php-sdk/blob/master/examples/example_list_item.php">please update this file</a>, with values according to the site Id where your app works, like <b>category_id</b> and <b>currency</b>.
+                       <br /> To be able to list an item in another country, <a href="https://github.com/mercadolibre/php-sdk/blob/master/examples/example_list_item.php">please update this file</a>, with values according to the site Id where your app works, like <b>category_id</b> and <b>currency</b>.
                      <br />
                     </p>
                     <pre class="pre-item">

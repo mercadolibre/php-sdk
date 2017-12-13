@@ -1,11 +1,14 @@
 <?php
 
+namespace Meli\Meli;
+
+
 class Meli {
 
 	/**
-	 * @version 1.1.0
+	 * @version 1.2.0
 	 */
-    const VERSION  = "1.1.0";
+    const VERSION  = "1.2.0";
 
     /**
      * @var $API_ROOT_URL is a main URL to access the Meli API's.
@@ -30,10 +33,18 @@ class Meli {
     );
 
     /**
+    * Countries supported
+    */
+    public static $countries = array(
+        'MLA', 'MLB', 'MCO', 'MCR', 'MEC', 'MLC', 'MLM', 
+        'MLU', 'MLV', 'MPA', 'MPE', 'MPT', 'MRD'
+    );
+
+    /**
      * Configuration for CURL
      */
     public static $CURL_OPTS = array(
-        CURLOPT_USERAGENT => "MELI-PHP-SDK-1.1.0", 
+        CURLOPT_USERAGENT => "MELI-PHP-SDK-1.2.0", 
         CURLOPT_SSL_VERIFYPEER => true,
         CURLOPT_CONNECTTIMEOUT => 10, 
         CURLOPT_RETURNTRANSFER => 1, 

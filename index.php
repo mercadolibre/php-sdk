@@ -1,7 +1,12 @@
 <?php
 session_start();
-require 'Meli/meli.php';
+require 'Meli/Meli.php';
+require 'Meli/MeliProduct.php';
 require 'configApp.php';
+
+echo '<pre>';
+var_dump(Meli\MeliProduct::getListingTypes('MLB'));
+exit();
 
 $domain = $_SERVER['HTTP_HOST'];
 $appName = explode('.', $domain)[0];

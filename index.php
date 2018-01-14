@@ -1,15 +1,29 @@
 <?php
 session_start();
-require 'Meli/Meli.php';
-require 'Meli/MeliProduct.php';
-require 'configApp.php';
+require 'vendor/autoload.php';
+$access_token = '';
+$refresh_token = '';
+$client_id = '';
+$client_secret = '';
+// require 'configApp.php';
 
 echo '<pre>';
-var_dump(Meli\MeliProduct::getListingTypes('MLB'));
+
+try {
+    $product = new Meli\MeliProduct($client_id, $client_secret, $access_token, $refresh_token);
+
+    var_dump($product->getProductList());
+} catch (Exception $e) {
+    var_dump($e->getMessage(), $e->getFile(), $e->getLine());
+} catch (Error $e) {
+    var_dump($e->getMessage(), $e->getFile(), $e->getLine());
+}
+
 exit();
 
 $domain = $_SERVER['HTTP_HOST'];
 $appName = explode('.', $domain)[0];
+
 ?>
 
     <!DOCTYPE html>

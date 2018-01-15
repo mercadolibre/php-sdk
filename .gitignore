@@ -2,3 +2,4 @@
 .project
 *.no-git
 vendor/
+.env

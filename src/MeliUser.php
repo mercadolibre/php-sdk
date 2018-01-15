@@ -2,29 +2,40 @@
 
 namespace Meli;
 
-// use \Meli\Meli as Meli;
-
 /**
  * MeliProduct - this class will handle product's operations and also will be an instance of a product itself
  */
-class MeliUser extends Meli
+class MeliUser
 {
-	public $sku;
+    private $meli;
 
-	public function __construct($client_id, $client_secret, $access_token = null, $refresh_token = null)
+    /**
+     * Receives a Meli instance as reference for making requests
+     * @author Matheus Hernandes {github.com/onhernandes}
+     * @return void
+     */
+	public function __construct(Meli $meli)
 	{
-		parent::__construct($client_id, $client_secret, $access_token, $refresh_token);
+        $this->meli = &$meli;
 	}
 
     /**
     * Gets the user itself
-    * @param $sku is the product's sku
-    * @return an instance of MeliProduct or throws an error
+    * @return an instance of the user
     */
     public function getMe()
     {
-    	return parent::request('GET', 'users/me');
-        // Some cool code will born here
+    	$response = $this->meli->request('GET', '/users/me');
+
+        if ($response['status'] == 200 && is_array($response['body'])) {
+            foreach ($response['body'] as $k => $v) {
+                $this->$k = $v;
+            }
+        } else {
+            return $response;
+        }
+
+        return $this;
     }
 
     /**
@@ -33,6 +44,36 @@ class MeliUser extends Meli
      */
     public function getUser($id)
     {
-        return parent::request('GET', 'user');
+        $response = $this->meli->request('GET', "/users/{$id}");
+        if ($response['status'] == 200) {
+            foreach ($response['body'] as $k => $v) {
+                $this->$k = $v;
+            }
+        } else {
+            return $response;
+        }
+
+        return $this;
+    }
+
+    /**
+     * @param $nickame the user's nickname
+     * @return array
+     */
+    public function search($nickname)
+    {
+        $response = $this->meli->request('GET', 'search', ['query' => ['nickname' => $nickname]]);
+        if ($response['status'] == 200) {
+            return $response['body'];
+        } else {
+            return $response;
+        }
+    }
+
+    public function __debugInfo()
+    {
+        $result = get_object_vars($this);
+        unset($result['meli']);
+        return $result;
     }
 }

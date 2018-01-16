@@ -361,21 +361,19 @@ final class Meli {
         } catch (ClientException $e) {
             $response = $e->getResponse();
             $request = $e->getRequest();
-            $uri = $request->getUri();
             $return = [
-                'message' => $e->getMessage(),
+                'reason' => $response->getReasonPhrase(),
                 'status' => $response->getStatusCode(),
-                'method' => $request->getMethod(),
-                // 'uri' => $uri->composeComponents(),
-                // 'target' => $request->getRequestTarget(),
-                'data' => $request,
+                'method' => $method,
+                'uri' => $uri,
+                'data' => $data,
             ];
         } catch (TransferException $e) {
             $return = [
                 'message' => $e->getMessage(),
                 'response' => $e->getResponse(),
             ];
-        } catch (\InvalidArgumentException $e) {
+        } catch (InvalidArgumentException $e) {
             $return = [
                 'message' => $e->getMessage(),
             ];

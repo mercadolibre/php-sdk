@@ -14,9 +14,10 @@ class MeliUser
      * @author Matheus Hernandes {github.com/onhernandes}
      * @return void
      */
-	public function __construct(Meli $meli)
+	public function __construct(Meli &$meli, array $data = [])
 	{
-        $this->meli = &$meli;
+        $this->meli = $meli;
+        $this->fill($data);
 	}
 
     /**
@@ -28,9 +29,7 @@ class MeliUser
     	$response = $this->meli->request('GET', '/users/me');
 
         if ($response['status'] == 200 && is_array($response['body'])) {
-            foreach ($response['body'] as $k => $v) {
-                $this->$k = $v;
-            }
+            $this->fill($response['body']);
         } else {
             return $response;
         }
@@ -46,9 +45,7 @@ class MeliUser
     {
         $response = $this->meli->request('GET', "/users/{$id}");
         if ($response['status'] == 200) {
-            foreach ($response['body'] as $k => $v) {
-                $this->$k = $v;
-            }
+            $this->fill($response['body']);
         } else {
             return $response;
         }
@@ -75,5 +72,18 @@ class MeliUser
         $result = get_object_vars($this);
         unset($result['meli']);
         return $result;
+    }
+
+    /**
+    * @param $data is an array containing data to be set in the object
+    * @return object itself
+    */
+    private function fill(array $data)
+    {
+        foreach ($data as $k => $v) {
+            $this->$k = $v;
+        }
+
+        return $this;
     }
 }

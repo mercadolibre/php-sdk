@@ -11,6 +11,8 @@ use GuzzleHttp\Exception\ClientException;
 use GuzzleHttp\Exception\BadResponseException;
 use GuzzleHttp\Exception\ServerException;
 use GuzzleHttp\Exception\TooManyRedirectsException;
+use \InvalidArgumentException;
+use \Exception;
 
 final class Meli {
     const VERSION = '2.0.0';
@@ -75,7 +77,8 @@ final class Meli {
      * @param string $access_token
      * @param string $refresh_token
      */
-    public function __construct($site = '', array $credentials = []) {
+    public function __construct($site = '', array $credentials = []) 
+    {
         $keys = ['client_id', 'client_secret', 'access_token', 'refresh_token', 'redirect_uri'];
 
         foreach ($keys as $k) {
@@ -101,51 +104,49 @@ final class Meli {
      * @param string $redirect_uri
      * @return string
      */
-    public function getAuthUrl($redirect_uri, $country) {
+    public function getAuthUrl($redirect_uri, $country) 
+    {
         if (!in_array($country, array_keys($this->auth_url))) {
             throw new InvalidArgumentException('This country is not supported!');
         }
 
         $this->redirect_uri = $redirect_uri;
         $params = [
-            "client_id" => $this->client_id, 
-            "response_type" => "code", 
-            "redirect_uri" => $redirect_uri
+            'client_id' => $this->client_id, 
+            'response_type' => 'code', 
+            'redirect_uri' => $redirect_uri
         ];
 
         $auth_url = $this->auth_url[$country];
 
-        $auth_uri = $auth_url."/authorization?".http_build_query($params);
+        $auth_uri = $auth_url.'/authorization?'.http_build_query($params);
 
         return $auth_uri;
     }
 
     /**
-     * Executes a POST Request to authorize the application and take
-     * an AccessToken.
+     * Executes a POST Request to authorize the application and receive an AccessToken.
      * 
      * @param string $code
      * @param string $redirect_uri
-     * 
+     * @return array
      */
-    public function authorize($code, $redirect_uri) {
-
-        if ($redirect_uri) {
-            $this->redirect_uri = $redirect_uri;
-        }
+    public function authorize($code, $redirect_uri)
+    {
+        $this->redirect_uri = $redirect_uri;
 
         $body = array(
-            "grant_type" => "authorization_code", 
-            "client_id" => $this->client_id, 
-            "client_secret" => $this->client_secret, 
-            "code" => $code, 
-            "redirect_uri" => $this->redirect_uri
+            'grant_type' => 'authorization_code', 
+            'client_id' => $this->client_id, 
+            'client_secret' => $this->client_secret, 
+            'code' => $code, 
+            'redirect_uri' => $this->redirect_uri
         );
 
         $response = $this->request('POST', 'oauth/token', ['query' => $body]);
 
-        if ($response["status"] == 200) {             
-            $this->access_token = $response["body"]['access_token'];
+        if ($response['status'] == 200) {             
+            $this->access_token = $response['body']['access_token'];
 
             if (isset($request['body']['refresh_token'])) {
                 $this->refresh_token = $request['body']['refresh_token'];
@@ -158,43 +159,39 @@ final class Meli {
     }
 
     /**
-     * Execute a POST Request to create a new AccessToken from a existent refresh_token
+     * Execute a POST Request to refresh the tokne
      * 
-     * @return string|mixed
+     * @return array
      */
-    public function refreshAccessToken() {
-
-        if($this->refresh_token) {
+    public function refreshAccessToken() 
+    {
+        if (!empty($this->refresh_token)) {
              $body = array(
-                "grant_type" => "refresh_token", 
-                "client_id" => $this->client_id, 
-                "client_secret" => $this->client_secret, 
-                "refresh_token" => $this->refresh_token
-            );
-
-            $opts = array(
-                CURLOPT_POST => true, 
-                CURLOPT_POSTFIELDS => $body
+                'grant_type' => 'refresh_token', 
+                'client_id' => $this->client_id, 
+                'client_secret' => $this->client_secret, 
+                'refresh_token' => $this->refresh_token
             );
         
-            $request = $this->execute(self::$Oauth_url, $opts);
+            $request = $this->request('POST', '/oauth/token', ['query' => $body]);
 
-            if($request["httpCode"] == 200) {             
-                $this->access_token = $request["body"]->access_token;
+            if ($request['status'] == 200) {             
+                $this->access_token = $request['body']['access_token'];
 
-                if($request["body"]->refresh_token)
-                    $this->refresh_token = $request["body"]->refresh_token;
+                if (isset($request['body']['refresh_token'])) {
+                    $this->refresh_token = $request['body']['refresh_token'];
+                }
 
                 return $request;
-
             } else {
                 return $request;
             }   
         } else {
             $result = array(
                 'error' => 'Offline-Access is not allowed.',
-                'httpCode'  => null
+                'status'  => null
             );
+
             return $result;
         }        
     }
@@ -347,7 +344,10 @@ final class Meli {
     public function request($method, $uri, array $data = [])
     {
         try {
-            if (!isset($data['query']) || !isset($data['query']['access_token'])) {
+            if (
+                (!isset($data['query']) || !isset($data['query']['access_token'])) &&
+                $uri != '/oauth/token'
+            ) {
                 $data['query'] = [
                     'access_token' => $this->access_token
                 ];
@@ -361,26 +361,49 @@ final class Meli {
         } catch (ClientException $e) {
             $response = $e->getResponse();
             $request = $e->getRequest();
+            $contents = $response->getBody()->getContents();
+
+            if (is_string($contents)) {
+                $contents = json_decode($contents, true);
+            }
+
             $return = [
                 'reason' => $response->getReasonPhrase(),
                 'status' => $response->getStatusCode(),
+                'body' => $contents,
                 'method' => $method,
                 'uri' => $uri,
                 'data' => $data,
             ];
-        } catch (TransferException $e) {
+        } catch (RequestException $e) {
             $return = [
-                'message' => $e->getMessage(),
-                'response' => $e->getResponse(),
+                'method' => $method,
+                'request' => Psr7\str($e->getRequest()),
+                'uri' => $uri,
+                'data' => $data,
             ];
+
+            if ($e->hasResponse()) {
+                $response = $e->getResponse();
+                $return['reason'] = $response->getReasonPhrase();
+                $return['status'] = $response->getStatusCode();
+            }
         } catch (InvalidArgumentException $e) {
             $return = [
                 'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
             ];
         } catch (Exception $e) {
             $return = [
                 'message' => $e->getMessage(),
+                'file' => $e->getFile(),
+                'line' => $e->getLine()
             ];
+        }
+
+        if (!isset($return['body'])) {
+            $return['body'] = [];
         }
 
         return $return;

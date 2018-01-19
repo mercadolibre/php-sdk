@@ -19,11 +19,12 @@ final class Meli {
 
     /**
      * @var $api_root_url is a main URL to access the Meli API's.
-     * @var $auth_url is a url to redirect the user for login.
+     * @var $Oauth_endpoint is an endpoint to redirect the user for login.
+     * @var $auth_url is an array containing all auth URLs for each country supported by ML
      */
     private $api_root_url = 'https://api.mercadolibre.com/';
-    private $Oauth_url = 'oauth/token';
-    private $auth_url = array(
+    private $Oauth_endpoint = '/oauth/token';
+    private $auth_url = [
         'MLA' => 'https://auth.mercadolibre.com.ar', // Argentina 
         'MLB' => 'https://auth.mercadolivre.com.br', // Brasil
         'MCO' => 'https://auth.mercadolibre.com.co', // Colombia
@@ -37,7 +38,12 @@ final class Meli {
         'MPE' => 'https://auth.mercadolibre.com.pe', // Peru
         'MPT' => 'https://auth.mercadolibre.com.pt', // Prtugal
         'MRD' => 'https://auth.mercadolibre.com.do'  // Dominicana
-    );
+    ];
+
+    /**
+    * Current country
+    */
+    private $current_country = null;
 
     /**
     * Client's ID
@@ -65,6 +71,11 @@ final class Meli {
     private $refresh_token;
 
     /**
+    * Expire token time
+    */
+    private $expires_in;
+
+    /**
     * $client is the GuzzleClient instance
     */
     private $client;
@@ -76,8 +87,9 @@ final class Meli {
      * @param string $client_secret
      * @param string $access_token
      * @param string $refresh_token
+     * @return object
      */
-    public function __construct($site = '', array $credentials = []) 
+    public function __construct($site = '', array $credentials) 
     {
         $keys = ['client_id', 'client_secret', 'access_token', 'refresh_token', 'redirect_uri'];
 
@@ -88,13 +100,16 @@ final class Meli {
         }
 
         if (!empty($site) && in_array($site, array_keys($this->auth_url))) {
-            $this->api_root_url .= 'sites/'.$site.'/';
+            $this->current_country = $site;
+            $this->api_root_url .= 'sites/'.$this->current_country.'/';
         }
 
         $this->client = new Client([
             'base_uri' => $this->api_root_url,
             'timeout' => 60
         ]);
+
+        return $this;
     }
 
     /**
@@ -102,11 +117,12 @@ final class Meli {
      * NOTE: You can modify the $auth_url to change the language of login
      * 
      * @param string $redirect_uri
+     * @param string $country
      * @return string
      */
-    public function getAuthUrl($redirect_uri, $country) 
+    public function getAuthUrl($redirect_uri, $country = '') 
     {
-        if (!in_array($country, array_keys($this->auth_url))) {
+        if (empty($this->current_country) && !in_array($country, array_keys($this->auth_url))) {
             throw new InvalidArgumentException('This country is not supported!');
         }
 
@@ -116,6 +132,10 @@ final class Meli {
             'response_type' => 'code', 
             'redirect_uri' => $redirect_uri
         ];
+
+        if (!empty($this->current_country)) {
+            $country = $this->current_country;
+        }
 
         $auth_url = $this->auth_url[$country];
 
@@ -143,10 +163,11 @@ final class Meli {
             'redirect_uri' => $this->redirect_uri
         );
 
-        $response = $this->request('POST', 'oauth/token', ['query' => $body]);
+        $response = $this->request('POST', $this->Oauth_endpoint, ['query' => $body]);
 
         if ($response['status'] == 200) {             
             $this->access_token = $response['body']['access_token'];
+            $this->expires_in = $response['body']['expires_in'];
 
             if (isset($request['body']['refresh_token'])) {
                 $this->refresh_token = $request['body']['refresh_token'];
@@ -159,24 +180,25 @@ final class Meli {
     }
 
     /**
-     * Execute a POST Request to refresh the tokne
+     * Execute a POST Request to refresh the token
      * 
      * @return array
      */
     public function refreshAccessToken() 
     {
         if (!empty($this->refresh_token)) {
-             $body = array(
+             $body = [
                 'grant_type' => 'refresh_token', 
                 'client_id' => $this->client_id, 
                 'client_secret' => $this->client_secret, 
                 'refresh_token' => $this->refresh_token
-            );
+             ];
         
-            $request = $this->request('POST', '/oauth/token', ['query' => $body]);
+            $request = $this->request('POST', $this->Oauth_endpoint, ['query' => $body]);
 
             if ($request['status'] == 200) {             
                 $this->access_token = $request['body']['access_token'];
+                $this->expires_in = $response['body']['expires_in'];
 
                 if (isset($request['body']['refresh_token'])) {
                     $this->refresh_token = $request['body']['refresh_token'];
@@ -205,9 +227,7 @@ final class Meli {
      * @return mixed
      */
     public function get($path, $params = null, $assoc = false) {
-        $exec = $this->execute($path, null, $params, $assoc);
-
-        return $exec;
+        return $this->request($path, null, $params, $assoc);
     }
 
     /**
@@ -341,16 +361,52 @@ final class Meli {
         return $uri;
     }
 
-    public function request($method, $uri, array $data = [])
+    /**
+    * Check credentials, throws an Exception in case of access_token not being valid
+    * Automatically tries to refresh if there is refresh_token
+    *
+    * @return void
+    */
+    private function checkCredentials()
+    {
+        if (empty($this->access_token)) {
+            throw new Exception('AccessToken not available!');
+        }
+
+        if (is_null($this->expires_in)) {
+            return false;
+        }
+
+        if ($this->expires_in > time()) {
+            return true;
+        }
+
+        if (is_null($this->refresh_token)) {
+            return false;
+        }
+
+        $refresh = $this->refreshAccessToken();
+
+        if (empty($refresh['status'])) {
+            throw new Exception('Could not refresh access token!');
+        }
+
+        return true;
+    }
+
+    public function request($method, $uri, array $data = [], $append_access_token = true)
     {
         try {
-            if (
-                (!isset($data['query']) || !isset($data['query']['access_token'])) &&
-                $uri != '/oauth/token'
-            ) {
-                $data['query'] = [
-                    'access_token' => $this->access_token
-                ];
+            if ($append_access_token) {
+                $this->checkCredentials();
+
+                if (isset($data['query']) && is_array($data['query'])) {
+                    $data['query']['access_token'] = $this->access_token;
+                } else {
+                    $data['query'] = [
+                        'access_token' => $this->access_token
+                    ];
+                }
             }
 
             $response = $this->client->request($method, $uri, $data);

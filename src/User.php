@@ -2,22 +2,29 @@
 
 namespace Meli;
 
+use \Exception;
+use \InvalidArgumentException;
+
 /**
- * MeliProduct - this class will handle product's operations and also will be an instance of a product itself
+ * User
  */
-class MeliUser
+class User
 {
+    /**
+    * @var object $meli instance for making requests
+    */
     private $meli;
 
     /**
      * Receives a Meli instance as reference for making requests
      * @author Matheus Hernandes {github.com/onhernandes}
-     * @return void
+     * @return $this
      */
 	public function __construct(Meli &$meli, array $data = [])
 	{
         $this->meli = $meli;
         $this->fill($data);
+        return $this;
 	}
 
     /**
@@ -26,31 +33,30 @@ class MeliUser
     */
     public function getMe()
     {
-    	$response = $this->meli->request('GET', '/users/me');
+        $response = $this->meli->request('GET', '/users/me');
 
-        if ($response['status'] == 200 && is_array($response['body'])) {
+        if ($response['status'] == 200) {
             $this->fill($response['body']);
+            return $this;
         } else {
-            return $response;
+            throw new Exception('Could not get this user!');
         }
-
-        return $this;
     }
 
     /**
-     * @param $id the user's id
+     * @param int $user_id the user's id
      * @return object instance as user
      */
-    public function getUser($id)
+    public function getUser($user_id)
     {
-        $response = $this->meli->request('GET', "/users/{$id}");
+        $response = $this->meli->request('GET', "/users/{$user_id}");
+
         if ($response['status'] == 200) {
             $this->fill($response['body']);
+            return $this;
         } else {
-            return $response;
+            throw new Exception('Could not get this user!');
         }
-
-        return $this;
     }
 
     /**
@@ -65,6 +71,26 @@ class MeliUser
         } else {
             return $response;
         }
+    }
+
+    /**
+    * Update the user's data
+    * 
+    * @param array $data
+    * @param int $user_id, use the set data by default
+    * @return mixed
+    */
+    public function update(array $data, $user_id = false)
+    {
+        if ($user_id === false && (!isset($this->id) || empty($this->id))) {
+            throw new InvalidArgumentException('You must set an user_id!');
+        }
+
+        if ($user_id === false) {
+            $user_id = $this->id;            
+        }
+
+        return $response = $this->meli->request('PUT', "/users/{$user_id}", ['json' => $data], true);
     }
 
     public function __debugInfo()

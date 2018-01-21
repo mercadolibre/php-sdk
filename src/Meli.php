@@ -81,13 +81,16 @@ final class Meli {
     private $client;
 
     /**
+    * $json_decode_array if the JSON decoding must be assoc or not
+    */
+    private $json_decode_array = true;
+
+    /**
      * Constructor method. Set all variables to connect in Meli
      *
-     * @param string $client_id
-     * @param string $client_secret
-     * @param string $access_token
-     * @param string $refresh_token
-     * @return object
+     * @param string $site
+     * @param array $credentials
+     * @return void
      */
     public function __construct($site = '', array $credentials) 
     {
@@ -165,9 +168,18 @@ final class Meli {
 
         $response = $this->request('POST', $this->Oauth_endpoint, ['query' => $body]);
 
-        if ($response['status'] == 200) {             
+        if ($response['status'] == 200) {
+            if (!isset($response['body']['access_token'])) {
+                throw new Exception('Could not find access_token within response!');
+            }
+
             $this->access_token = $response['body']['access_token'];
-            $this->expires_in = $response['body']['expires_in'];
+
+            if (isset($response['body']['expires_in'])) {
+                $this->expires_in = time() + intval($response['body']['expires_in']);
+            } else {
+                $this->expires_in = time() + 21600;
+            }
 
             if (isset($request['body']['refresh_token'])) {
                 $this->refresh_token = $request['body']['refresh_token'];
@@ -194,19 +206,28 @@ final class Meli {
                 'refresh_token' => $this->refresh_token
              ];
         
-            $request = $this->request('POST', $this->Oauth_endpoint, ['query' => $body]);
+            $response = $this->request('POST', $this->Oauth_endpoint, ['query' => $body], false);
 
-            if ($request['status'] == 200) {             
-                $this->access_token = $request['body']['access_token'];
-                $this->expires_in = $response['body']['expires_in'];
-
-                if (isset($request['body']['refresh_token'])) {
-                    $this->refresh_token = $request['body']['refresh_token'];
+            if ($response['status'] == 200) {             
+                if (!isset($response['body']['access_token'])) {
+                    throw new Exception('Could not find access_token within response!');
                 }
 
-                return $request;
+                $this->access_token = $response['body']['access_token'];
+
+                if (isset($response['body']['expires_in'])) {
+                    $this->expires_in = time() + intval($response['body']['expires_in']);
+                } else {
+                    $this->expires_in = time() + 21600;
+                }
+
+                if (isset($response['body']['refresh_token'])) {
+                    $this->refresh_token = $response['body']['refresh_token'];
+                }
+
+                return $response;
             } else {
-                return $request;
+                return $response;
             }   
         } else {
             $result = array(
@@ -221,151 +242,81 @@ final class Meli {
     /**
      * Execute a GET Request
      * 
-     * @param string $path
-     * @param array $params
-     * @param boolean $assoc
+     * @param string $uri
+     * @param array $data
+     * @param boolean $append_access_token
      * @return mixed
      */
-    public function get($path, $params = null, $assoc = false) {
-        return $this->request($path, null, $params, $assoc);
+    public function get($uri, $data = [], $append_access_token = true) {
+        return $this->request('GET', $uri, $data, $append_access_token);
     }
 
     /**
      * Execute a POST Request
      * 
-     * @param string $body
-     * @param array $params
+     * @param string $uri
+     * @param array $data
+     * @param boolean $append_access_token
      * @return mixed
      */
-    public function post($path, $body = null, $params = array()) {
-        $body = json_encode($body);
-        $opts = array(
-            CURLOPT_HTTPHEADER => array('Content-Type: application/json'),
-            CURLOPT_POST => true, 
-            CURLOPT_POSTFIELDS => $body
-        );
-        
-        $exec = $this->execute($path, $opts, $params);
-
-        return $exec;
+    public function post($uri, $data = [], $append_access_token = true) {
+        return $this->request('POST', $uri, ['json' => $data], $append_access_token);
     }
 
     /**
      * Execute a PUT Request
      * 
-     * @param string $path
-     * @param string $body
-     * @param array $params
+     * @param string $uri
+     * @param array $data
+     * @param boolean $append_access_token
      * @return mixed
      */
-    public function put($path, $body = null, $params = array()) {
-        $body = json_encode($body);
-        $opts = array(
-            CURLOPT_HTTPHEADER => array('Content-Type: application/json'),
-            CURLOPT_CUSTOMREQUEST => "PUT",
-            CURLOPT_POSTFIELDS => $body
-        );
-        
-        $exec = $this->execute($path, $opts, $params);
-
-        return $exec;
+    public function put($uri, $data = [], $append_access_token = true) {
+        return $this->request('PUT', $uri, ['json' => $data], $append_access_token);
     }
 
     /**
      * Execute a DELETE Request
      * 
-     * @param string $path
-     * @param array $params
+     * @param string $uri
+     * @param array $data
+     * @param boolean $append_access_token
      * @return mixed
      */
-    public function delete($path, $params) {
-        $opts = array(
-            CURLOPT_CUSTOMREQUEST => "DELETE"
-        );
-        
-        $exec = $this->execute($path, $opts, $params);
-        
-        return $exec;
+    public function delete($uri, $data = [], $append_access_token = true) {
+        return $this->request('DELETE', $uri, ['query' => $data], $append_access_token);
     }
 
     /**
      * Execute a OPTION Request
      * 
-     * @param string $path
-     * @param array $params
+     * @param string $uri
+     * @param array $data
+     * @param boolean $append_access_token
      * @return mixed
      */
-    public function options($path, $params = null) {
-        $opts = array(
-            CURLOPT_CUSTOMREQUEST => "OPTIONS"
-        );
-        
-        $exec = $this->execute($path, $opts, $params);
-
-        return $exec;
+    public function options($uri, $data = [], $append_access_token = true) {
+        return $this->request('OPTION', $uri, ['query' => $data], $append_access_token);
     }
 
     /**
      * Execute all requests and returns the json body and headers
      * 
-     * @param string $path
-     * @param array $opts
-     * @param array $params
-     * @param boolean $assoc
+     * @param string $method
+     * @param string $uri
+     * @param array $data
+     * @param boolean $append_access_token
      * @return mixed
      */
-    public function execute($path, $opts = array(), $params = array(), $assoc = false) {
-        $uri = $this->make_path($path, $params);
-
-        $ch = curl_init($uri);
-        curl_setopt_array($ch, self::$CURL_OPTS);
-
-        if(!empty($opts))
-            curl_setopt_array($ch, $opts);
-
-        $return["body"] = json_decode(curl_exec($ch), $assoc);
-        $return["httpCode"] = curl_getinfo($ch, CURLINFO_HTTP_CODE);
-
-        curl_close($ch);
-        
-        return $return;
-    }
-
-    /**
-     * Check and construct an real URL to make request
-     * 
-     * @param string $path
-     * @param array $params
-     * @return string
-     */
-    public function make_path($path, $params = array()) {
-        if (!preg_match("/^http/", $path)) {
-            if (!preg_match("/^\//", $path)) {
-                $path = '/'.$path;
-            }
-            $uri = self::$api_root_url.$path;
-        } else {
-            $uri = $path;
-        }
-
-        if(!empty($params)) {
-            $paramsJoined = array();
-
-            foreach($params as $param => $value) {
-               $paramsJoined[] = "$param=$value";
-            }
-            $params = '?'.implode('&', $paramsJoined);
-            $uri = $uri.$params;
-        }
-
-        return $uri;
+    public function execute($method, $uri, array $data = [], $append_access_token = true) {
+        return $this->request($method, $uri, $data, $append_access_token);
     }
 
     /**
     * Check credentials, throws an Exception in case of access_token not being valid
     * Automatically tries to refresh if there is refresh_token
     *
-    * @return void
+    * @return boolean
     */
     private function checkCredentials()
     {
@@ -400,19 +351,27 @@ final class Meli {
             if ($append_access_token) {
                 $this->checkCredentials();
 
-                if (isset($data['query']) && is_array($data['query'])) {
+                if (!isset($data['query'])) {
+                    $data['query'] = [];
+                }
+
+                if (is_array($data['query'])) {
                     $data['query']['access_token'] = $this->access_token;
-                } else {
-                    $data['query'] = [
-                        'access_token' => $this->access_token
-                    ];
+                } else if (is_string($data['query'])) {
+                    $data['query'] .= "&access_token={$this->access_token}";
                 }
             }
 
             $response = $this->client->request($method, $uri, $data);
+            $body = (string) $response->getBody();
+            if (!is_null(json_decode($body))) {
+                $body = json_decode($body, $this->json_decode_array);
+            }
+
             $return = [
-                'body' => json_decode((string) $response->getBody(), true),
+                'body' => $body,
                 'status' => $response->getStatusCode(),
+                'headers' => $response->getHeaders(),
             ];
         } catch (ClientException $e) {
             $response = $e->getResponse();
@@ -426,6 +385,7 @@ final class Meli {
             $return = [
                 'reason' => $response->getReasonPhrase(),
                 'status' => $response->getStatusCode(),
+                'headers' => $response->getHeaders(),
                 'body' => $contents,
                 'method' => $method,
                 'uri' => $uri,
@@ -463,5 +423,75 @@ final class Meli {
         }
 
         return $return;
+    }
+
+    /**
+    * Get a user
+    * 
+    * @param int $user_id
+    * @return object Meli\User
+    */
+    public function getUser($user_id)
+    {
+        $response = $this->request('GET', "/users/{$user_id}");
+
+        if ($response['status'] == 200) {
+            return new User($this, $response['body']);
+        } else {
+            throw new Exception('Could not get this user!');
+        }
+    }
+
+    /**
+    * Get me
+    * 
+    * @return object Meli\User
+    */
+    public function getMe()
+    {
+        return $this->getUser('me');
+    }
+
+    /**
+    * Get categories for a given country
+    * 
+    * @param string $country
+    * @param boolean $autoload if must return a new instance of Meli\Category for each item
+    * @return mixed
+    */
+    public function getCategories($country = '', $autoload = true)
+    {
+        if (empty($country) && empty($this->current_country)) {
+            throw new InvalidArgumentException('You must select a country!');
+        }
+
+        if (!in_array($country, array_keys($this->auth_url))) {
+            $list = array_keys($this->auth_url);
+            $list = implode(', ', $list);
+            throw new InvalidArgumentException("You must select a valid country! Allowed values are: {$list}");
+        }
+
+        if (empty($country)) {
+            $country = $this->current_country;
+        }
+
+        $response = $this->request('GET', "/sites/{$country}");
+
+        if ($response['status'] !== 200) {
+            throw new Exception('Could not get the categories!');
+        }
+
+        return array_map(function($category) {
+            return new Category($this, $category, $autoload);
+        }, $response['body']);
+    }
+
+    /**
+    * Get a product
+    * 
+    */
+    public function getProduct()
+    {
+        // Some cool code will born here!
     }
 }

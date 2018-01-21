@@ -16,6 +16,4 @@ $meli = new Meli\Meli('MLB', [
         'access_token' => $access_token, 
         'refresh_token' => $refresh_token
     ]);
-// $user = new Meli\MeliUser($meli);
-// print_r($user->getUser(2207803321));
-print_r($meli->refreshAccessToken());
+print_r($meli->getCategories());

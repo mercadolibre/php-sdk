@@ -54,6 +54,97 @@ class Category
     }
 
     /**
+     * Searches for a category
+     * 
+     * @param string $category
+     * @return mixed
+     */
+    public function search($category)
+    {
+        $response = $this->meli->request('GET', 'search', ['query' => ['category' => $category]]);
+
+        if ($response['status'] !== 200) {
+            throw new Exception('Could not search for this category!');
+        }
+
+        return $response['body'];
+    }
+
+    /**
+     * Predict a category for a title
+     *
+     * @param string $title
+     * @return mixed
+     */
+    public function predictOne($title)
+    {
+        $response = $this->meli->request('GET', 'category_predictor/predict', ['query' => [
+                'title' => $title
+            ]]);
+
+        if ($response['status'] !== 200) {
+            throw new Exception('Could not predict!');
+        }
+
+        return $response['body'];
+    }
+
+    /**
+     * Predict a category for 
+     *
+     * @param array $data containing arrays with at least a 'title' index. 'category' index is optional
+     * @return mixed
+     */
+    public function predict(array $data)
+    {
+        if (empty($data)) {
+            throw new InvalidArgumentException('You must pass at least one title!');
+        }
+
+        $filtered = array_filter($data, function ($it) {
+            return is_array($it) && isset($it['title']);
+        });
+
+        if (empty($filtered)) {
+            throw new InvalidArgumentException('You must pass at least one title!');
+        }
+
+        if (count($filtered) == 1) {
+            $method = 'GET';
+            $payload = [
+                'query' => [
+                    'title' => $filtered[0]['title']
+                ]
+            ];
+        } else {
+            $method = 'POST';
+            $mapped = array_map(function($it) {
+                $result = [
+                    'title' => $it['title']
+                ];
+
+                if (isset($it['category_from'])) {
+                    $result['category_from'] = $it['category_from'];
+                }
+
+                return $result;
+            }, $filtered);
+
+            $payload = [
+                'json' => $mapped
+            ];
+        }
+
+        $response = $this->meli->request($method, 'category_predictor/predict', $payload);
+
+        if ($response['status'] !== 200) {
+            throw new Exception('Could not predict!');
+        }
+
+        return $response['body'];
+    }
+
+    /**
     * Remove $meli from debug functions
     * 
     * @return void

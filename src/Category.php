@@ -22,23 +22,26 @@ class Category
      * @param boolean $autoload
      * @return $this
      */
-	public function __construct(Meli &$meli, array $data = [], $autoload = true)
+	public function __construct(Meli &$meli, array $data = [])
 	{
         $this->meli = $meli;
         $this->fill($data);
 
-        if ($autoload) {
-            try {
-                $loaded = $this->getCategory($this->id);
-                $this->fill($loaded);
-            } catch (Exception $e) {
-                // Some prevention will born here
-            }
+        if (isset($data['children_categories']) && is_array($data['children_categories']) && !empty($data['children_categories'])) {
+            $this->children_categories = array_map(function($item) {
+                return new self($this->meli, $item);
+            }, $data['children_categories']);
         }
 
         return $this;
 	}
 
+    /**
+     * Get a category
+     * 
+     * @param string $id
+     * @return void
+     */
     public function getCategory($id)
     {
         $response = $this->request->request('GET', "/categories/{$id}");
@@ -47,9 +50,14 @@ class Category
             throw new Exception('Could not get this category!');
         }
 
-        return $response['body'];
+        return new self($this->meli, $response['body']);
     }
 
+    /**
+    * Remove $meli from debug functions
+    * 
+    * @return void
+    */
     public function __debugInfo()
     {
         $result = get_object_vars($this);
@@ -67,6 +75,23 @@ class Category
             $this->$k = $v;
         }
 
+        return $this;
+    }
+
+    /**
+    * Try to get data for this category itself and load in the object, because not always all the category data are loaded in the first state.
+    * 
+    * @return $this
+    */
+    public function load()
+    {
+        $response = $this->meli->request('GET', "/categories/{$category_id}");
+
+        if ($response['status'] !== 200) {
+            throw new Exception('Could not get this category!');
+        }
+
+        $this->fill($response['body']);
         return $this;
     }
 }

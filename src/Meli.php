@@ -422,6 +422,10 @@ final class Meli {
             $return['body'] = [];
         }
 
+        if (!isset($return['status'])) {
+            $return['status'] = 0;
+        }
+
         return $return;
     }
 
@@ -456,16 +460,15 @@ final class Meli {
     * Get categories for a given country
     * 
     * @param string $country
-    * @param boolean $autoload if must return a new instance of Meli\Category for each item
     * @return mixed
     */
-    public function getCategories($country = '', $autoload = true)
+    public function getCategories($country = '')
     {
         if (empty($country) && empty($this->current_country)) {
             throw new InvalidArgumentException('You must select a country!');
         }
 
-        if (!in_array($country, array_keys($this->auth_url))) {
+        if (!empty($country) && !in_array($country, array_keys($this->auth_url))) {
             $list = array_keys($this->auth_url);
             $list = implode(', ', $list);
             throw new InvalidArgumentException("You must select a valid country! Allowed values are: {$list}");
@@ -475,15 +478,42 @@ final class Meli {
             $country = $this->current_country;
         }
 
-        $response = $this->request('GET', "/sites/{$country}");
+        $response = $this->request('GET', "/sites/{$country}/categories");
 
         if ($response['status'] !== 200) {
             throw new Exception('Could not get the categories!');
         }
 
-        return array_map(function($category) {
-            return new Category($this, $category, $autoload);
-        }, $response['body']);
+
+        $categories = [];
+
+        foreach ($response['body'] as $category) {
+            $category_got = $this->request('GET', '/categories/'.$category['id']);
+            if ($category_got['status'] !== 200) {
+                return false;
+            }
+
+            array_push($categories, new Category($this, $category_got['body']));
+        }
+
+        return $categories;
+    }
+
+    /**
+     * Get a category
+     *
+     * @param string $category_id
+     * @return object|instance of Category
+     */
+    public function getCategory($category_id)
+    {
+        $response = $this->request('GET', "/categories/{$category_id}");
+
+        if ($response['status'] !== 200) {
+            throw new Exception('Could not get this category!');
+        }
+
+        return new Category($this, $response['body']);
     }
 
     /**

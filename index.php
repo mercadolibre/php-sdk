@@ -16,4 +16,4 @@ $meli = new Meli\Meli('MLB', [
         'access_token' => $access_token, 
         'refresh_token' => $refresh_token
     ]);
-print_r($meli->getCategories());
+var_dump($meli->getCategories());

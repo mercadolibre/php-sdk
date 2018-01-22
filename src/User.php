@@ -36,8 +36,7 @@ class User
         $response = $this->meli->request('GET', '/users/me');
 
         if ($response['status'] == 200) {
-            $this->fill($response['body']);
-            return $this;
+            return new self($this, $response['body']);
         } else {
             throw new Exception('Could not get this user!');
         }
@@ -52,8 +51,7 @@ class User
         $response = $this->meli->request('GET', "/users/{$user_id}");
 
         if ($response['status'] == 200) {
-            $this->fill($response['body']);
-            return $this;
+            return new self($this, $response['body']);
         } else {
             throw new Exception('Could not get this user!');
         }
@@ -93,6 +91,11 @@ class User
         return $response = $this->meli->request('PUT', "/users/{$user_id}", ['json' => $data], true);
     }
 
+    /**
+    * Remove $meli from debug functions
+    * 
+    * @return void
+    */
     public function __debugInfo()
     {
         $result = get_object_vars($this);

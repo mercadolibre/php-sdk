@@ -5,9 +5,9 @@ namespace Meli;
 // use \Meli\Meli as Meli;
 
 /**
- * MeliProduct - this class will handle product's operations and also will be an instance of a product itself
+ * Product
  */
-class MeliProduct
+class Product
 {
     private $meli;
 
@@ -41,6 +41,11 @@ class MeliProduct
         // Some cool code will born here
     }
 
+    /**
+    * Remove $meli from debug functions
+    * 
+    * @return void
+    */
     public function __debugInfo()
     {
         $result = get_object_vars($this);

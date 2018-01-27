@@ -358,7 +358,7 @@ final class Meli implements MeliRequestInterface {
     {
         try {
             if ($append_access_token) {
-                $this->checkCredentials();
+                // $this->checkCredentials();
 
                 if (!isset($data['query'])) {
                     $data['query'] = [];

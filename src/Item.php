@@ -5,23 +5,12 @@ namespace Meli;
 /**
  * Item
  */
-class Item implements MeliInterface
+class Item extends Resource
 {
-    private $meli;
-
-    /**
-     * If must or not validate also types, not only the keys. 
-     * Like for category, will instantiate Category for checking if the category exists
-     *
-     * @var bool
-     */
+    /** @var bool If must or not validate also types, not only the keys. Like for category, will instantiate Category for checking if the category exists */
     public $post_checking = true;
 
-    /**
-     * Mandatory attributes
-     *
-     * @var array
-     */
+    /** @var array Mandatory attributes */
     private $general_mandatory_attributes = [
         'title' => '', 
         'description' => '', 
@@ -31,46 +20,103 @@ class Item implements MeliInterface
         'price' => '',
         'currency_id' => '',
         'buying_mode' => '',
-        'listing_type' => '',
+        'listing_type_id' => '',
     ];
 
     /**
-     * Receives a Meli instance as reference for making requests
+     * Initiates the object
      * 
      * @param object $meli as reference
-     * @param array $data
-     * @return void
+     * @param array $data for filling the object
      */
-    public function __construct(Meli &$meli, array $data = [])
+    public function __construct(Meli &$meli, array $data = ['id' => ''])
     {
-        $this->meli = $meli;
+        parent::__construct($meli, $data, '/items', true);
         $this->fill($data);
     }
 
     /**
-    * Gets a product based on product's id
-    * @param string $id is the product's id
-    * @return an instance of Item or throws an error
+    * Gets a product
+    * 
+    * @param string $id the product id
+    * 
+    * @throws InvalidArgumentException if the $id is null
+    * @throws MeliException if the request was not successful
+    * 
+    * @return object instance of Item
     */
     public function getItem($id)
     {
-        $response = $this->meli->request('GET', "/items/{$id}");
+        $response = parent::getData($id);
 
-        if ($response['status'] == 200) {
-            return new self($this, $response['body']);
-        } else {
-            throw new Exception('Could not get this item!');
-        }
+        return new self($this, $response);
     }
 
     /**
     * Create an item
     * 
-    * @param array $item data
-    * @return mixed
+    * @param array|object $item data
+    * @param bool $post_checking if must check also for types within Item, this can take more time because may need to request more data from ML
+    * 
+    * @throws InvalidArgumentException if any field is invalid
+    * @throws MeliException if the request was not successful
+    * 
+    * @return array of response from MercadoLivre
     */
-    public function createItem($item)
+    public function createItem($item, $post_checking = true, $user = null)
     {
+        $errors = [];
+
+        if (is_object($item)) {
+            $item = (array) $item;
+        }
+
+        foreach ($this->general_mandatory_attributes as $k => $v) {
+            if (!isset($item[$k]) || $item[$k] == '' || $item[$k] == false || is_null($item[$k])) {
+                $errors[$k] = "Either {$k} is missing or is empty('', false or null are not allowed values)!";
+                continue;
+            }
+
+            if (is_array($v) && !in_array($item[$k], $v)) {
+                $valid = implode(', ', $v);
+                $errors[$k] = "{$item[$k]} is not a valid value! Valid values are {$valid}";
+            }
+        }
+
+        if ($post_checking) {
+            if (!isset($errors['category_id'])) {
+                if (!is_object($item['category_id'])) {
+                    $item['category_id'] = new Category($this->meli, $item['category_id']);
+                }
+
+                if (!$item['category_id']->validate()) {
+                    $errors['category_id'] = 'Invalid category!';
+                }
+            }
+
+            if (!isset($errors['category_id'])) {
+                if (!isset($errors['buying_mode']) && !in_array($item['buying_mode'], $item['category_id']->settings['buying_modes'])) {
+                    $errors['buying_mode'] = 'This buying_mode is invalid! Accepted values for this category are: '.implode(', ', $item['category_id']->settings['buying_modes']);
+                }
+
+                if (!isset($errors['currency_id']) && !in_array($item['currency_id'], $item['category_id']->settings['currencies'])) {
+                    $errors['currency_id'] = 'This currency_id is invalid! Accepted values for this category are: '.implode(', ', $item['category_id']->settings['currencies']);
+                }
+
+                if (isset($item['pictures']) && count($item['pictures']) > $item['category_id']->settings['max_pictures_per_item']) {
+                    $item['pictures'] = array_slice($item['pictures'], 0, count($item['pictures']) - $item['category_id']->settings['max_pictures_per_item']);
+                }
+
+                if (!isset($errors['condition']) && !in_array($item['condition'], $item['category_id']->settings['item_conditions'])) {
+                    $errors['condition'] = 'This condition is invalid for this category! Accepted values for this condition are: '.implode(', ', $item['category_id']->settings['item_conditions']);
+                }
+            }
+        }
+
+        if (!empty($errors)) {
+            throw new MeliException('Invalid item!', $errors);
+        }
+
         $response = $this->meli->request('POST', '/items/', ['json' => $item]);
 
         if ($response['status'] == 200) {
@@ -82,37 +128,17 @@ class Item implements MeliInterface
 
     /**
     * Gets a list of products
-    * @param $page is the current page
-    * @return an array with the result, empty in case of any product's found or throws an instance of MeliException
+    * 
+    * @param int $page current page
+    * 
+    * @throws InvalidArgumentException if any field is invalid
+    * @throws MeliException if the request was not successful
+    * 
+    * @return array of items from MercadoLivre
     */
-    public function getItemList($page = 0)
+    public function getItems($page = 0)
     {
         // Some cool code will born here
-    }
-
-    /**
-    * Remove $meli from debug functions
-    * 
-    * @return void
-    */
-    public function __debugInfo()
-    {
-        $result = get_object_vars($this);
-        unset($result['meli']);
-        return $result;
-    }
-
-    /**
-    * @param $data is an array containing data to be set in the object
-    * @return object itself
-    */
-    private function fill(array $data)
-    {
-        foreach ($data as $k => $v) {
-            $this->$k = $v;
-        }
-
-        return $this;
     }
 
     /**
@@ -123,41 +149,6 @@ class Item implements MeliInterface
      */
     public function validate()
     {
-        $errors = [];
-
-        foreach ($this->general_mandatory_attributes as $key => $value) {
-            if (!property_exists($this, $key)) {
-                $errors[$key] = "{$this->$key} is mandatory, must be set!";
-            }
-
-            if (is_null($this->$key) || $this->$key == '') {
-                $errors[$key] = "{$this->$key} is mandatory and can not be null or empty string!";
-            }
-        }
-
-        if (!$this->post_checking) {
-            throw new Exception('Invalid item! See data for more info about the errors!');
-        }
-
-        if (!in_array($this->condition, $this->general_mandatory_attributes['condition'])) {
-            $allowed_conditions = implode(', ', $this->general_mandatory_attributes['condition']);
-            $errors['condition'] = "The value {$this->condition} is not valid, you must one of the following values: {$allowed_conditions}";
-        }
-
-        // Need to change static methods, its too tricky using them. 
-
-        if (!Category::validate($this->category_id)) {
-            $errors['category_id'] = 'The current category_id does not exists, please submit a new one!';
-        }
-
-        if (!Category::validate($this->category_id, 'buying_modes', $this->buying_mode)) {
-            $errors['buying_mode'] = 'The current buying_mode does not exists, please submit a new one!';
-        }
-
-        if (!Currency::validate($this->currency_id)) {
-            $errors['currency_id'] = 'The current currency_id does not exists, please submit a new one!';
-        }
-
         if (!ListingType::validate($this->listing_type)) {
             $errors['listing_type'] = 'The current listing_type does not exists, please submit a new one!';
         }
@@ -170,31 +161,9 @@ class Item implements MeliInterface
         // ListingType -> Validate for 'not_available_in_categories'
         // ListingType -> Validate for 'immediate_payment'
         // ListingType -> Validate for 'max_stock_per_item'
-        // Category -> Validate for 'category_id'
-        // Category -> Validate for 'currencies'
         // Category -> Validate for 'shipping_modes'
         // Category -> Validate for 'shipping_options'
         // Category -> Validate for 'shipping_profile'
         // Category -> Validate for 'immediate_payment'
-        // Category -> Validate for 'item_conditions'
-        // Category -> Validate for 'max_pictures_per_item'
-    }
-
-    /**
-    * Validate images for MercadoLivre
-    * 
-    * @param array $images
-    * @return array
-    */
-    public static function validateImages(array $images)
-    {
-
-        for ($i = 0; $i < count($images); $i++) {
-            if (!isset($img[$i]['source']) || empty($img[$i]['source'])) {
-                throw new Exception("Image source is empty! Index: {$i}");
-            }
-        }
-
-        return true;
     }
 }

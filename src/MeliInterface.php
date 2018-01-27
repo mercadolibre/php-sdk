@@ -1,5 +1,8 @@
 <?php 
 
+namespace Meli;
+
+
 interface MeliInterface
 {
 	/**

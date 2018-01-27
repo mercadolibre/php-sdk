@@ -1,11 +1,11 @@
 <?php
 
-namespace Meli\MeliException;
+namespace Meli;
 
 /**
  * MeliException - throw custom Exception
  */
-class MeliException extends Exception
+class MeliException extends \Exception
 {
 	/** @var mixed Contains the Exception data */
 	private $data;

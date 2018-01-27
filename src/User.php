@@ -16,9 +16,9 @@ class User extends Resource
      * @param object $meli as reference
      * @param array $data for filling the object
      */
-    public function __construct(MeliRequestInterface &$meli, array $data = [])
+    public function __construct(MeliRequestInterface &$meli, array $data = ['id' => ''])
     {
-        parent::__construct($meli, $data, '/users');
+        parent::__construct($meli, $data, '/users', false);
     }
 
     /**
@@ -30,9 +30,9 @@ class User extends Resource
     */
     public function getMe()
     {
-        $response = $this->getData('me');
+        $response = parent::getData('me');
 
-        return new self($this, $response['body']);
+        return new self($this->meli, $response);
     }
 
     /**
@@ -47,9 +47,9 @@ class User extends Resource
     */
     public function getUser($id)
     {
-        $response = $this->getData($id);
+        $response = parent::getData($id);
 
-        return new self($this, $response['body']);
+        return new self($this->meli, $response);
     }
 
     /**
@@ -68,7 +68,7 @@ class User extends Resource
             throw new InvalidArgumentException('The nickname cannot be null!');
         }
 
-        $response = $this->meli->request('GET', 'search', ['query' => ['nickname' => $nickname]]);
+        $response = $this->meli->request('GET', 'search', ['query' => ['nickname' => $nickname]], $this->is_public_resource);
 
         if ($response['status'] !== 200) {
             throw new MeliException('Could not search for this user!', $response);
@@ -98,7 +98,7 @@ class User extends Resource
             $id = $this->id;            
         }
 
-        $response = $this->meli->request('PUT', "/users/{$id}", ['json' => $data], true);
+        $response = $this->meli->request('PUT', "/users/{$id}", ['json' => $data], $this->is_public_resource);
 
         if ($response['status'] !== 200) {
             throw new MeliException('Could not update the user data!', $response);

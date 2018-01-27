@@ -16,14 +16,28 @@ class Category extends Resource
      * @param object $meli as reference
      * @param array $data for filling the object
      */
-	public function __construct(MeliRequestInterface &$meli, array $data = [])
+	public function __construct(MeliRequestInterface &$meli, array $data = ['id' => ''])
 	{
-        parent::__construct($meli, $data, 'categories');
+        parent::__construct($meli, $data, '/categories', true);
 
-        if (isset($data['children_categories']) && is_array($data['children_categories']) && !empty($data['children_categories'])) {
+        if (
+            isset($data['children_categories']) && 
+            is_array($data['children_categories']) && 
+            !empty($data['children_categories'])
+        ) {
             $this->children_categories = array_map(function($item) {
                 return new self($this->meli, $item);
             }, $data['children_categories']);
+        }
+
+        if (
+            isset($data['path_from_root']) && 
+            is_array($data['path_from_root']) && 
+            !empty($data['path_from_root'])
+        ) {
+            $this->path_from_root = array_map(function($item) {
+                return new self($this->meli, $item);
+            }, $data['path_from_root']);
         }
 	}
 
@@ -41,7 +55,7 @@ class Category extends Resource
     {
         $response = parent::getData($id);
 
-        return new self($this->meli, $response['body']);
+        return new self($this->meli, $response);
     }
 
     /**
@@ -70,7 +84,7 @@ class Category extends Resource
             $country = $this->meli->current_country;
         }
 
-        $response = $this->meli->request('GET', "/sites/{$country}/categories");
+        $response = $this->meli->request('GET', "/sites/{$country}/categories", [], !$this->is_public_resource);
 
         if ($response['status'] !== 200) {
             throw new MeliException('Could not get the categories!', $response);
@@ -107,7 +121,7 @@ class Category extends Resource
      */
     public function search($category)
     {
-        $response = $this->meli->request('GET', 'search', ['query' => ['category' => $category]]);
+        $response = $this->meli->request('GET', 'search', ['query' => ['category' => $category]], !$this->is_public_resource);
 
         if ($response['status'] !== 200) {
             throw new MeliException('Could not search for this category!', $response);
@@ -148,7 +162,7 @@ class Category extends Resource
             'json' => $filtered
         ];
 
-        $response = $this->meli->request('POST', 'category_predictor/predict', $payload);
+        $response = $this->meli->request('POST', 'category_predictor/predict', $payload, !$this->is_public_resource);
 
         if ($response['status'] !== 200) {
             throw new MeliException('Could not predict!', $response);

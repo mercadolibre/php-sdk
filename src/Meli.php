@@ -41,7 +41,7 @@ final class Meli implements MeliRequestInterface {
     ];
 
     /** @var string Current country */
-    private $current_country;
+    public $current_country;
 
     /** @var string the client's ID */
     private $client_id;

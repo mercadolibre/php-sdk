@@ -1,5 +1,8 @@
 <?php 
 
+namespace Meli;
+
+
 interface MeliRequestInterface
 {
 	/**
@@ -11,5 +14,5 @@ interface MeliRequestInterface
 	* @param bool $append_access_token
 	* @return array with at least 'status' index with HTTP Status Code and 'body' index containing the response(if is JSON, must be decoded as array)
 	*/
-    public function request($method, array $data = [], $append_access_token);
+    public function request($method, $uri, array $data = [], $append_access_token);
 }

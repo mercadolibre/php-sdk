@@ -8,73 +8,123 @@ use \InvalidArgumentException;
 /**
  * Category
  */
-class Category
+class Category extends Resource
 {
     /**
-    * @var object $meli instance for making requests
-    */
-    private $meli;
-
-    /**
-     * Receives a Meli instance as reference for making requests
-     * @param object as reference Meli $meli
-     * @param array $data
-     * @param boolean $autoload
-     * @return $this
+     * Initiates the object
+     * 
+     * @param object $meli as reference
+     * @param array $data for filling the object
      */
-	public function __construct(Meli &$meli, array $data = [])
+	public function __construct(MeliRequestInterface &$meli, array $data = [])
 	{
-        $this->meli = $meli;
-        $this->fill($data);
+        parent::__construct($meli, $data, 'categories');
 
         if (isset($data['children_categories']) && is_array($data['children_categories']) && !empty($data['children_categories'])) {
             $this->children_categories = array_map(function($item) {
                 return new self($this->meli, $item);
             }, $data['children_categories']);
         }
-
-        return $this;
 	}
 
     /**
      * Get a category
      * 
-     * @param string $id
-     * @return void
+     * @param string $id the category id
+     * 
+     * @throws InvalidArgumentException if the $id is null
+     * @throws MeliException if the request was not successful
+     * 
+     * @return object instance of Category
      */
     public function getCategory($id)
     {
-        $response = $this->request->request('GET', "/categories/{$id}");
-
-        if ($response['status'] !== 200) {
-            throw new Exception('Could not get this category!');
-        }
+        $response = parent::getData($id);
 
         return new self($this->meli, $response['body']);
+    }
+
+    /**
+    * Get categories for a given country
+    * 
+    * @param string $country the country supported by MercadoLivre
+    * @param bool $fully_load if must also request for fully data of every category
+    * 
+    * @throws InvalidArgumentException if the $country is not supported or both $country and $meli->current_country are empty
+    * @throws MeliException if the $request was not successful
+    * 
+    * @return array of instances of Category
+    */
+    public function getCategories($country = '', $fully_load = true)
+    {
+        if (empty($country) && empty($this->meli->current_country)) {
+            throw new InvalidArgumentException('You must select a country!');
+        }
+
+        if (!empty($country) && !in_array($country, $this->meli->supported_countries)) {
+            $list = implode(', ', $this->meli->supported_countries);
+            throw new InvalidArgumentException("You must select a valid country! Allowed values are: {$list}");
+        }
+
+        if (empty($country)) {
+            $country = $this->meli->current_country;
+        }
+
+        $response = $this->meli->request('GET', "/sites/{$country}/categories");
+
+        if ($response['status'] !== 200) {
+            throw new MeliException('Could not get the categories!', $response);
+        }
+
+
+        $categories = [];
+
+        foreach ($response['body'] as $category) {
+            try {
+                $cat = new self($this->meli, $category);
+
+                if ($fully_load) {
+                    $cat->load();
+                }
+            } catch (Exception $e) {
+                $cat = $category;
+            }
+
+            array_push($categories, $cat);
+        }
+
+        return $categories;
     }
 
     /**
      * Searches for a category
      * 
      * @param string $category
-     * @return mixed
+     * 
+     * @throws MeliException if the request was not successful
+     * 
+     * @return array containing the response
      */
     public function search($category)
     {
         $response = $this->meli->request('GET', 'search', ['query' => ['category' => $category]]);
 
         if ($response['status'] !== 200) {
-            throw new Exception('Could not search for this category!');
+            throw new MeliException('Could not search for this category!', $response);
         }
 
         return $response['body'];
     }
 
     /**
-     * Predict a category for 
-     *
+     * Predict a category for one or more title
+     * 
      * @param array|string $data containing either an array of titles to be predicted or a single title
-     * @return mixed
+     * 
+     * @throws InvalidArgumentException if the $data is empty or doesn't contain a title
+     * @throws MeliException if the request was not successful
+     * 
+     * @return array of instances of Category
      */
     public function predict($data)
     {
@@ -101,59 +151,11 @@ class Category
         $response = $this->meli->request('POST', 'category_predictor/predict', $payload);
 
         if ($response['status'] !== 200) {
-            throw new Exception('Could not predict!');
+            throw new MeliException('Could not predict!', $response);
         }
 
         return array_map(function($predicted) {
             return new self($this->meli, $predicted);
         }, $response['body']);
-    }
-
-    /**
-    * Remove $meli from debug functions
-    * 
-    * @return void
-    */
-    public function __debugInfo()
-    {
-        $result = get_object_vars($this);
-        unset($result['meli']);
-        return $result;
-    }
-
-    /**
-    * @param $data is an array containing data to be set in the object
-    * @return object itself
-    */
-    private function fill(array $data)
-    {
-        foreach ($data as $k => $v) {
-            $this->$k = $v;
-        }
-
-        if (isset($this->path_from_root) && is_array($this->path_from_root) && !empty($this->path_from_root)) {
-            $this->path_from_root = array_map(function($path) {
-                return new self($this->meli, $value);
-            }, $this->path_from_root);
-        }
-
-        return $this;
-    }
-
-    /**
-    * Try to get data for this category itself and load in the object, because not always all the category data are loaded in the first state.
-    * 
-    * @return $this
-    */
-    public function load()
-    {
-        $response = $this->meli->request('GET', "/categories/{$category_id}");
-
-        if ($response['status'] !== 200) {
-            throw new Exception('Could not get this category!');
-        }
-
-        $this->fill($response['body']);
-        return $this;
     }
 }

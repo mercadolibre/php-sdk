@@ -5,7 +5,7 @@ namespace Meli;
 /**
  * Item
  */
-class Item
+class Item implements MeliInterface
 {
     private $meli;
 
@@ -36,12 +36,14 @@ class Item
 
     /**
      * Receives a Meli instance as reference for making requests
-     * @author Matheus Hernandes {github.com/onhernandes}
+     * 
+     * @param object $meli as reference
+     * @param array $data
      * @return void
      */
-    public function __construct(Meli $meli, array $data = [])
+    public function __construct(Meli &$meli, array $data = [])
     {
-        $this->meli = &$meli;
+        $this->meli = $meli;
         $this->fill($data);
     }
 

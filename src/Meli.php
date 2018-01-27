@@ -14,16 +14,16 @@ use GuzzleHttp\Exception\TooManyRedirectsException;
 use \InvalidArgumentException;
 use \Exception;
 
-final class Meli {
+final class Meli implements MeliRequestInterface {
     const VERSION = '2.0.0';
 
-    /**
-     * @var $api_root_url is a main URL to access the Meli API's.
-     * @var $Oauth_endpoint is an endpoint to redirect the user for login.
-     * @var $auth_url is an array containing all auth URLs for each country supported by ML
-     */
+    /** @var string is a main URL to access the Meli API's. */
     private $api_root_url = 'https://api.mercadolibre.com/';
+
+    /** @var string is an endpoint to redirect the user for login. */
     private $Oauth_endpoint = '/oauth/token';
+
+    /** @var array is an array containing all auth URLs for each country supported by ML */
     private $auth_url = [
         'MLA' => 'https://auth.mercadolibre.com.ar', // Argentina 
         'MLB' => 'https://auth.mercadolivre.com.br', // Brasil
@@ -40,57 +40,41 @@ final class Meli {
         'MRD' => 'https://auth.mercadolibre.com.do'  // Dominicana
     ];
 
-    /**
-    * Current country
-    */
-    private $current_country = null;
+    /** @var string Current country */
+    private $current_country;
 
-    /**
-    * Client's ID
-    */
+    /** @var string the client's ID */
     private $client_id;
 
-    /**
-    * Client's Secret
-    */
+    /** @var string the client's secret */
     private $client_secret;
 
-    /**
-    * Redirect URI
-    */
+    /** @var string the redirect URI */
     private $redirect_uri;
 
-    /**
-    * Access Token
-    */
+    /** @var string the access token */
     private $access_token;
 
-    /**
-    * Refresh Token
-    */
+    /** @var string the refresh token */
     private $refresh_token;
 
-    /**
-    * Expire token time
-    */
+    /** @var int the expire token time */
     private $expires_in;
 
-    /**
-    * $client is the GuzzleClient instance
-    */
+    /** @var object the GuzzleClient instance */
     private $client;
 
-    /**
-    * $json_decode_array if the JSON decoding must be assoc or not
-    */
+    /** @var bool if the JSON decoding must be assoc or not */
     private $json_decode_array = true;
 
+    /** @var array with valid countries supported by MercadoLivre */
+    public $supported_countries;
+
     /**
-     * Constructor method. Set all variables to connect in Meli
+     * Initiates the object
      *
-     * @param string $site
-     * @param array $credentials
-     * @return void
+     * @param string $site a valid site supported by MercadoLivre
+     * @param array $credentials containing some credentials like 'client_id', 'client_secret', 'refresh_token' and 'redirect_uri'
      */
     public function __construct($site = '', array $credentials) 
     {
@@ -102,7 +86,9 @@ final class Meli {
             }
         }
 
-        if (!empty($site) && in_array($site, array_keys($this->auth_url))) {
+        $this->supported_countries = array_keys($this->auth_url);
+
+        if (!empty($site) && in_array($site, $this->supported_countries)) {
             $this->current_country = $site;
             $this->api_root_url .= 'sites/'.$this->current_country.'/';
         }
@@ -116,11 +102,13 @@ final class Meli {
     }
 
     /**
-     * Return an string with a complete Meli login url.
-     * NOTE: You can modify the $auth_url to change the language of login
+     * Return an string with a complete Meli login URL.
      * 
-     * @param string $redirect_uri
-     * @param string $country
+     * @param string $redirect_uri the redirect_uri
+     * @param string $country the country for getting the URL, defaults to $current_country, set on constructor
+     * 
+     * @throws InvalidArgumentException if the $country is not supported
+     * 
      * @return string
      */
     public function getAuthUrl($redirect_uri, $country = '') 
@@ -150,13 +138,23 @@ final class Meli {
     /**
      * Executes a POST Request to authorize the application and receive an AccessToken.
      * 
-     * @param string $code
-     * @param string $redirect_uri
-     * @return array
+     * @param string $code received from MercadoLivre after user's authorization
+     * @param string $redirect_uri the redirect_uri, defaults to what was set on constructor
+     * 
+     * @throws InvalidArgumentException if $redirect_uri and $this->redirect_uri are empty
+     * @throws MeliException if the request was not successful or could not find the access_token within response
+     * 
+     * @return void
      */
-    public function authorize($code, $redirect_uri)
+    public function authorize($code, $redirect_uri = '')
     {
-        $this->redirect_uri = $redirect_uri;
+        if (empty($this->redirect_uri) && empty($redirect_uri)) {
+            throw new InvalidArgumentException('You must pass a valid redirect_uri!');
+        }
+
+        if (!empty($redirect_uri)) {
+            $this->redirect_uri = $redirect_uri;
+        }
 
         $body = array(
             'grant_type' => 'authorization_code', 
@@ -168,84 +166,83 @@ final class Meli {
 
         $response = $this->request('POST', $this->Oauth_endpoint, ['query' => $body]);
 
-        if ($response['status'] == 200) {
-            if (!isset($response['body']['access_token'])) {
-                throw new Exception('Could not find access_token within response!');
-            }
+        if ($response['status'] !== 200) {
+            throw new MeliException('Could not get the access_token!', $response);
+        }
 
-            $this->access_token = $response['body']['access_token'];
+        if (!isset($response['body']['access_token'])) {
+            throw new MeliException('Could not find access_token within response!', $response);
+        }
 
-            if (isset($response['body']['expires_in'])) {
-                $this->expires_in = time() + intval($response['body']['expires_in']);
-            } else {
-                $this->expires_in = time() + 21600;
-            }
+        $this->access_token = $response['body']['access_token'];
 
-            if (isset($request['body']['refresh_token'])) {
-                $this->refresh_token = $request['body']['refresh_token'];
-            }
-
-            return $request;
+        if (isset($response['body']['expires_in'])) {
+            $this->expires_in = time() + intval($response['body']['expires_in']);
         } else {
-            return $request;
+            $this->expires_in = time() + 21600;
+        }
+
+        if (isset($request['body']['refresh_token'])) {
+            $this->refresh_token = $request['body']['refresh_token'];
         }
     }
 
     /**
      * Execute a POST Request to refresh the token
      * 
-     * @return array
+     * @throws InvalidArgumentException if the client ID, client secret or refresh_token are empty
+     * @throws MeliException if the request was not successful or could not find the access_token within response
+     * 
+     * @return void
      */
     public function refreshAccessToken() 
     {
-        if (!empty($this->refresh_token)) {
-             $body = [
-                'grant_type' => 'refresh_token', 
-                'client_id' => $this->client_id, 
-                'client_secret' => $this->client_secret, 
-                'refresh_token' => $this->refresh_token
-             ];
-        
-            $response = $this->request('POST', $this->Oauth_endpoint, ['query' => $body], false);
+        $keys = ['client_id', 'client_secret', 'refresh_token'];
 
-            if ($response['status'] == 200) {             
-                if (!isset($response['body']['access_token'])) {
-                    throw new Exception('Could not find access_token within response!');
-                }
+        foreach ($keys as $k) {
+            if (empty($this->$k)) {
+                throw new InvalidArgumentException("{$k} is empty!");
+            }
+        }
 
-                $this->access_token = $response['body']['access_token'];
+        $body = [
+            'grant_type' => 'refresh_token', 
+            'client_id' => $this->client_id, 
+            'client_secret' => $this->client_secret, 
+            'refresh_token' => $this->refresh_token
+         ];
+    
+        $response = $this->request('POST', $this->Oauth_endpoint, ['query' => $body], false);
 
-                if (isset($response['body']['expires_in'])) {
-                    $this->expires_in = time() + intval($response['body']['expires_in']);
-                } else {
-                    $this->expires_in = time() + 21600;
-                }
+        if ($response['status'] == 200) {             
+            throw new MeliException('Could not refresht the token!', $response);
+        }
 
-                if (isset($response['body']['refresh_token'])) {
-                    $this->refresh_token = $response['body']['refresh_token'];
-                }
+        if (!isset($response['body']['access_token'])) {
+            throw new MeliException('Could not find access_token within response!', $response);
+        }
 
-                return $response;
-            } else {
-                return $response;
-            }   
+        $this->access_token = $response['body']['access_token'];
+
+        if (isset($response['body']['expires_in'])) {
+            $this->expires_in = time() + intval($response['body']['expires_in']);
         } else {
-            $result = array(
-                'error' => 'Offline-Access is not allowed.',
-                'status'  => null
-            );
+            $this->expires_in = time() + 21600;
+        }
 
-            return $result;
-        }        
+        if (isset($response['body']['refresh_token'])) {
+            $this->refresh_token = $response['body']['refresh_token'];
+        }
     }
 
     /**
      * Execute a GET Request
      * 
-     * @param string $uri
-     * @param array $data
-     * @param boolean $append_access_token
-     * @return mixed
+     * @param string $uri the URI
+     * @param array $data the data, as GuzzleHttp needs
+     * @param bool $append_access_token if must append the access_token in the URL or not
+     * 
+     * @return array
      */
     public function get($uri, $data = [], $append_access_token = true) {
         return $this->request('GET', $uri, $data, $append_access_token);
@@ -254,10 +251,11 @@ final class Meli {
     /**
      * Execute a POST Request
      * 
-     * @param string $uri
-     * @param array $data
-     * @param boolean $append_access_token
-     * @return mixed
+     * @param string $uri the URI
+     * @param array $data the data, as GuzzleHttp needs
+     * @param bool $append_access_token if must append the access_token in the URL or not
+     * 
+     * @return array
      */
     public function post($uri, $data = [], $append_access_token = true) {
         return $this->request('POST', $uri, ['json' => $data], $append_access_token);
@@ -266,10 +264,11 @@ final class Meli {
     /**
      * Execute a PUT Request
      * 
-     * @param string $uri
-     * @param array $data
-     * @param boolean $append_access_token
-     * @return mixed
+     * @param string $uri the URI
+     * @param array $data the data, as GuzzleHttp needs
+     * @param bool $append_access_token if must append the access_token in the URL or not
+     * 
+     * @return array
      */
     public function put($uri, $data = [], $append_access_token = true) {
         return $this->request('PUT', $uri, ['json' => $data], $append_access_token);
@@ -278,10 +277,11 @@ final class Meli {
     /**
      * Execute a DELETE Request
      * 
-     * @param string $uri
-     * @param array $data
-     * @param boolean $append_access_token
-     * @return mixed
+     * @param string $uri the URI
+     * @param array $data the data, as GuzzleHttp needs
+     * @param bool $append_access_token if must append the access_token in the URL or not
+     * 
+     * @return array
      */
     public function delete($uri, $data = [], $append_access_token = true) {
         return $this->request('DELETE', $uri, ['query' => $data], $append_access_token);
@@ -290,38 +290,42 @@ final class Meli {
     /**
      * Execute a OPTION Request
      * 
-     * @param string $uri
-     * @param array $data
-     * @param boolean $append_access_token
-     * @return mixed
+     * @param string $uri the URI
+     * @param array $data the data, as GuzzleHttp needs
+     * @param bool $append_access_token if must append the access_token in the URL or not
+     * 
+     * @return array
      */
     public function options($uri, $data = [], $append_access_token = true) {
         return $this->request('OPTION', $uri, ['query' => $data], $append_access_token);
     }
 
     /**
-     * Execute all requests and returns the json body and headers
+     * Execute any request
      * 
-     * @param string $method
-     * @param string $uri
-     * @param array $data
-     * @param boolean $append_access_token
-     * @return mixed
+     * @param string $method the HTTP Method
+     * @param string $uri the URI
+     * @param array $data the data, as GuzzleHttp needs
+     * @param bool $append_access_token if must append the access_token in the URL or not
+     * 
+     * @return array
      */
     public function execute($method, $uri, array $data = [], $append_access_token = true) {
         return $this->request($method, $uri, $data, $append_access_token);
     }
 
     /**
-    * Check credentials, throws an Exception in case of access_token not being valid
-    * Automatically tries to refresh if there is refresh_token
-    *
+    * Check if credentials are valid also automatically tries to refresh if there is refresh_token
+    * 
+    * @throws InvalidArgumentException if the access_token is empty
+    * @throws MeliException if the request was not successful or could not find the access_token within response when refreshing
+    * 
     * @return boolean
     */
     private function checkCredentials()
     {
         if (empty($this->access_token)) {
-            throw new Exception('AccessToken not available!');
+            throw new InvalidArgumentException('AccessToken not available!');
         }
 
         if (is_null($this->expires_in)) {
@@ -336,15 +340,20 @@ final class Meli {
             return false;
         }
 
-        $refresh = $this->refreshAccessToken();
-
-        if (empty($refresh['status'])) {
-            throw new Exception('Could not refresh access token!');
-        }
+        $response = $this->refreshAccessToken();
 
         return true;
     }
 
+    /**
+    * Make any request using GuzzleHttp
+    * 
+    * @param string $method the HTTP Method
+    * @param array $data the data to be sent, checks GuzzleHttp docs for more info
+    * @param bool $append_access_token if must or not append $access_token in the request
+    * 
+    * @return array containing the body, HTTP Status Code and headers
+    */
     public function request($method, $uri, array $data = [], $append_access_token = true)
     {
         try {
@@ -364,6 +373,7 @@ final class Meli {
 
             $response = $this->client->request($method, $uri, $data);
             $body = (string) $response->getBody();
+
             if (!is_null(json_decode($body))) {
                 $body = json_decode($body, $this->json_decode_array);
             }
@@ -375,7 +385,6 @@ final class Meli {
             ];
         } catch (ClientException $e) {
             $response = $e->getResponse();
-            $request = $e->getRequest();
             $contents = $response->getBody()->getContents();
 
             if (is_string($contents)) {
@@ -383,25 +392,25 @@ final class Meli {
             }
 
             $return = [
-                'reason' => $response->getReasonPhrase(),
                 'status' => $response->getStatusCode(),
                 'headers' => $response->getHeaders(),
                 'body' => $contents,
-                'method' => $method,
-                'uri' => $uri,
-                'data' => $data,
             ];
         } catch (RequestException $e) {
             $return = [
-                'method' => $method,
                 'request' => Psr7\str($e->getRequest()),
-                'uri' => $uri,
-                'data' => $data,
             ];
 
             if ($e->hasResponse()) {
                 $response = $e->getResponse();
-                $return['reason'] = $response->getReasonPhrase();
+                $contents = $response->getBody()->getContents();
+
+                if (is_string($contents)) {
+                    $contents = json_decode($contents, true);
+                }
+
+                $return['headers'] = $response->getHeaders();
+                $return['body'] = $contents;
                 $return['status'] = $response->getStatusCode();
             }
         } catch (InvalidArgumentException $e) {
@@ -430,97 +439,67 @@ final class Meli {
     }
 
     /**
-    * Get a user
+    * Gets a user
     * 
-    * @param int $user_id
-    * @return object Meli\User
+    * @param string $id the user id
+    * 
+    * @throws InvalidArgumentException if the $id is null
+    * @throws MeliException if the request was not successful
+    * 
+    * @return object instance of User
     */
-    public function getUser($user_id)
+    public function getUser($id)
     {
-        $response = $this->request('GET', "/users/{$user_id}");
-
-        if ($response['status'] == 200) {
-            return new User($this, $response['body']);
-        } else {
-            throw new Exception('Could not get this user!');
-        }
+        return (new User($this))->getUser($id);
     }
 
     /**
-    * Get me
+    * Gets the user itself
     * 
-    * @return object Meli\User
+    * @throws MeliException if the request was not successful
+    * 
+    * @return object instance of User
     */
     public function getMe()
     {
-        return $this->getUser('me');
+        return (new User($this))->getMe();
     }
 
     /**
     * Get categories for a given country
     * 
-    * @param string $country
-    * @return mixed
+    * @param string $country the country supported by MercadoLivre
+    * @param bool $fully_load if must also request for fully data of every category
+    * 
+    * @throws InvalidArgumentException if the $country is not supported or both $country and $meli->current_country are empty
+    * @throws MeliException if the $request was not successful
+    * 
+    * @return array of instances of Category
     */
-    public function getCategories($country = '')
+    public function getCategories($country = '', $fully_load = true)
     {
-        if (empty($country) && empty($this->current_country)) {
-            throw new InvalidArgumentException('You must select a country!');
-        }
-
-        if (!empty($country) && !in_array($country, array_keys($this->auth_url))) {
-            $list = array_keys($this->auth_url);
-            $list = implode(', ', $list);
-            throw new InvalidArgumentException("You must select a valid country! Allowed values are: {$list}");
-        }
-
-        if (empty($country)) {
-            $country = $this->current_country;
-        }
-
-        $response = $this->request('GET', "/sites/{$country}/categories");
-
-        if ($response['status'] !== 200) {
-            throw new Exception('Could not get the categories!');
-        }
-
-
-        $categories = [];
-
-        foreach ($response['body'] as $category) {
-            $category_got = $this->request('GET', '/categories/'.$category['id']);
-            if ($category_got['status'] !== 200) {
-                return false;
-            }
-
-            array_push($categories, new Category($this, $category_got['body']));
-        }
-
-        return $categories;
+        return (new Category($this))->getCategories($country);
     }
 
     /**
      * Get a category
-     *
-     * @param string $category_id
-     * @return object|instance of Category
+     * 
+     * @param string $id the category id
+     * 
+     * @throws InvalidArgumentException if the $id is null
+     * @throws MeliException if the request was not successful
+     * 
+     * @return object instance of Category
      */
-    public function getCategory($category_id)
+    public function getCategory($id)
     {
-        $response = $this->request('GET', "/categories/{$category_id}");
-
-        if ($response['status'] !== 200) {
-            throw new Exception('Could not get this category!');
-        }
-
-        return new Category($this, $response['body']);
+        return (new Category($this))->getCategory($id);
     }
 
     /**
     * Get a product
-    * 
     */
-    public function getProduct()
+    public function getItem()
     {
         // Some cool code will born here!
     }

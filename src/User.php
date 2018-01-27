@@ -8,111 +8,102 @@ use \InvalidArgumentException;
 /**
  * User
  */
-class User
+class User extends Resource
 {
     /**
-    * @var object $meli instance for making requests
-    */
-    private $meli;
-
-    /**
-     * Receives a Meli instance as reference for making requests
-     * @author Matheus Hernandes {github.com/onhernandes}
-     * @return $this
+     * Initiates the object
+     * 
+     * @param object $meli as reference
+     * @param array $data for filling the object
      */
-	public function __construct(Meli &$meli, array $data = [])
-	{
-        $this->meli = $meli;
-        $this->fill($data);
-        return $this;
-	}
+    public function __construct(MeliRequestInterface &$meli, array $data = [])
+    {
+        parent::__construct($meli, $data, '/users');
+    }
 
     /**
     * Gets the user itself
-    * @return an instance of the user
+    * 
+    * @throws MeliException if the request was not successful
+    * 
+    * @return object instance of User
     */
     public function getMe()
     {
-        $response = $this->meli->request('GET', '/users/me');
+        $response = $this->getData('me');
 
-        if ($response['status'] == 200) {
-            return new self($this, $response['body']);
-        } else {
-            throw new Exception('Could not get this user!');
-        }
+        return new self($this, $response['body']);
     }
 
     /**
-     * @param int $user_id the user's id
-     * @return object instance as user
-     */
-    public function getUser($user_id)
+    * Gets a user
+    * 
+    * @param string $id the user id
+    * 
+    * @throws InvalidArgumentException if the $id is null
+    * @throws MeliException if the request was not successful
+    * 
+    * @return object instance of User
+    */
+    public function getUser($id)
     {
-        $response = $this->meli->request('GET', "/users/{$user_id}");
+        $response = $this->getData($id);
 
-        if ($response['status'] == 200) {
-            return new self($this, $response['body']);
-        } else {
-            throw new Exception('Could not get this user!');
-        }
+        return new self($this, $response['body']);
     }
 
     /**
-     * @param $nickame the user's nickname
-     * @return array
-     */
+    * Searches for a user
+    * 
+    * @param $nickame the user's nickname
+    * 
+    * @throws InvalidArgumentException if the $nickname is null
+    * @throws MeliException if the request was not successful
+    * 
+    * @return array containing the results
+    */
     public function search($nickname)
     {
-        $response = $this->meli->request('GET', 'search', ['query' => ['nickname' => $nickname]]);
-        if ($response['status'] == 200) {
-            return $response['body'];
-        } else {
-            return $response;
+        if (is_null($nickname)) {
+            throw new InvalidArgumentException('The nickname cannot be null!');
         }
+
+        $response = $this->meli->request('GET', 'search', ['query' => ['nickname' => $nickname]]);
+
+        if ($response['status'] !== 200) {
+            throw new MeliException('Could not search for this user!', $response);
+        }
+
+        return $response['body'];
     }
 
     /**
     * Update the user's data
     * 
-    * @param array $data
-    * @param int $user_id, use the set data by default
-    * @return mixed
-    */
-    public function update(array $data, $user_id = false)
-    {
-        if ($user_id === false && (!isset($this->id) || empty($this->id))) {
-            throw new InvalidArgumentException('You must set an user_id!');
-        }
-
-        if ($user_id === false) {
-            $user_id = $this->id;            
-        }
-
-        return $response = $this->meli->request('PUT', "/users/{$user_id}", ['json' => $data], true);
-    }
-
-    /**
-    * Remove $meli from debug functions
+    * @param array $data to be updated
+    * @param int $id, use the set data by default
     * 
-    * @return void
+    * @throws InvalidArgumentException if there's no valid ID set
+    * @throws MeliException if the request was not successful
+    * 
+    * @return array containing the result
     */
-    public function __debugInfo()
+    public function update(array $data, $id = false)
     {
-        $result = get_object_vars($this);
-        unset($result['meli']);
-        return $result;
-    }
-
-    /**
-    * @param $data is an array containing data to be set in the object
-    * @return object itself
-    */
-    private function fill(array $data)
-    {
-        foreach ($data as $k => $v) {
-            $this->$k = $v;
+        if ($id === false && (!isset($this->id) || empty($this->id))) {
+            throw new InvalidArgumentException('You must set an id!');
         }
 
-        return $this;
+        if ($id === false) {
+            $id = $this->id;            
+        }
+
+        $response = $this->meli->request('PUT', "/users/{$id}", ['json' => $data], true);
+
+        if ($response['status'] !== 200) {
+            throw new MeliException('Could not update the user data!', $response);
+        }
+
+        return $response['body'];
     }
 }

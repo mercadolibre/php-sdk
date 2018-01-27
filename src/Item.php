@@ -63,54 +63,19 @@ class Item extends Resource
     * 
     * @return array of response from MercadoLivre
     */
-    public function createItem($item, $post_checking = true, $user = null)
+    public function createItem($item, $post_checking = true)
     {
         $errors = [];
+        $new = new self($this->meli, $item);
 
         if (is_object($item)) {
             $item = (array) $item;
         }
 
-        foreach ($this->general_mandatory_attributes as $k => $v) {
-            if (!isset($item[$k]) || $item[$k] == '' || $item[$k] == false || is_null($item[$k])) {
-                $errors[$k] = "Either {$k} is missing or is empty('', false or null are not allowed values)!";
-                continue;
-            }
-
-            if (is_array($v) && !in_array($item[$k], $v)) {
-                $valid = implode(', ', $v);
-                $errors[$k] = "{$item[$k]} is not a valid value! Valid values are {$valid}";
-            }
-        }
+        $new->validateGeneral($errors);
 
         if ($post_checking) {
-            if (!isset($errors['category_id'])) {
-                if (!is_object($item['category_id'])) {
-                    $item['category_id'] = new Category($this->meli, $item['category_id']);
-                }
-
-                if (!$item['category_id']->validate()) {
-                    $errors['category_id'] = 'Invalid category!';
-                }
-            }
-
-            if (!isset($errors['category_id'])) {
-                if (!isset($errors['buying_mode']) && !in_array($item['buying_mode'], $item['category_id']->settings['buying_modes'])) {
-                    $errors['buying_mode'] = 'This buying_mode is invalid! Accepted values for this category are: '.implode(', ', $item['category_id']->settings['buying_modes']);
-                }
-
-                if (!isset($errors['currency_id']) && !in_array($item['currency_id'], $item['category_id']->settings['currencies'])) {
-                    $errors['currency_id'] = 'This currency_id is invalid! Accepted values for this category are: '.implode(', ', $item['category_id']->settings['currencies']);
-                }
-
-                if (isset($item['pictures']) && count($item['pictures']) > $item['category_id']->settings['max_pictures_per_item']) {
-                    $item['pictures'] = array_slice($item['pictures'], 0, count($item['pictures']) - $item['category_id']->settings['max_pictures_per_item']);
-                }
-
-                if (!isset($errors['condition']) && !in_array($item['condition'], $item['category_id']->settings['item_conditions'])) {
-                    $errors['condition'] = 'This condition is invalid for this category! Accepted values for this condition are: '.implode(', ', $item['category_id']->settings['item_conditions']);
-                }
-            }
+            $new->validateCategory($errors);
         }
 
         if (!empty($errors)) {
@@ -127,6 +92,118 @@ class Item extends Resource
     }
 
     /**
+    * Validates item general attributes
+    * 
+    * @param array $errors accepts an array by reference for user friendly error message 
+    * 
+    * @return bool
+    */
+    public function validateGeneral(array &$errors = [])
+    {
+        $local = [];
+
+        foreach ($this->general_mandatory_attributes as $k => $v) {
+            if (
+                !property_exists($this, $k) || 
+                $this->$k == '' || 
+                $this->$k == false || 
+                is_null($this->$k)
+            ) {
+                $errors[$k] = $local[$k] = "Either {$k} is missing or is empty('', false or null are not allowed values)!";
+                continue;
+            }
+
+            if (is_array($v) && !in_array($this->$k, $v)) {
+                $valid = implode(', ', $v);
+                $errors[$k] = $local[$k] = "{$this->$k} is not a valid value! Valid values are {$valid}";
+            }
+        }
+
+        return empty($local);
+    }
+
+    /**
+    * Validates item category and related
+    * 
+    * @param array $errors accepts an array by reference for user friendly error message 
+    * 
+    * @return bool
+    */
+    public function validateCategory(array &$errors = [])
+    {
+        if (!property_exists($this, 'category_id') || empty($this->category_id)) {
+            $errors['category_id'] = 'Invalid category!';
+            return false;
+        }
+
+        if (!is_object($this->category_id)) {
+            $this->category_id = new Category($this->meli, $this->category_id);
+        }
+
+
+        if (property_exists($this, 'buying_mode') && !in_array($this->buying_mode, $this->category_id->settings['buying_modes'])) {
+            $errors['buying_mode'] = 'This buying_mode is invalid! Accepted values for this category are: '.implode(', ', $this->category_id->settings['buying_modes']);
+        }
+
+        if (property_exists($this, 'currency_id') && !in_array($this->currency_id, $this->category_id->settings['currencies'])) {
+            $errors['currency_id'] = 'This currency_id is invalid! Accepted values for this category are: '.implode(', ', $this->category_id->settings['currencies']);
+        }
+
+        if (property_exists($this, 'pictures') && count($this->pictures) > $this->category_id->settings['max_pictures_per_item']) {
+            $this->pictures = array_slice($this->pictures, 0, count($this->pictures) - $this->category_id->settings['max_pictures_per_item']);
+        }
+
+        if (property_exists($this, 'condition') && !in_array($this->condition, $this->category_id->settings['item_conditions'])) {
+            $errors['condition'] = 'This condition is invalid for this category! Accepted values for this condition are: '.implode(', ', $this->category_id->settings['item_conditions']);
+        }
+
+        if (isset($item['shipping_mode'])) {
+            $user = new User($this->meli);
+            $user->load();
+
+            if (property_exists($user, 'shipping_modes' && is_array($user->shipping_modes) && !in_array($item['shipping_mode'], $user->shipping_modes))) {
+                $errors['shipping_mode'] = 'This shipping_mode is not allowed! Accepted values are: '.implode(', ', $user->shipping_modes);
+            }
+        }
+    }
+
+    /**
+    * Validates item shipping and related
+    * 
+    * @param array $errors accepts an array by reference for user friendly error message 
+    * 
+    * @return bool
+    */
+    public function validateShipping(array &$errors = [])
+    {
+        // Some cool code will born here
+    }
+
+    /**
+    * Validates item pictures
+    * 
+    * @param array $errors accepts an array by reference for user friendly error message 
+    * 
+    * @return bool
+    */
+    public function validatePictures(array &$errors = [])
+    {
+        // Some cool code will born here
+    }
+
+    /**
+    * Validates item listing type and related
+    * 
+    * @param array $errors accepts an array by reference for user friendly error message 
+    * 
+    * @return bool
+    */
+    public function validateListingType(array &$errors = [])
+    {
+        // Some cool code will born here
+    }
+
+    /**
     * Gets a list of products
     * 
     * @param int $page current page
@@ -139,31 +216,5 @@ class Item extends Resource
     public function getItems($page = 0)
     {
         // Some cool code will born here
-    }
-
-    /**
-     * summary
-     *
-     * @return void
-     * @author 
-     */
-    public function validate()
-    {
-        if (!ListingType::validate($this->listing_type)) {
-            $errors['listing_type'] = 'The current listing_type does not exists, please submit a new one!';
-        }
-
-        if (!ListingType::validate($this->listing_type, 'max_stock_per_item', $this->available_quantity)) {
-        }
-
-        // ListingType -> Validate for 'listing_type'
-        // ListingType -> Validate for 'requires_picture'
-        // ListingType -> Validate for 'not_available_in_categories'
-        // ListingType -> Validate for 'immediate_payment'
-        // ListingType -> Validate for 'max_stock_per_item'
-        // Category -> Validate for 'shipping_modes'
-        // Category -> Validate for 'shipping_options'
-        // Category -> Validate for 'shipping_profile'
-        // Category -> Validate for 'immediate_payment'
     }
 }

@@ -3,6 +3,8 @@ require 'vendor/autoload.php';
 $dotenv = new Dotenv\Dotenv(__DIR__);
 $dotenv->load();
 
+echo "<pre>"; var_dump(Meli\Category::fake()); die;
+
 use Meli\{Meli, User, MeliException};
 
 $access_token = getenv('TEST_ACCESS_TOKEN', null);

@@ -4,6 +4,7 @@ namespace Meli;
 
 use \Exception;
 use \InvalidArgumentException;
+use \Faker\Factory;
 
 /**
  * Category
@@ -171,5 +172,88 @@ class Category extends Resource
         return array_map(function($predicted) {
             return new self($this->meli, $predicted);
         }, $response['body']);
+    }
+
+    /**
+    * Creates a fake category
+    * 
+    * @param bool $short return a whole category or just name and id
+    * 
+    * @return array
+    */
+    public static function fake($short = false)
+    {
+        $faker = \Faker\Factory::create();
+        $faker->addProvider(new \Faker\Provider\pt_BR\Person($faker));
+        $faker->addProvider(new \Faker\Provider\pt_BR\Address($faker));
+        $faker->addProvider(new \Faker\Provider\pt_BR\PhoneNumber($faker));
+        $faker->addProvider(new \Faker\Provider\Internet($faker));
+        $faker->addProvider(new \Faker\Provider\Miscellaneous($faker));
+        $faker->addProvider(new MeliFakeProvider($faker));
+
+        if ($short) {
+            return [
+                'id' => $faker->id(true),
+                'name' => $faker->category
+            ];
+        }
+
+        $category = [
+            'id' => $faker->id,
+            'name' => $faker->category,
+            'shipping_mode' => $faker->shipping_mode,
+            'picture' => $faker->imageUrl(640, 480),
+            'permalink' => $faker->url,
+            'total_items_in_this_category' => $faker->randomNumber(),
+            'path_from_root' => array_map(function() {
+                    return self::fake(true);
+                }, array_pad([], $faker->numberBetween(1, 5), 10)),
+            'children_categories' => array_map(function() {
+                    return self::fake(true);
+                }, array_pad([], $faker->numberBetween(1, 5), 10)),
+            'settings' => [
+                'adult_content' => $faker->boolean(10),
+                'buying_allowed' => $faker->boolean(99),
+                'buying_modes' => $faker->buying_mode(false),
+                'catalog_domain' => $faker->url,
+                'coverage_areas' => '',
+                'currencies' => $faker->currency,
+                'fragile' => $faker->boolean(5),
+                'immediate_payment' => 'required',
+                'item_conditions' => $faker->item_condition(false),
+                'items_reviews_allowed' => $faker->boolean(30),
+                'listing_allowed' => $faker->boolean(90),
+                'max_description_length' => $faker->numberBetween(30000, 50000),
+                'max_pictures_per_item' => $faker->numberBetween(1, 15),
+                'max_pictures_per_item_var' => $faker->numberBetween(1, 13),
+                'max_sub_title_length' => $faker->numberBetween(1, 70),
+                'max_title_length' => $faker->numberBetween(1, 60),
+                'maximum_price' => $faker->numberBetween(1, 9999999),
+                'minimum_price' => 0,
+                'mirror_category' => null,
+                'mirror_master_category' => null,
+                'mirror_slave_categories' => [],
+                'price' => 'required',
+                'reservation_allowed' => null,
+                'restrictions' => [],
+                'rounded_address' => false,
+                'seller_contact' => 'not_allowed',
+                'shipping_modes' => $faker->shipping_mode(true),
+                'shipping_options' => $faker->shipping_option(true),
+                'shipping_profile' => 'shipping_profile',
+                'show_contact_information' => false,
+                'simple_shipping' => 'optional',
+                'stock' => 'required',
+                'sub_vertical' => null,
+                'subscribable' => null,
+                'tags' => ['others'],
+                'vertical' => null,
+                'vip_subdomain' => 'produto'
+            ],
+            'attribute_types' => 'attributes',
+            'meta_categ_id' => $faker->id
+        ];
+
+        return $category;
     }
 }

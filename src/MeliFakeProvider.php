@@ -53,6 +53,11 @@ class MeliFakeProvider extends \Faker\Provider\Base
     public static $coverage_areas = ['not_allowed'];
 
     /**
+     * @var array of seller_experiences
+     */
+    public static $seller_experiences = ['ADVANCED'];
+
+    /**
     * @example 'me1'
     * 
     * @param bool $single if must return one or more
@@ -72,10 +77,12 @@ class MeliFakeProvider extends \Faker\Provider\Base
 
     /**
     * @example 'MLB' 
+    * 
+    * @param bool $single if must return one or more
     */
     public static function country()
     {
-        return static::randomElement(static::$supported_countries);
+        return $single ? static::randomElement(static::$supported_countries) : static::randomElements(static::$supported_countries, parent::numberBetween(1, 4), true);
     }
 
     /**
@@ -134,5 +141,15 @@ class MeliFakeProvider extends \Faker\Provider\Base
     public static function coverage_area($single = true)
     {
         return $single ? static::randomElement(static::$coverage_areas) : static::randomElements(static::$coverage_areas, parent::numberBetween(1, 4), true);
+    }
+
+    /**
+    * @example 'ADVANCED' 
+    * 
+    * @param bool $single if must return one or more
+    */
+    public static function seller_experience($single = true)
+    {
+        return $single ? static::randomElement(static::$seller_experiences) : static::randomElements(static::$seller_experiences, parent::numberBetween(1, 4), true);
     }
 }

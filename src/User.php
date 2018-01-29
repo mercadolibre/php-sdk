@@ -137,7 +137,28 @@ class User extends Resource
                 'zip_code' => $faker->postcode,
             ],
             'phone' => [
-            ]
+                'area_code' => $faker->areaCode,
+                'number' => $faker->cellphoneNumber,
+                'extension' => '',
+                'verified' => $faker->boolean(60),
+            ],
+            'alternative_phone' => [
+                'area_code' => $faker->areaCode,
+                'number' => $faker->cellphoneNumber,
+                'extension' => '',
+            ],
+            'user_type' => 'real_estate_agency',
+            'tags' => [
+                'real_estate_agency',
+                'test_user',
+                'user_info_verified'
+            ],
+            'logo' => $faker->imageUrl(50, 50),
+            'points' => $faker->randomNumber(3, true),
+            'site_id' => $faker->country,
+            'permalink' => $faker->url,
+            'shipping_modes' => $faker->shipping_mode(false),
+            'seller_experience' => $faker->seller_experience
         ];
 
         return $user;

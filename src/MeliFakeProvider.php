@@ -48,6 +48,11 @@ class MeliFakeProvider extends \Faker\Provider\Base
     public static $item_conditions = ['used', 'not_specified', 'new'];
 
     /**
+     * @var array of coverage_areas
+     */
+    public static $coverage_areas = ['not_allowed'];
+
+    /**
     * @example 'me1'
     * 
     * @param bool $single if must return one or more
@@ -119,5 +124,15 @@ class MeliFakeProvider extends \Faker\Provider\Base
     public static function shipping_option($single = true)
     {
         return $single ? static::randomElement(static::$shipping_options) : static::randomElements(static::$shipping_options, parent::numberBetween(1, 4), true);
+    }
+
+    /**
+    * @example 'custom' 
+    * 
+    * @param bool $single if must return one or more
+    */
+    public static function coverage_area($single = true)
+    {
+        return $single ? static::randomElement(static::$coverage_areas) : static::randomElements(static::$coverage_areas, parent::numberBetween(1, 4), true);
     }
 }

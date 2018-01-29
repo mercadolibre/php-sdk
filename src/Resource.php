@@ -147,4 +147,35 @@ class Resource implements MeliInterface
         unset($result['is_public_resource']);
         return $result;
     }
+
+    /**
+    * Creates a fake resource
+    * 
+    * @param bool $short return a whole resource or just name and id
+    * 
+    * @return array
+    */
+    public static function fake($short = false)
+    {
+        $faker = \Faker\Factory::create();
+        $faker->addProvider(new \Faker\Provider\pt_BR\Person($faker));
+        $faker->addProvider(new \Faker\Provider\pt_BR\Address($faker));
+        $faker->addProvider(new \Faker\Provider\pt_BR\PhoneNumber($faker));
+        $faker->addProvider(new \Faker\Provider\Internet($faker));
+        $faker->addProvider(new \Faker\Provider\Miscellaneous($faker));
+        $faker->addProvider(new MeliFakeProvider($faker));
+
+        if ($short) {
+            return [
+                'id' => $faker->id
+            ];
+        }
+
+        $resource = [
+            'id' => $faker->id,
+            'name' => $faker->name,
+        ];
+
+        return $resource;
+    }
 }

@@ -43,4 +43,13 @@ interface MeliInterface
 	* @return object $this|throws Exception
 	*/
     public function load();
+
+    /**
+    * Creates a fake resource
+    * 
+    * @param bool $short return a whole resource or just name and id
+    * 
+    * @return array
+    */
+	public static function fake($short = false);
 }

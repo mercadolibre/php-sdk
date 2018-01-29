@@ -3,3 +3,4 @@
 *.no-git
 vendor/
 .env
+categoriesMLB.json

@@ -157,13 +157,7 @@ class Resource implements MeliInterface
     */
     public static function fake($short = false)
     {
-        $faker = \Faker\Factory::create();
-        $faker->addProvider(new \Faker\Provider\pt_BR\Person($faker));
-        $faker->addProvider(new \Faker\Provider\pt_BR\Address($faker));
-        $faker->addProvider(new \Faker\Provider\pt_BR\PhoneNumber($faker));
-        $faker->addProvider(new \Faker\Provider\Internet($faker));
-        $faker->addProvider(new \Faker\Provider\Miscellaneous($faker));
-        $faker->addProvider(new MeliFakeProvider($faker));
+        $faker = self::getFaker();
 
         if ($short) {
             return [
@@ -177,5 +171,23 @@ class Resource implements MeliInterface
         ];
 
         return $resource;
+    }
+
+    /**
+    * Get a faker instance autoloaded with some useful providers
+    * 
+    * @return object \Faker\Generator created by \Faker\Factory::create();
+    */
+    public static function getFaker()
+    {
+        $faker = \Faker\Factory::create();
+        $faker->addProvider(new \Faker\Provider\pt_BR\Person($faker));
+        $faker->addProvider(new \Faker\Provider\pt_BR\Address($faker));
+        $faker->addProvider(new \Faker\Provider\pt_BR\PhoneNumber($faker));
+        $faker->addProvider(new \Faker\Provider\Internet($faker));
+        $faker->addProvider(new \Faker\Provider\Miscellaneous($faker));
+        $faker->addProvider(new MeliFakeProvider($faker));
+
+        return $faker;
     }
 }

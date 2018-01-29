@@ -106,4 +106,40 @@ class User extends Resource
 
         return $response['body'];
     }
+
+    /**
+    * Creates a fake user
+    * 
+    * @param bool $short return a whole user or just name and id
+    * 
+    * @return array
+    */
+    public static function fake($short = false)
+    {
+        $faker = parent::getFaker();
+
+        $user = [
+            'id' => $faker->randomNumber(7, true),
+            'nickname' => $faker->userName,
+            'registration_date' => $faker->iso8601,
+            'first_name' => $faker->firstName,
+            'last_name' => $faker->lastName,
+            'country_id' => $faker->countryCode,
+            'email' => $faker->email,
+            'identification' => [
+                'type' => 'DNI',
+                'number' => ''
+            ],
+            'address' => [
+                'state' => $faker->state,
+                'city' => $faker->city,
+                'address' => $faker->streetAddress,
+                'zip_code' => $faker->postcode,
+            ],
+            'phone' => [
+            ]
+        ];
+
+        return $user;
+    }
 }

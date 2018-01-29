@@ -183,13 +183,7 @@ class Category extends Resource
     */
     public static function fake($short = false)
     {
-        $faker = \Faker\Factory::create();
-        $faker->addProvider(new \Faker\Provider\pt_BR\Person($faker));
-        $faker->addProvider(new \Faker\Provider\pt_BR\Address($faker));
-        $faker->addProvider(new \Faker\Provider\pt_BR\PhoneNumber($faker));
-        $faker->addProvider(new \Faker\Provider\Internet($faker));
-        $faker->addProvider(new \Faker\Provider\Miscellaneous($faker));
-        $faker->addProvider(new MeliFakeProvider($faker));
+        $faker = parent::getFaker();
 
         if ($short) {
             return [

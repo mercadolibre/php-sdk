@@ -5,6 +5,10 @@
 	    </testsuite>
   	</testsuites>
 
+    <php>
+        <ini name="error_reporting" value="E_ERROR" />
+    </php>
+
     <filter>
       <blacklist>
         <directory suffix=".php">../*</directory>

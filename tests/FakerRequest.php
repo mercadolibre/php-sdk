@@ -6,14 +6,20 @@
 class FakerRequest implements \Meli\MeliRequestInterface
 {
     /**
+     * Faker
+     *
+     * @var string
+     */
+    private $faker;
+
+    /**
     * Initiates the object
     * 
-    * @param string $country the current country
-    * @param array $credentials the credentials
+    * @param object $resource is a resource
     */
-    public function __construct($country = '', $credentials = [])
+    public function __construct(Resource $resource)
     {
-        
+        $this->faker = $resource;
     }
 
     /**
@@ -26,8 +32,12 @@ class FakerRequest implements \Meli\MeliRequestInterface
     * 
     * @return array with body, status and headers
     */
-    public function request($method, $uri, $data = [], $append_access_token = false)
+    public function request($method, $uri, array $data = [], $append_access_token = false)
     {
-        
+        return [
+            'body' => $this->faker::fake(),
+            'status' => 200,
+            'headers' => []
+        ];
     }
 }

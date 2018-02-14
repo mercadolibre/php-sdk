@@ -177,7 +177,7 @@ class Category extends Resource
     /**
     * Creates a fake category
     * 
-    * @param bool $short return a whole category or just name and id
+    * @param bool $short return a whole resource or just a short version of the resource, normally this differentiates from public(without need of access token) and private data
     * 
     * @return array
     */

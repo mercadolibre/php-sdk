@@ -110,7 +110,7 @@ class User extends Resource
     /**
     * Creates a fake user
     * 
-    * @param bool $short return a whole user or just name and id
+    * @param bool $short return a whole resource or just a short version of the resource, normally this differentiates from public(without need of access token) and private data
     * 
     * @return array
     */

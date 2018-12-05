@@ -281,15 +281,12 @@ class Meli {
      * @return string
      */
     public function make_path($path, $params = array()) {
-        if (!preg_match("/^http/", $path)) {
-            if (!preg_match("/^\//", $path)) {
-                $path = '/'.$path;
-            }
-            $uri = self::$API_ROOT_URL.$path;
-        } else {
-            $uri = $path;
+        if (!preg_match("/^\//", $path)) {
+            $path = '/' . $path;
         }
 
+        $uri = self::$API_ROOT_URL . $path;
+        
         if(!empty($params)) {
             $paramsJoined = array();
 

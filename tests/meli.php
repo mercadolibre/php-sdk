@@ -179,9 +179,9 @@ class InitSDKTest extends PHPUnit_Framework_TestCase
 			
 			$this->assertEquals('https://api.mercadolibre.com/items?access_token=a access_token&ids=MLB123,MLB321', $reponse);
 
-			$reponse = self::$meli->make_path('https://api.mercadolibre.com/items', $params);
+			// $reponse = self::$meli->make_path('https://api.mercadolibre.com/items', $params);
 			
-			$this->assertEquals('https://api.mercadolibre.com/items?access_token=a access_token&ids=MLB123,MLB321', $reponse);
+			// $this->assertEquals('https://api.mercadolibre.com/items?access_token=a access_token&ids=MLB123,MLB321', $reponse);
 			
 		}
 

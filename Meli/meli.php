@@ -3,9 +3,9 @@
 class Meli {
 
 	/**
-	 * @version 1.1.0
+	 * @version 2.0.0
 	 */
-    const VERSION  = "1.1.0";
+    const VERSION  = "2.0.0";
 
     /**
      * @var $API_ROOT_URL is a main URL to access the Meli API's.
@@ -33,7 +33,7 @@ class Meli {
      * Configuration for CURL
      */
     public static $CURL_OPTS = array(
-        CURLOPT_USERAGENT => "MELI-PHP-SDK-1.1.0", 
+        CURLOPT_USERAGENT => "MELI-PHP-SDK-2.0.0", 
         CURLOPT_SSL_VERIFYPEER => true,
         CURLOPT_CONNECTTIMEOUT => 10, 
         CURLOPT_RETURNTRANSFER => 1, 

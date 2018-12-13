@@ -27,7 +27,7 @@ if($_GET['code']) {
 	
 	$params = array('access_token' => $_SESSION['access_token']);
 
-	$body = array('text' => 'Adding new description <strong>html</strong>');
+	$body = array('plain_text' => 'Adding new description <strong>html</strong>');
 
 	$response = $meli->put('/items/MLB12343412/descriptions', $body, $params);
 	

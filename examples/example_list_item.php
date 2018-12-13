@@ -35,8 +35,8 @@ if($_GET['code']) {
         "buying_mode" => "buy_it_now",
         "listing_type_id" => "bronze",
         "condition" => "new",
-        "description" => "Item de Teste. Mercado Livre's PHP SDK.",
-        "video_id" => "Q6dsRpVyyWs",
+        "description" => array ("plain_text" => "Item de Teste. Mercado Livre's PHP SDK."),
+        "video_id" => "RXWn6kftTHY",
         "warranty" => "12 month",
         "pictures" => array(
             array(

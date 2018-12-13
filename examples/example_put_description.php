@@ -1,5 +1,5 @@
 <?php
-session_start('teste');
+session_start();
 
 require '../Meli/meli.php';
 require '../configApp.php';

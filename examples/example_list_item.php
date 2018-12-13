@@ -28,7 +28,7 @@ if($_GET['code']) {
 	// We construct the item to POST
 	$item = array(
 		"title" => "Item De Teste - Por Favor, Não Ofertar! --kc:off",
-        "category_id" => "MLB1227",
+        "category_id" => "MLB257111",
         "price" => 10,
         "currency_id" => "BRL",
         "available_quantity" => 1,
@@ -40,10 +40,64 @@ if($_GET['code']) {
         "warranty" => "12 month",
         "pictures" => array(
             array(
-                "source" => "https://upload.wikimedia.org/wikipedia/commons/f/fd/Ray_Ban_Original_Wayfarer.jpg"
+                "source" => "https://upload.wikimedia.org/wikipedia/commons/thumb/6/64/IPhone_7_Plus_Jet_Black.svg/440px-IPhone_7_Plus_Jet_Black.svg.png"
             ),
             array(
-                "source" => "https://upload.wikimedia.org/wikipedia/commons/a/ab/Teashades.gif"
+                "source" => "https://upload.wikimedia.org/wikipedia/commons/thumb/b/bc/IPhone7.jpg/440px-IPhone7.jpg"
+            )
+        ),
+        "attributes" => array(
+            array(
+                "id" => "EAN",
+                "value_name" => "190198043566"
+            ),
+            array(
+                "id" => "COLOR",
+                "value_id" => "52049"
+            ),
+            array(
+                "id" => "WEIGHT",
+                "value_name" => "188g"
+            ),
+            array(
+                "id" => "SCREEN_SIZE",
+                "value_name" => "4.7 polegadas"
+            ),
+            array(
+                "id" => "TOUCH_SCREEN",
+                "value_id" => "242085"
+            ),
+            array(
+                "id" => "DIGITAL_CAMERA",
+                "value_id" => "242085"
+            ),
+            array(
+                "id" => "GPS",
+                "value_id" => "242085"
+            ),
+            array(
+                "id" => "MP3",
+                "value_id" => "242085"
+            ),
+            array(
+                "id" => "OPERATING_SYSTEM",
+                "value_id" => "296859"
+            ),
+            array(
+                "id" => "OPERATING_SYSTEM_VERSION",
+                "value_id" => "iOS 10"
+            ),
+            array(
+                "id" => "DISPLAY_RESOLUTION",
+                "value_id" => "1920 x 1080"
+            ),
+            array(
+                "id" => "BATTERY_CAPACITY",
+                "value_name" => "3980 mAh"
+            ),
+            array(
+                "id" => "FRONT_CAMERA_RESOLUTION",
+                "value_name" => "7 mpx"
             )
         )
     );
@@ -52,6 +106,7 @@ if($_GET['code']) {
 	echo '<pre>';
 	print_r($meli->post('/items', $item, array('access_token' => $_SESSION['access_token'])));
 	echo '</pre>';
+
 } else {
 
 	echo '<a href="' . $meli->getAuthUrl($redirectURI, Meli::$AUTH_URL['MLB']) . '">Login using MercadoLibre oAuth 2.0</a>';

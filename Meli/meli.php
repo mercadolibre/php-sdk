@@ -106,7 +106,7 @@ class Meli {
         if($request["httpCode"] == 200) {             
             $this->access_token = $request["body"]->access_token;
 
-            if($request["body"]->refresh_token)
+            if(isset($request["body"]->refresh_token) && !empty($request["body"]->refresh_token))
                 $this->refresh_token = $request["body"]->refresh_token;
 
             return $request;

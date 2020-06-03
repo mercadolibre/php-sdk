@@ -1,4 +1,4 @@
-# OpenAPI\Client\ItemsApi
+# Meli\ItemsApi
 
 All URIs are relative to *https://api.mercadolibre.com*
 
@@ -23,7 +23,7 @@ Return a Item.
 require_once(__DIR__ . '/vendor/autoload.php');
 
 
-$apiInstance = new OpenAPI\Client\Api\ItemsApi(
+$apiInstance = new Meli\Api\ItemsApi(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
     new GuzzleHttp\Client()
@@ -77,10 +77,10 @@ require_once(__DIR__ . '/vendor/autoload.php');
 
 
 // Configure OAuth2 access token for authorization: oAuth2AuthCode
-$config = OpenAPI\Client\Configuration::getDefaultConfiguration()->setAccessToken('YOUR_ACCESS_TOKEN');
+$config = Meli\Configuration::getDefaultConfiguration()->setAccessToken('YOUR_ACCESS_TOKEN');
 
 
-$apiInstance = new OpenAPI\Client\Api\ItemsApi(
+$apiInstance = new Meli\Api\ItemsApi(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
     new GuzzleHttp\Client(),
@@ -88,7 +88,7 @@ $apiInstance = new OpenAPI\Client\Api\ItemsApi(
 );
 $id = 'id_example'; // string | 
 $access_token = 'access_token_example'; // string | 
-$item = new \OpenAPI\Client\Model\Item(); // \OpenAPI\Client\Model\Item | 
+$item = new \Meli\Model\Item(); // \Meli\Model\Item | 
 
 try {
     $apiInstance->itemsIdPut($id, $access_token, $item);
@@ -105,7 +105,7 @@ Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **id** | **string**|  |
  **access_token** | **string**|  |
- **item** | [**\OpenAPI\Client\Model\Item**](../Model/Item.md)|  |
+ **item** | [**\Meli\Model\Item**](../Model/Item.md)|  |
 
 ### Return type
 
@@ -139,17 +139,17 @@ require_once(__DIR__ . '/vendor/autoload.php');
 
 
 // Configure OAuth2 access token for authorization: oAuth2AuthCode
-$config = OpenAPI\Client\Configuration::getDefaultConfiguration()->setAccessToken('YOUR_ACCESS_TOKEN');
+$config = Meli\Configuration::getDefaultConfiguration()->setAccessToken('YOUR_ACCESS_TOKEN');
 
 
-$apiInstance = new OpenAPI\Client\Api\ItemsApi(
+$apiInstance = new Meli\Api\ItemsApi(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
     new GuzzleHttp\Client(),
     $config
 );
 $access_token = 'access_token_example'; // string | 
-$item = new \OpenAPI\Client\Model\Item(); // \OpenAPI\Client\Model\Item | 
+$item = new \Meli\Model\Item(); // \Meli\Model\Item | 
 
 try {
     $apiInstance->itemsPost($access_token, $item);
@@ -165,7 +165,7 @@ try {
 Name | Type | Description  | Notes
 ------------- | ------------- | ------------- | -------------
  **access_token** | **string**|  |
- **item** | [**\OpenAPI\Client\Model\Item**](../Model/Item.md)|  |
+ **item** | [**\Meli\Model\Item**](../Model/Item.md)|  |
 
 ### Return type
 

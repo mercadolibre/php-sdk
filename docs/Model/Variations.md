@@ -5,7 +5,7 @@
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
 **price** | **int** |  | [optional] 
-**attribute_combinations** | [**\OpenAPI\Client\Model\VariationsAttributeCombinations[]**](VariationsAttributeCombinations.md) |  | [optional] 
+**attribute_combinations** | [**\Meli\Model\VariationsAttributeCombinations[]**](VariationsAttributeCombinations.md) |  | [optional] 
 **available_quantity** | **int** |  | [optional] 
 **sold_quantity** | **int** |  | [optional] 
 **picture_ids** | **string[]** |  | [optional] 

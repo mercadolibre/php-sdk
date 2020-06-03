@@ -8,8 +8,8 @@ Name | Type | Description | Notes
 **name** | **string** |  | [optional] 
 **value_id** | **string** |  | [optional] 
 **value_name** | **string** |  | [optional] 
-**value_struct** | [**\OpenAPI\Client\Model\AttributesValueStruct**](AttributesValueStruct.md) |  | [optional] 
-**values** | [**\OpenAPI\Client\Model\AttributesValues[]**](AttributesValues.md) |  | [optional] 
+**value_struct** | [**\Meli\Model\AttributesValueStruct**](AttributesValueStruct.md) |  | [optional] 
+**values** | [**\Meli\Model\AttributesValues[]**](AttributesValues.md) |  | [optional] 
 **attribute_group_id** | **string** |  | [optional] 
 **attribute_group_name** | **string** |  | [optional] 
 

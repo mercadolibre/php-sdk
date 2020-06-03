@@ -1,4 +1,4 @@
-# OpenAPI\Client\OAuth20Api
+# Meli\OAuth20Api
 
 All URIs are relative to *https://api.mercadolibre.com*
 
@@ -22,7 +22,7 @@ Authentication Endpoint
 require_once(__DIR__ . '/vendor/autoload.php');
 
 
-$apiInstance = new OpenAPI\Client\Api\OAuth20Api(
+$apiInstance = new Meli\Api\OAuth20Api(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
     new GuzzleHttp\Client()
@@ -68,7 +68,7 @@ No authorization required
 
 ## getToken
 
-> \OpenAPI\Client\Model\Token getToken($grant_type, $client_id, $client_secret, $redirect_uri, $code, $refresh_token)
+> \Meli\Model\Token getToken($grant_type, $client_id, $client_secret, $redirect_uri, $code, $refresh_token)
 
 Request Access Token
 
@@ -81,7 +81,7 @@ Partner makes a request to the token endpoint by adding the following parameters
 require_once(__DIR__ . '/vendor/autoload.php');
 
 
-$apiInstance = new OpenAPI\Client\Api\OAuth20Api(
+$apiInstance = new Meli\Api\OAuth20Api(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
     new GuzzleHttp\Client()
@@ -116,7 +116,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**\OpenAPI\Client\Model\Token**](../Model/Token.md)
+[**\Meli\Model\Token**](../Model/Token.md)
 
 ### Authorization
 

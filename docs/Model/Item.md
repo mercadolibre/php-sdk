@@ -4,8 +4,8 @@
 
 Name | Type | Description | Notes
 ------------ | ------------- | ------------- | -------------
-**title** | **int** |  | 
-**category_id** | **int** |  | 
+**title** | **string** |  | 
+**category_id** | **string** |  | 
 **price** | **int** |  | 
 **currency_id** | **string** |  | 
 **available_quantity** | **string** |  | 
@@ -15,9 +15,9 @@ Name | Type | Description | Notes
 **description** | **string** |  | 
 **video_id** | **string** |  | 
 **warranty** | **string** |  | 
-**pictures** | [**\OpenAPI\Client\Model\ItemPictures[]**](ItemPictures.md) |  | 
-**attributes** | [**\OpenAPI\Client\Model\Attributes[]**](Attributes.md) |  | [optional] 
-**variations** | [**\OpenAPI\Client\Model\Variations[]**](Variations.md) |  | [optional] 
+**pictures** | [**\Meli\Model\ItemPictures[]**](ItemPictures.md) |  | 
+**attributes** | [**\Meli\Model\Attributes[]**](Attributes.md) |  | [optional] 
+**variations** | [**\Meli\Model\Variations[]**](Variations.md) |  | [optional] 
 
 [[Back to Model list]](../../README.md#documentation-for-models) [[Back to API list]](../../README.md#documentation-for-api-endpoints) [[Back to README]](../../README.md)
 

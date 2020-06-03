@@ -1,4 +1,4 @@
-# OpenAPI\Client\ItemsHealthApi
+# Meli\ItemsHealthApi
 
 All URIs are relative to *https://api.mercadolibre.com*
 
@@ -23,7 +23,7 @@ Return item health actions by id.
 require_once(__DIR__ . '/vendor/autoload.php');
 
 
-$apiInstance = new OpenAPI\Client\Api\ItemsHealthApi(
+$apiInstance = new Meli\Api\ItemsHealthApi(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
     new GuzzleHttp\Client()
@@ -78,7 +78,7 @@ Return health by id.
 require_once(__DIR__ . '/vendor/autoload.php');
 
 
-$apiInstance = new OpenAPI\Client\Api\ItemsHealthApi(
+$apiInstance = new Meli\Api\ItemsHealthApi(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
     new GuzzleHttp\Client()
@@ -133,7 +133,7 @@ Return health levels.
 require_once(__DIR__ . '/vendor/autoload.php');
 
 
-$apiInstance = new OpenAPI\Client\Api\ItemsHealthApi(
+$apiInstance = new Meli\Api\ItemsHealthApi(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
     new GuzzleHttp\Client()

@@ -1,4 +1,4 @@
-# OpenAPI\Client\CategoriesApi
+# Meli\CategoriesApi
 
 All URIs are relative to *https://api.mercadolibre.com*
 
@@ -23,7 +23,7 @@ Return by category.
 require_once(__DIR__ . '/vendor/autoload.php');
 
 
-$apiInstance = new OpenAPI\Client\Api\CategoriesApi(
+$apiInstance = new Meli\Api\CategoriesApi(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
     new GuzzleHttp\Client()
@@ -76,7 +76,7 @@ Return a categories by site.
 require_once(__DIR__ . '/vendor/autoload.php');
 
 
-$apiInstance = new OpenAPI\Client\Api\CategoriesApi(
+$apiInstance = new Meli\Api\CategoriesApi(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
     new GuzzleHttp\Client()
@@ -129,7 +129,7 @@ Predictor
 require_once(__DIR__ . '/vendor/autoload.php');
 
 
-$apiInstance = new OpenAPI\Client\Api\CategoriesApi(
+$apiInstance = new Meli\Api\CategoriesApi(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
     new GuzzleHttp\Client()

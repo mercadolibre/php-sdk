@@ -73,6 +73,16 @@ class RestClientApiTest extends TestCase
     }
 
     /**
+     * Test case for resourceDelete
+     *
+     * Resource path DELETE.
+     *
+     */
+    public function testResourceDelete()
+    {
+    }
+
+    /**
      * Test case for resourceGet
      *
      * Resource path GET.

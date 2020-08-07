@@ -25,11 +25,11 @@ To install the bindings via [Composer](http://getcomposer.org/), add the followi
   "repositories": [
     {
       "type": "vcs",
-      "url": "https://github.com/GIT_USER_ID/GIT_REPO_ID.git"
+      "url": "https://github.com/mercadolibre/php-sdk.git"
     }
   ],
   "require": {
-    "GIT_USER_ID/GIT_REPO_ID": "*@dev"
+    "mercadolibre/php-sdk": "*@dev"
   }
 }
 ```
@@ -41,7 +41,7 @@ Then run `composer install`
 Download the files and include `autoload.php`:
 
 ```php
-    require_once('/path/to/OpenAPIClient-php/vendor/autoload.php');
+    require_once('/path-to-integration-folder/vendor/autoload.php');
 ```
 
 ## Tests

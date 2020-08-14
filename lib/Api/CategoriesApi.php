@@ -124,11 +124,12 @@ class CategoriesApi
      *
      * @throws \Meli\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return void
+     * @return AnyType
      */
     public function categoriesCategoryIdGet($category_id)
     {
-        $this->categoriesCategoryIdGetWithHttpInfo($category_id);
+        list($response) = $this->categoriesCategoryIdGetWithHttpInfo($category_id);
+        return $response;
     }
 
     /**
@@ -140,7 +141,7 @@ class CategoriesApi
      *
      * @throws \Meli\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return array of null, HTTP status code, HTTP response headers (array of strings)
+     * @return array of AnyType, HTTP status code, HTTP response headers (array of strings)
      */
     public function categoriesCategoryIdGetWithHttpInfo($category_id)
     {
@@ -174,10 +175,46 @@ class CategoriesApi
                 );
             }
 
-            return [null, $statusCode, $response->getHeaders()];
+            $responseBody = $response->getBody();
+            switch($statusCode) {
+                case 200:
+                    if ('AnyType' === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = (string) $responseBody;
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, 'AnyType', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+            }
+
+            $returnType = 'AnyType';
+            $responseBody = $response->getBody();
+            if ($returnType === '\SplFileObject') {
+                $content = $responseBody; //stream goes to serializer
+            } else {
+                $content = (string) $responseBody;
+            }
+
+            return [
+                ObjectSerializer::deserialize($content, $returnType, []),
+                $response->getStatusCode(),
+                $response->getHeaders()
+            ];
 
         } catch (ApiException $e) {
             switch ($e->getCode()) {
+                case 200:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        'AnyType',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
             }
             throw $e;
         }
@@ -215,14 +252,25 @@ class CategoriesApi
      */
     public function categoriesCategoryIdGetAsyncWithHttpInfo($category_id)
     {
-        $returnType = '';
+        $returnType = 'AnyType';
         $request = $this->categoriesCategoryIdGetRequest($category_id);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
             ->then(
                 function ($response) use ($returnType) {
-                    return [null, $response->getStatusCode(), $response->getHeaders()];
+                    $responseBody = $response->getBody();
+                    if ($returnType === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = (string) $responseBody;
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, $returnType, []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
                 },
                 function ($exception) {
                     $response = $exception->getResponse();
@@ -257,10 +305,6 @@ class CategoriesApi
                 'Missing the required parameter $category_id when calling categoriesCategoryIdGet'
             );
         }
-        if ($category_id < 1) {
-            throw new \InvalidArgumentException('invalid value for "$category_id" when calling CategoriesApi.categoriesCategoryIdGet, must be bigger than or equal to 1.');
-        }
-
 
         $resourcePath = '/categories/{category_id}';
         $formParams = [];
@@ -285,11 +329,11 @@ class CategoriesApi
 
         if ($multipart) {
             $headers = $this->headerSelector->selectHeadersForMultipart(
-                []
+                ['application/json']
             );
         } else {
             $headers = $this->headerSelector->selectHeaders(
-                [],
+                ['application/json'],
                 []
             );
         }
@@ -353,11 +397,12 @@ class CategoriesApi
      *
      * @throws \Meli\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return void
+     * @return AnyType
      */
     public function sitesSiteIdCategoriesGet($site_id)
     {
-        $this->sitesSiteIdCategoriesGetWithHttpInfo($site_id);
+        list($response) = $this->sitesSiteIdCategoriesGetWithHttpInfo($site_id);
+        return $response;
     }
 
     /**
@@ -369,7 +414,7 @@ class CategoriesApi
      *
      * @throws \Meli\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return array of null, HTTP status code, HTTP response headers (array of strings)
+     * @return array of AnyType, HTTP status code, HTTP response headers (array of strings)
      */
     public function sitesSiteIdCategoriesGetWithHttpInfo($site_id)
     {
@@ -403,10 +448,46 @@ class CategoriesApi
                 );
             }
 
-            return [null, $statusCode, $response->getHeaders()];
+            $responseBody = $response->getBody();
+            switch($statusCode) {
+                case 200:
+                    if ('AnyType' === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = (string) $responseBody;
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, 'AnyType', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+            }
+
+            $returnType = 'AnyType';
+            $responseBody = $response->getBody();
+            if ($returnType === '\SplFileObject') {
+                $content = $responseBody; //stream goes to serializer
+            } else {
+                $content = (string) $responseBody;
+            }
+
+            return [
+                ObjectSerializer::deserialize($content, $returnType, []),
+                $response->getStatusCode(),
+                $response->getHeaders()
+            ];
 
         } catch (ApiException $e) {
             switch ($e->getCode()) {
+                case 200:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        'AnyType',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
             }
             throw $e;
         }
@@ -444,14 +525,25 @@ class CategoriesApi
      */
     public function sitesSiteIdCategoriesGetAsyncWithHttpInfo($site_id)
     {
-        $returnType = '';
+        $returnType = 'AnyType';
         $request = $this->sitesSiteIdCategoriesGetRequest($site_id);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
             ->then(
                 function ($response) use ($returnType) {
-                    return [null, $response->getStatusCode(), $response->getHeaders()];
+                    $responseBody = $response->getBody();
+                    if ($returnType === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = (string) $responseBody;
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, $returnType, []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
                 },
                 function ($exception) {
                     $response = $exception->getResponse();
@@ -486,10 +578,6 @@ class CategoriesApi
                 'Missing the required parameter $site_id when calling sitesSiteIdCategoriesGet'
             );
         }
-        if ($site_id < 1) {
-            throw new \InvalidArgumentException('invalid value for "$site_id" when calling CategoriesApi.sitesSiteIdCategoriesGet, must be bigger than or equal to 1.');
-        }
-
 
         $resourcePath = '/sites/{site_id}/categories';
         $formParams = [];
@@ -514,11 +602,11 @@ class CategoriesApi
 
         if ($multipart) {
             $headers = $this->headerSelector->selectHeadersForMultipart(
-                []
+                ['application/json']
             );
         } else {
             $headers = $this->headerSelector->selectHeaders(
-                [],
+                ['application/json'],
                 []
             );
         }
@@ -584,11 +672,12 @@ class CategoriesApi
      *
      * @throws \Meli\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return void
+     * @return AnyType
      */
     public function sitesSiteIdDomainDiscoverySearchGet($site_id, $q, $limit)
     {
-        $this->sitesSiteIdDomainDiscoverySearchGetWithHttpInfo($site_id, $q, $limit);
+        list($response) = $this->sitesSiteIdDomainDiscoverySearchGetWithHttpInfo($site_id, $q, $limit);
+        return $response;
     }
 
     /**
@@ -602,7 +691,7 @@ class CategoriesApi
      *
      * @throws \Meli\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return array of null, HTTP status code, HTTP response headers (array of strings)
+     * @return array of AnyType, HTTP status code, HTTP response headers (array of strings)
      */
     public function sitesSiteIdDomainDiscoverySearchGetWithHttpInfo($site_id, $q, $limit)
     {
@@ -636,10 +725,46 @@ class CategoriesApi
                 );
             }
 
-            return [null, $statusCode, $response->getHeaders()];
+            $responseBody = $response->getBody();
+            switch($statusCode) {
+                case 200:
+                    if ('AnyType' === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = (string) $responseBody;
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, 'AnyType', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+            }
+
+            $returnType = 'AnyType';
+            $responseBody = $response->getBody();
+            if ($returnType === '\SplFileObject') {
+                $content = $responseBody; //stream goes to serializer
+            } else {
+                $content = (string) $responseBody;
+            }
+
+            return [
+                ObjectSerializer::deserialize($content, $returnType, []),
+                $response->getStatusCode(),
+                $response->getHeaders()
+            ];
 
         } catch (ApiException $e) {
             switch ($e->getCode()) {
+                case 200:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        'AnyType',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
             }
             throw $e;
         }
@@ -681,14 +806,25 @@ class CategoriesApi
      */
     public function sitesSiteIdDomainDiscoverySearchGetAsyncWithHttpInfo($site_id, $q, $limit)
     {
-        $returnType = '';
+        $returnType = 'AnyType';
         $request = $this->sitesSiteIdDomainDiscoverySearchGetRequest($site_id, $q, $limit);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
             ->then(
                 function ($response) use ($returnType) {
-                    return [null, $response->getStatusCode(), $response->getHeaders()];
+                    $responseBody = $response->getBody();
+                    if ($returnType === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = (string) $responseBody;
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, $returnType, []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
                 },
                 function ($exception) {
                     $response = $exception->getResponse();
@@ -725,30 +861,18 @@ class CategoriesApi
                 'Missing the required parameter $site_id when calling sitesSiteIdDomainDiscoverySearchGet'
             );
         }
-        if ($site_id < 1) {
-            throw new \InvalidArgumentException('invalid value for "$site_id" when calling CategoriesApi.sitesSiteIdDomainDiscoverySearchGet, must be bigger than or equal to 1.');
-        }
-
         // verify the required parameter 'q' is set
         if ($q === null || (is_array($q) && count($q) === 0)) {
             throw new \InvalidArgumentException(
                 'Missing the required parameter $q when calling sitesSiteIdDomainDiscoverySearchGet'
             );
         }
-        if ($q < 1) {
-            throw new \InvalidArgumentException('invalid value for "$q" when calling CategoriesApi.sitesSiteIdDomainDiscoverySearchGet, must be bigger than or equal to 1.');
-        }
-
         // verify the required parameter 'limit' is set
         if ($limit === null || (is_array($limit) && count($limit) === 0)) {
             throw new \InvalidArgumentException(
                 'Missing the required parameter $limit when calling sitesSiteIdDomainDiscoverySearchGet'
             );
         }
-        if ($limit < 1) {
-            throw new \InvalidArgumentException('invalid value for "$limit" when calling CategoriesApi.sitesSiteIdDomainDiscoverySearchGet, must be bigger than or equal to 1.');
-        }
-
 
         $resourcePath = '/sites/{site_id}/domain_discovery/search';
         $formParams = [];
@@ -795,11 +919,11 @@ class CategoriesApi
 
         if ($multipart) {
             $headers = $this->headerSelector->selectHeadersForMultipart(
-                []
+                ['application/json']
             );
         } else {
             $headers = $this->headerSelector->selectHeaders(
-                [],
+                ['application/json'],
                 []
             );
         }

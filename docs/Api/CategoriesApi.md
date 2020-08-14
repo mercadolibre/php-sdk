@@ -12,7 +12,7 @@ Method | HTTP request | Description
 
 ## categoriesCategoryIdGet
 
-> categoriesCategoryIdGet($category_id)
+> AnyType categoriesCategoryIdGet($category_id)
 
 Return by category.
 
@@ -31,7 +31,8 @@ $apiInstance = new Meli\Api\CategoriesApi(
 $category_id = 'category_id_example'; // string | 
 
 try {
-    $apiInstance->categoriesCategoryIdGet($category_id);
+    $result = $apiInstance->categoriesCategoryIdGet($category_id);
+    print_r($result);
 } catch (Exception $e) {
     echo 'Exception when calling CategoriesApi->categoriesCategoryIdGet: ', $e->getMessage(), PHP_EOL;
 }
@@ -47,7 +48,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-void (empty response body)
+[**AnyType**](../Model/AnyType.md)
 
 ### Authorization
 
@@ -56,7 +57,7 @@ No authorization required
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: Not defined
+- **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../../README.md#documentation-for-models)
@@ -65,7 +66,7 @@ No authorization required
 
 ## sitesSiteIdCategoriesGet
 
-> sitesSiteIdCategoriesGet($site_id)
+> AnyType sitesSiteIdCategoriesGet($site_id)
 
 Return a categories by site.
 
@@ -84,7 +85,8 @@ $apiInstance = new Meli\Api\CategoriesApi(
 $site_id = 'site_id_example'; // string | 
 
 try {
-    $apiInstance->sitesSiteIdCategoriesGet($site_id);
+    $result = $apiInstance->sitesSiteIdCategoriesGet($site_id);
+    print_r($result);
 } catch (Exception $e) {
     echo 'Exception when calling CategoriesApi->sitesSiteIdCategoriesGet: ', $e->getMessage(), PHP_EOL;
 }
@@ -100,7 +102,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-void (empty response body)
+[**AnyType**](../Model/AnyType.md)
 
 ### Authorization
 
@@ -109,7 +111,7 @@ No authorization required
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: Not defined
+- **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../../README.md#documentation-for-models)
@@ -118,7 +120,7 @@ No authorization required
 
 ## sitesSiteIdDomainDiscoverySearchGet
 
-> sitesSiteIdDomainDiscoverySearchGet($site_id, $q, $limit)
+> AnyType sitesSiteIdDomainDiscoverySearchGet($site_id, $q, $limit)
 
 Predictor
 
@@ -139,7 +141,8 @@ $q = 'q_example'; // string |
 $limit = 'limit_example'; // string | 
 
 try {
-    $apiInstance->sitesSiteIdDomainDiscoverySearchGet($site_id, $q, $limit);
+    $result = $apiInstance->sitesSiteIdDomainDiscoverySearchGet($site_id, $q, $limit);
+    print_r($result);
 } catch (Exception $e) {
     echo 'Exception when calling CategoriesApi->sitesSiteIdDomainDiscoverySearchGet: ', $e->getMessage(), PHP_EOL;
 }
@@ -157,7 +160,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-void (empty response body)
+[**AnyType**](../Model/AnyType.md)
 
 ### Authorization
 
@@ -166,7 +169,7 @@ No authorization required
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: Not defined
+- **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../../README.md#documentation-for-models)

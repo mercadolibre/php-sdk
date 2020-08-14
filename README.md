@@ -59,26 +59,97 @@ composer install
 <?php
 require_once(__DIR__ . '/vendor/autoload.php');
 
-$apiInstance = new Meli\Api\CategoriesApi(
+$config = new Meli\Configuration();
+$servers = $config->getHostSettings();
+// Auth URLs Options by country
+
+// 1:  "https://auth.mercadolibre.com.ar"
+// 2:  "https://auth.mercadolivre.com.br"
+// 3:  "https://auth.mercadolibre.com.co"
+// 4:  "https://auth.mercadolibre.com.mx"
+// 5:  "https://auth.mercadolibre.com.uy"
+// 6:  "https://auth.mercadolibre.cl"
+// 7:  "https://auth.mercadolibre.com.cr"
+// 8:  "https://auth.mercadolibre.com.ec"
+// 9:  "https://auth.mercadolibre.com.ve"
+// 10: "https://auth.mercadolibre.com.pa"
+// 11: "https://auth.mercadolibre.com.pe"
+// 12: "https://auth.mercadolibre.com.do"
+// 13: "https://auth.mercadolibre.com.bo"
+// 14: "https://auth.mercadolibre.com.py"
+
+// Use the correct auth URL
+$config->setHost($servers[1]["url"]);
+
+// Or Print all URLs
+print_r($servers);
+
+// Or Print or Put the following URL in your browser window to obtain authorization:
+// 
+// http://auth.mercadolibre.com.ar/authorization?response_type=code&client_id=$APP_ID&redirect_uri=$YOUR_URL
+?>
+```
+
+This will give you the url to redirect the user. You need to specify a callback url which will be the one that the user will redirected after a successfull authrization process.
+
+Once the user is redirected to your callback url, you'll receive in the query string, a parameter named code. You'll need this for the second part of the process
+
+
+## Examples for OAuth - get token
+```php
+<?php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+
+$apiInstance = new Meli\Api\OAuth20Api(
     // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
     // This is optional, `GuzzleHttp\Client` will be used as default.
     new GuzzleHttp\Client()
 );
-$category_id = 'category_id_example'; // string | 
+$grant_type = 'grant_type_example'; // string | 
+$client_id = 'client_id_example'; // string | 
+$client_secret = 'client_secret_example'; // string | 
+$redirect_uri = 'redirect_uri_example'; // string | 
+$code = 'code_example'; // string | 
+$refresh_token = 'refresh_token_example'; // string | 
 
 try {
-    $apiInstance->categoriesCategoryIdGet($category_id);
+    $apiInstance->getToken($grant_type, $client_id, $client_secret, $redirect_uri, $code, $refresh_token);
 } catch (Exception $e) {
-    echo 'Exception when calling CategoriesApi->categoriesCategoryIdGet: ', $e->getMessage(), PHP_EOL;
+    echo 'Exception when calling OAuth20Api->getToken: ', $e->getMessage(), PHP_EOL;
 }
 ?>
 ```
+
+## Example using the RestClient with a POST Item
+```php
+<?php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+
+$apiInstance = new Meli\Api\RestClientApi(
+    // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
+    // This is optional, `GuzzleHttp\Client` will be used as default.
+    new GuzzleHttp\Client()
+);
+$resource = 'resource_example'; // string | for example: items
+$access_token = 'access_token_example'; // string | 
+$body = new \stdClass; // object | 
+
+try {
+    $apiInstance->resourcePost($resource, $access_token, $body);
+} catch (Exception $e) {
+    echo 'Exception when calling RestClientApi->resourcePost: ', $e->getMessage(), PHP_EOL;
+}
+?>
+```
+
 
 ## Documentation & Important notes
 
 ##### The URIs are relative to https://api.mercadolibre.com
 
-##### The Authorization URL: https://auth.mercadolibre.com.ar/authorization
+##### The Authorization URLs (set the correct country domain): https://auth.mercadolibre.{country_domain}
 
 #####  All docs for the library are located [here](https://github.com/mercadolibre/php-sdk/tree/master/docs)
 

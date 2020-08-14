@@ -12,7 +12,7 @@ Method | HTTP request | Description
 
 ## itemsIdHealthActionsGet
 
-> itemsIdHealthActionsGet($id, $access_token)
+> AnyType itemsIdHealthActionsGet($id, $access_token)
 
 Return item health actions by id.
 
@@ -32,7 +32,8 @@ $id = 'id_example'; // string |
 $access_token = 'access_token_example'; // string | 
 
 try {
-    $apiInstance->itemsIdHealthActionsGet($id, $access_token);
+    $result = $apiInstance->itemsIdHealthActionsGet($id, $access_token);
+    print_r($result);
 } catch (Exception $e) {
     echo 'Exception when calling ItemsHealthApi->itemsIdHealthActionsGet: ', $e->getMessage(), PHP_EOL;
 }
@@ -49,7 +50,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-void (empty response body)
+[**AnyType**](../Model/AnyType.md)
 
 ### Authorization
 
@@ -58,7 +59,7 @@ No authorization required
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: Not defined
+- **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../../README.md#documentation-for-models)
@@ -67,7 +68,7 @@ No authorization required
 
 ## itemsIdHealthGet
 
-> itemsIdHealthGet($id, $access_token)
+> AnyType itemsIdHealthGet($id, $access_token)
 
 Return health by id.
 
@@ -87,7 +88,8 @@ $id = 'id_example'; // string |
 $access_token = 'access_token_example'; // string | 
 
 try {
-    $apiInstance->itemsIdHealthGet($id, $access_token);
+    $result = $apiInstance->itemsIdHealthGet($id, $access_token);
+    print_r($result);
 } catch (Exception $e) {
     echo 'Exception when calling ItemsHealthApi->itemsIdHealthGet: ', $e->getMessage(), PHP_EOL;
 }
@@ -104,7 +106,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-void (empty response body)
+[**AnyType**](../Model/AnyType.md)
 
 ### Authorization
 
@@ -113,7 +115,7 @@ No authorization required
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: Not defined
+- **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../../README.md#documentation-for-models)
@@ -122,7 +124,7 @@ No authorization required
 
 ## sitesSiteIdHealthLevelsGet
 
-> sitesSiteIdHealthLevelsGet($site_id)
+> AnyType sitesSiteIdHealthLevelsGet($site_id)
 
 Return health levels.
 
@@ -141,7 +143,8 @@ $apiInstance = new Meli\Api\ItemsHealthApi(
 $site_id = 'site_id_example'; // string | 
 
 try {
-    $apiInstance->sitesSiteIdHealthLevelsGet($site_id);
+    $result = $apiInstance->sitesSiteIdHealthLevelsGet($site_id);
+    print_r($result);
 } catch (Exception $e) {
     echo 'Exception when calling ItemsHealthApi->sitesSiteIdHealthLevelsGet: ', $e->getMessage(), PHP_EOL;
 }
@@ -157,7 +160,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-void (empty response body)
+[**AnyType**](../Model/AnyType.md)
 
 ### Authorization
 
@@ -166,7 +169,7 @@ No authorization required
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: Not defined
+- **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../../README.md#documentation-for-models)

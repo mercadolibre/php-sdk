@@ -124,11 +124,12 @@ class ItemsApi
      *
      * @throws \Meli\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return void
+     * @return AnyType
      */
     public function itemsIdGet($id)
     {
-        $this->itemsIdGetWithHttpInfo($id);
+        list($response) = $this->itemsIdGetWithHttpInfo($id);
+        return $response;
     }
 
     /**
@@ -140,7 +141,7 @@ class ItemsApi
      *
      * @throws \Meli\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return array of null, HTTP status code, HTTP response headers (array of strings)
+     * @return array of AnyType, HTTP status code, HTTP response headers (array of strings)
      */
     public function itemsIdGetWithHttpInfo($id)
     {
@@ -174,10 +175,46 @@ class ItemsApi
                 );
             }
 
-            return [null, $statusCode, $response->getHeaders()];
+            $responseBody = $response->getBody();
+            switch($statusCode) {
+                case 200:
+                    if ('AnyType' === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = (string) $responseBody;
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, 'AnyType', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+            }
+
+            $returnType = 'AnyType';
+            $responseBody = $response->getBody();
+            if ($returnType === '\SplFileObject') {
+                $content = $responseBody; //stream goes to serializer
+            } else {
+                $content = (string) $responseBody;
+            }
+
+            return [
+                ObjectSerializer::deserialize($content, $returnType, []),
+                $response->getStatusCode(),
+                $response->getHeaders()
+            ];
 
         } catch (ApiException $e) {
             switch ($e->getCode()) {
+                case 200:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        'AnyType',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
             }
             throw $e;
         }
@@ -215,14 +252,25 @@ class ItemsApi
      */
     public function itemsIdGetAsyncWithHttpInfo($id)
     {
-        $returnType = '';
+        $returnType = 'AnyType';
         $request = $this->itemsIdGetRequest($id);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
             ->then(
                 function ($response) use ($returnType) {
-                    return [null, $response->getStatusCode(), $response->getHeaders()];
+                    $responseBody = $response->getBody();
+                    if ($returnType === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = (string) $responseBody;
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, $returnType, []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
                 },
                 function ($exception) {
                     $response = $exception->getResponse();
@@ -257,10 +305,6 @@ class ItemsApi
                 'Missing the required parameter $id when calling itemsIdGet'
             );
         }
-        if ($id < 1) {
-            throw new \InvalidArgumentException('invalid value for "$id" when calling ItemsApi.itemsIdGet, must be bigger than or equal to 1.');
-        }
-
 
         $resourcePath = '/items/{id}';
         $formParams = [];
@@ -285,11 +329,11 @@ class ItemsApi
 
         if ($multipart) {
             $headers = $this->headerSelector->selectHeadersForMultipart(
-                []
+                ['application/json']
             );
         } else {
             $headers = $this->headerSelector->selectHeaders(
-                [],
+                ['application/json'],
                 []
             );
         }
@@ -355,11 +399,12 @@ class ItemsApi
      *
      * @throws \Meli\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return void
+     * @return AnyType
      */
     public function itemsIdPut($id, $access_token, $item)
     {
-        $this->itemsIdPutWithHttpInfo($id, $access_token, $item);
+        list($response) = $this->itemsIdPutWithHttpInfo($id, $access_token, $item);
+        return $response;
     }
 
     /**
@@ -373,7 +418,7 @@ class ItemsApi
      *
      * @throws \Meli\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return array of null, HTTP status code, HTTP response headers (array of strings)
+     * @return array of AnyType, HTTP status code, HTTP response headers (array of strings)
      */
     public function itemsIdPutWithHttpInfo($id, $access_token, $item)
     {
@@ -407,10 +452,46 @@ class ItemsApi
                 );
             }
 
-            return [null, $statusCode, $response->getHeaders()];
+            $responseBody = $response->getBody();
+            switch($statusCode) {
+                case 200:
+                    if ('AnyType' === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = (string) $responseBody;
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, 'AnyType', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+            }
+
+            $returnType = 'AnyType';
+            $responseBody = $response->getBody();
+            if ($returnType === '\SplFileObject') {
+                $content = $responseBody; //stream goes to serializer
+            } else {
+                $content = (string) $responseBody;
+            }
+
+            return [
+                ObjectSerializer::deserialize($content, $returnType, []),
+                $response->getStatusCode(),
+                $response->getHeaders()
+            ];
 
         } catch (ApiException $e) {
             switch ($e->getCode()) {
+                case 200:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        'AnyType',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
             }
             throw $e;
         }
@@ -452,14 +533,25 @@ class ItemsApi
      */
     public function itemsIdPutAsyncWithHttpInfo($id, $access_token, $item)
     {
-        $returnType = '';
+        $returnType = 'AnyType';
         $request = $this->itemsIdPutRequest($id, $access_token, $item);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
             ->then(
                 function ($response) use ($returnType) {
-                    return [null, $response->getStatusCode(), $response->getHeaders()];
+                    $responseBody = $response->getBody();
+                    if ($returnType === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = (string) $responseBody;
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, $returnType, []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
                 },
                 function ($exception) {
                     $response = $exception->getResponse();
@@ -496,20 +588,12 @@ class ItemsApi
                 'Missing the required parameter $id when calling itemsIdPut'
             );
         }
-        if ($id < 1) {
-            throw new \InvalidArgumentException('invalid value for "$id" when calling ItemsApi.itemsIdPut, must be bigger than or equal to 1.');
-        }
-
         // verify the required parameter 'access_token' is set
         if ($access_token === null || (is_array($access_token) && count($access_token) === 0)) {
             throw new \InvalidArgumentException(
                 'Missing the required parameter $access_token when calling itemsIdPut'
             );
         }
-        if ($access_token < 1) {
-            throw new \InvalidArgumentException('invalid value for "$access_token" when calling ItemsApi.itemsIdPut, must be bigger than or equal to 1.');
-        }
-
         // verify the required parameter 'item' is set
         if ($item === null || (is_array($item) && count($item) === 0)) {
             throw new \InvalidArgumentException(
@@ -554,11 +638,11 @@ class ItemsApi
 
         if ($multipart) {
             $headers = $this->headerSelector->selectHeadersForMultipart(
-                []
+                ['application/json']
             );
         } else {
             $headers = $this->headerSelector->selectHeaders(
-                [],
+                ['application/json'],
                 ['application/json']
             );
         }
@@ -623,11 +707,12 @@ class ItemsApi
      *
      * @throws \Meli\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return void
+     * @return AnyType
      */
     public function itemsPost($access_token, $item)
     {
-        $this->itemsPostWithHttpInfo($access_token, $item);
+        list($response) = $this->itemsPostWithHttpInfo($access_token, $item);
+        return $response;
     }
 
     /**
@@ -640,7 +725,7 @@ class ItemsApi
      *
      * @throws \Meli\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return array of null, HTTP status code, HTTP response headers (array of strings)
+     * @return array of AnyType, HTTP status code, HTTP response headers (array of strings)
      */
     public function itemsPostWithHttpInfo($access_token, $item)
     {
@@ -674,10 +759,46 @@ class ItemsApi
                 );
             }
 
-            return [null, $statusCode, $response->getHeaders()];
+            $responseBody = $response->getBody();
+            switch($statusCode) {
+                case 200:
+                    if ('AnyType' === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = (string) $responseBody;
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, 'AnyType', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+            }
+
+            $returnType = 'AnyType';
+            $responseBody = $response->getBody();
+            if ($returnType === '\SplFileObject') {
+                $content = $responseBody; //stream goes to serializer
+            } else {
+                $content = (string) $responseBody;
+            }
+
+            return [
+                ObjectSerializer::deserialize($content, $returnType, []),
+                $response->getStatusCode(),
+                $response->getHeaders()
+            ];
 
         } catch (ApiException $e) {
             switch ($e->getCode()) {
+                case 200:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        'AnyType',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
             }
             throw $e;
         }
@@ -717,14 +838,25 @@ class ItemsApi
      */
     public function itemsPostAsyncWithHttpInfo($access_token, $item)
     {
-        $returnType = '';
+        $returnType = 'AnyType';
         $request = $this->itemsPostRequest($access_token, $item);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
             ->then(
                 function ($response) use ($returnType) {
-                    return [null, $response->getStatusCode(), $response->getHeaders()];
+                    $responseBody = $response->getBody();
+                    if ($returnType === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = (string) $responseBody;
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, $returnType, []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
                 },
                 function ($exception) {
                     $response = $exception->getResponse();
@@ -760,10 +892,6 @@ class ItemsApi
                 'Missing the required parameter $access_token when calling itemsPost'
             );
         }
-        if ($access_token < 1) {
-            throw new \InvalidArgumentException('invalid value for "$access_token" when calling ItemsApi.itemsPost, must be bigger than or equal to 1.');
-        }
-
         // verify the required parameter 'item' is set
         if ($item === null || (is_array($item) && count($item) === 0)) {
             throw new \InvalidArgumentException(
@@ -800,11 +928,11 @@ class ItemsApi
 
         if ($multipart) {
             $headers = $this->headerSelector->selectHeadersForMultipart(
-                []
+                ['application/json']
             );
         } else {
             $headers = $this->headerSelector->selectHeaders(
-                [],
+                ['application/json'],
                 ['application/json']
             );
         }

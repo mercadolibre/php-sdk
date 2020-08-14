@@ -125,11 +125,12 @@ class RestClientApi
      *
      * @throws \Meli\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return void
+     * @return AnyType
      */
     public function resourceDelete($resource, $access_token)
     {
-        $this->resourceDeleteWithHttpInfo($resource, $access_token);
+        list($response) = $this->resourceDeleteWithHttpInfo($resource, $access_token);
+        return $response;
     }
 
     /**
@@ -142,7 +143,7 @@ class RestClientApi
      *
      * @throws \Meli\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return array of null, HTTP status code, HTTP response headers (array of strings)
+     * @return array of AnyType, HTTP status code, HTTP response headers (array of strings)
      */
     public function resourceDeleteWithHttpInfo($resource, $access_token)
     {
@@ -176,10 +177,46 @@ class RestClientApi
                 );
             }
 
-            return [null, $statusCode, $response->getHeaders()];
+            $responseBody = $response->getBody();
+            switch($statusCode) {
+                case 200:
+                    if ('AnyType' === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = (string) $responseBody;
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, 'AnyType', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+            }
+
+            $returnType = 'AnyType';
+            $responseBody = $response->getBody();
+            if ($returnType === '\SplFileObject') {
+                $content = $responseBody; //stream goes to serializer
+            } else {
+                $content = (string) $responseBody;
+            }
+
+            return [
+                ObjectSerializer::deserialize($content, $returnType, []),
+                $response->getStatusCode(),
+                $response->getHeaders()
+            ];
 
         } catch (ApiException $e) {
             switch ($e->getCode()) {
+                case 200:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        'AnyType',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
             }
             throw $e;
         }
@@ -219,14 +256,25 @@ class RestClientApi
      */
     public function resourceDeleteAsyncWithHttpInfo($resource, $access_token)
     {
-        $returnType = '';
+        $returnType = 'AnyType';
         $request = $this->resourceDeleteRequest($resource, $access_token);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
             ->then(
                 function ($response) use ($returnType) {
-                    return [null, $response->getStatusCode(), $response->getHeaders()];
+                    $responseBody = $response->getBody();
+                    if ($returnType === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = (string) $responseBody;
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, $returnType, []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
                 },
                 function ($exception) {
                     $response = $exception->getResponse();
@@ -262,20 +310,12 @@ class RestClientApi
                 'Missing the required parameter $resource when calling resourceDelete'
             );
         }
-        if ($resource < 1) {
-            throw new \InvalidArgumentException('invalid value for "$resource" when calling RestClientApi.resourceDelete, must be bigger than or equal to 1.');
-        }
-
         // verify the required parameter 'access_token' is set
         if ($access_token === null || (is_array($access_token) && count($access_token) === 0)) {
             throw new \InvalidArgumentException(
                 'Missing the required parameter $access_token when calling resourceDelete'
             );
         }
-        if ($access_token < 1) {
-            throw new \InvalidArgumentException('invalid value for "$access_token" when calling RestClientApi.resourceDelete, must be bigger than or equal to 1.');
-        }
-
 
         $resourcePath = '/{resource}';
         $formParams = [];
@@ -311,11 +351,11 @@ class RestClientApi
 
         if ($multipart) {
             $headers = $this->headerSelector->selectHeadersForMultipart(
-                []
+                ['application/json']
             );
         } else {
             $headers = $this->headerSelector->selectHeaders(
-                [],
+                ['application/json'],
                 []
             );
         }
@@ -380,11 +420,12 @@ class RestClientApi
      *
      * @throws \Meli\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return void
+     * @return AnyType
      */
     public function resourceGet($resource, $access_token)
     {
-        $this->resourceGetWithHttpInfo($resource, $access_token);
+        list($response) = $this->resourceGetWithHttpInfo($resource, $access_token);
+        return $response;
     }
 
     /**
@@ -397,7 +438,7 @@ class RestClientApi
      *
      * @throws \Meli\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return array of null, HTTP status code, HTTP response headers (array of strings)
+     * @return array of AnyType, HTTP status code, HTTP response headers (array of strings)
      */
     public function resourceGetWithHttpInfo($resource, $access_token)
     {
@@ -431,10 +472,46 @@ class RestClientApi
                 );
             }
 
-            return [null, $statusCode, $response->getHeaders()];
+            $responseBody = $response->getBody();
+            switch($statusCode) {
+                case 200:
+                    if ('AnyType' === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = (string) $responseBody;
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, 'AnyType', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+            }
+
+            $returnType = 'AnyType';
+            $responseBody = $response->getBody();
+            if ($returnType === '\SplFileObject') {
+                $content = $responseBody; //stream goes to serializer
+            } else {
+                $content = (string) $responseBody;
+            }
+
+            return [
+                ObjectSerializer::deserialize($content, $returnType, []),
+                $response->getStatusCode(),
+                $response->getHeaders()
+            ];
 
         } catch (ApiException $e) {
             switch ($e->getCode()) {
+                case 200:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        'AnyType',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
             }
             throw $e;
         }
@@ -474,14 +551,25 @@ class RestClientApi
      */
     public function resourceGetAsyncWithHttpInfo($resource, $access_token)
     {
-        $returnType = '';
+        $returnType = 'AnyType';
         $request = $this->resourceGetRequest($resource, $access_token);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
             ->then(
                 function ($response) use ($returnType) {
-                    return [null, $response->getStatusCode(), $response->getHeaders()];
+                    $responseBody = $response->getBody();
+                    if ($returnType === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = (string) $responseBody;
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, $returnType, []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
                 },
                 function ($exception) {
                     $response = $exception->getResponse();
@@ -517,20 +605,12 @@ class RestClientApi
                 'Missing the required parameter $resource when calling resourceGet'
             );
         }
-        if ($resource < 1) {
-            throw new \InvalidArgumentException('invalid value for "$resource" when calling RestClientApi.resourceGet, must be bigger than or equal to 1.');
-        }
-
         // verify the required parameter 'access_token' is set
         if ($access_token === null || (is_array($access_token) && count($access_token) === 0)) {
             throw new \InvalidArgumentException(
                 'Missing the required parameter $access_token when calling resourceGet'
             );
         }
-        if ($access_token < 1) {
-            throw new \InvalidArgumentException('invalid value for "$access_token" when calling RestClientApi.resourceGet, must be bigger than or equal to 1.');
-        }
-
 
         $resourcePath = '/{resource}';
         $formParams = [];
@@ -566,11 +646,11 @@ class RestClientApi
 
         if ($multipart) {
             $headers = $this->headerSelector->selectHeadersForMultipart(
-                []
+                ['application/json']
             );
         } else {
             $headers = $this->headerSelector->selectHeaders(
-                [],
+                ['application/json'],
                 []
             );
         }
@@ -636,11 +716,12 @@ class RestClientApi
      *
      * @throws \Meli\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return void
+     * @return AnyType
      */
     public function resourcePost($resource, $access_token, $body)
     {
-        $this->resourcePostWithHttpInfo($resource, $access_token, $body);
+        list($response) = $this->resourcePostWithHttpInfo($resource, $access_token, $body);
+        return $response;
     }
 
     /**
@@ -654,7 +735,7 @@ class RestClientApi
      *
      * @throws \Meli\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return array of null, HTTP status code, HTTP response headers (array of strings)
+     * @return array of AnyType, HTTP status code, HTTP response headers (array of strings)
      */
     public function resourcePostWithHttpInfo($resource, $access_token, $body)
     {
@@ -688,10 +769,46 @@ class RestClientApi
                 );
             }
 
-            return [null, $statusCode, $response->getHeaders()];
+            $responseBody = $response->getBody();
+            switch($statusCode) {
+                case 200:
+                    if ('AnyType' === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = (string) $responseBody;
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, 'AnyType', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+            }
+
+            $returnType = 'AnyType';
+            $responseBody = $response->getBody();
+            if ($returnType === '\SplFileObject') {
+                $content = $responseBody; //stream goes to serializer
+            } else {
+                $content = (string) $responseBody;
+            }
+
+            return [
+                ObjectSerializer::deserialize($content, $returnType, []),
+                $response->getStatusCode(),
+                $response->getHeaders()
+            ];
 
         } catch (ApiException $e) {
             switch ($e->getCode()) {
+                case 200:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        'AnyType',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
             }
             throw $e;
         }
@@ -733,14 +850,25 @@ class RestClientApi
      */
     public function resourcePostAsyncWithHttpInfo($resource, $access_token, $body)
     {
-        $returnType = '';
+        $returnType = 'AnyType';
         $request = $this->resourcePostRequest($resource, $access_token, $body);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
             ->then(
                 function ($response) use ($returnType) {
-                    return [null, $response->getStatusCode(), $response->getHeaders()];
+                    $responseBody = $response->getBody();
+                    if ($returnType === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = (string) $responseBody;
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, $returnType, []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
                 },
                 function ($exception) {
                     $response = $exception->getResponse();
@@ -777,20 +905,12 @@ class RestClientApi
                 'Missing the required parameter $resource when calling resourcePost'
             );
         }
-        if ($resource < 1) {
-            throw new \InvalidArgumentException('invalid value for "$resource" when calling RestClientApi.resourcePost, must be bigger than or equal to 1.');
-        }
-
         // verify the required parameter 'access_token' is set
         if ($access_token === null || (is_array($access_token) && count($access_token) === 0)) {
             throw new \InvalidArgumentException(
                 'Missing the required parameter $access_token when calling resourcePost'
             );
         }
-        if ($access_token < 1) {
-            throw new \InvalidArgumentException('invalid value for "$access_token" when calling RestClientApi.resourcePost, must be bigger than or equal to 1.');
-        }
-
         // verify the required parameter 'body' is set
         if ($body === null || (is_array($body) && count($body) === 0)) {
             throw new \InvalidArgumentException(
@@ -835,11 +955,11 @@ class RestClientApi
 
         if ($multipart) {
             $headers = $this->headerSelector->selectHeadersForMultipart(
-                []
+                ['application/json']
             );
         } else {
             $headers = $this->headerSelector->selectHeaders(
-                [],
+                ['application/json'],
                 ['application/json']
             );
         }
@@ -905,11 +1025,12 @@ class RestClientApi
      *
      * @throws \Meli\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return void
+     * @return AnyType
      */
     public function resourcePut($resource, $access_token, $body)
     {
-        $this->resourcePutWithHttpInfo($resource, $access_token, $body);
+        list($response) = $this->resourcePutWithHttpInfo($resource, $access_token, $body);
+        return $response;
     }
 
     /**
@@ -923,7 +1044,7 @@ class RestClientApi
      *
      * @throws \Meli\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return array of null, HTTP status code, HTTP response headers (array of strings)
+     * @return array of AnyType, HTTP status code, HTTP response headers (array of strings)
      */
     public function resourcePutWithHttpInfo($resource, $access_token, $body)
     {
@@ -957,10 +1078,46 @@ class RestClientApi
                 );
             }
 
-            return [null, $statusCode, $response->getHeaders()];
+            $responseBody = $response->getBody();
+            switch($statusCode) {
+                case 200:
+                    if ('AnyType' === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = (string) $responseBody;
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, 'AnyType', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+            }
+
+            $returnType = 'AnyType';
+            $responseBody = $response->getBody();
+            if ($returnType === '\SplFileObject') {
+                $content = $responseBody; //stream goes to serializer
+            } else {
+                $content = (string) $responseBody;
+            }
+
+            return [
+                ObjectSerializer::deserialize($content, $returnType, []),
+                $response->getStatusCode(),
+                $response->getHeaders()
+            ];
 
         } catch (ApiException $e) {
             switch ($e->getCode()) {
+                case 200:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        'AnyType',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
             }
             throw $e;
         }
@@ -1002,14 +1159,25 @@ class RestClientApi
      */
     public function resourcePutAsyncWithHttpInfo($resource, $access_token, $body)
     {
-        $returnType = '';
+        $returnType = 'AnyType';
         $request = $this->resourcePutRequest($resource, $access_token, $body);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
             ->then(
                 function ($response) use ($returnType) {
-                    return [null, $response->getStatusCode(), $response->getHeaders()];
+                    $responseBody = $response->getBody();
+                    if ($returnType === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = (string) $responseBody;
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, $returnType, []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
                 },
                 function ($exception) {
                     $response = $exception->getResponse();
@@ -1046,20 +1214,12 @@ class RestClientApi
                 'Missing the required parameter $resource when calling resourcePut'
             );
         }
-        if ($resource < 1) {
-            throw new \InvalidArgumentException('invalid value for "$resource" when calling RestClientApi.resourcePut, must be bigger than or equal to 1.');
-        }
-
         // verify the required parameter 'access_token' is set
         if ($access_token === null || (is_array($access_token) && count($access_token) === 0)) {
             throw new \InvalidArgumentException(
                 'Missing the required parameter $access_token when calling resourcePut'
             );
         }
-        if ($access_token < 1) {
-            throw new \InvalidArgumentException('invalid value for "$access_token" when calling RestClientApi.resourcePut, must be bigger than or equal to 1.');
-        }
-
         // verify the required parameter 'body' is set
         if ($body === null || (is_array($body) && count($body) === 0)) {
             throw new \InvalidArgumentException(
@@ -1104,11 +1264,11 @@ class RestClientApi
 
         if ($multipart) {
             $headers = $this->headerSelector->selectHeadersForMultipart(
-                []
+                ['application/json']
             );
         } else {
             $headers = $this->headerSelector->selectHeaders(
-                [],
+                ['application/json'],
                 ['application/json']
             );
         }

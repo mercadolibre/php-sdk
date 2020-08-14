@@ -59,7 +59,7 @@ No authorization required
 ### HTTP request headers
 
 - **Content-Type**: Not defined
-- **Accept**: Not defined
+- **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../../README.md#documentation-for-models)
@@ -68,7 +68,7 @@ No authorization required
 
 ## getToken
 
-> getToken($grant_type, $client_id, $client_secret, $redirect_uri, $code, $refresh_token)
+> AnyType getToken($grant_type, $client_id, $client_secret, $redirect_uri, $code, $refresh_token)
 
 Request Access Token
 
@@ -94,7 +94,8 @@ $code = 'code_example'; // string |
 $refresh_token = 'refresh_token_example'; // string | 
 
 try {
-    $apiInstance->getToken($grant_type, $client_id, $client_secret, $redirect_uri, $code, $refresh_token);
+    $result = $apiInstance->getToken($grant_type, $client_id, $client_secret, $redirect_uri, $code, $refresh_token);
+    print_r($result);
 } catch (Exception $e) {
     echo 'Exception when calling OAuth20Api->getToken: ', $e->getMessage(), PHP_EOL;
 }
@@ -115,7 +116,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-void (empty response body)
+[**AnyType**](../Model/AnyType.md)
 
 ### Authorization
 
@@ -124,7 +125,7 @@ No authorization required
 ### HTTP request headers
 
 - **Content-Type**: application/x-www-form-urlencoded
-- **Accept**: Not defined
+- **Accept**: application/json
 
 [[Back to top]](#) [[Back to API list]](../../README.md#documentation-for-api-endpoints)
 [[Back to Model list]](../../README.md#documentation-for-models)

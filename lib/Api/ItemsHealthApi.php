@@ -125,11 +125,12 @@ class ItemsHealthApi
      *
      * @throws \Meli\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return void
+     * @return AnyType
      */
     public function itemsIdHealthActionsGet($id, $access_token)
     {
-        $this->itemsIdHealthActionsGetWithHttpInfo($id, $access_token);
+        list($response) = $this->itemsIdHealthActionsGetWithHttpInfo($id, $access_token);
+        return $response;
     }
 
     /**
@@ -142,7 +143,7 @@ class ItemsHealthApi
      *
      * @throws \Meli\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return array of null, HTTP status code, HTTP response headers (array of strings)
+     * @return array of AnyType, HTTP status code, HTTP response headers (array of strings)
      */
     public function itemsIdHealthActionsGetWithHttpInfo($id, $access_token)
     {
@@ -176,10 +177,46 @@ class ItemsHealthApi
                 );
             }
 
-            return [null, $statusCode, $response->getHeaders()];
+            $responseBody = $response->getBody();
+            switch($statusCode) {
+                case 200:
+                    if ('AnyType' === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = (string) $responseBody;
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, 'AnyType', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+            }
+
+            $returnType = 'AnyType';
+            $responseBody = $response->getBody();
+            if ($returnType === '\SplFileObject') {
+                $content = $responseBody; //stream goes to serializer
+            } else {
+                $content = (string) $responseBody;
+            }
+
+            return [
+                ObjectSerializer::deserialize($content, $returnType, []),
+                $response->getStatusCode(),
+                $response->getHeaders()
+            ];
 
         } catch (ApiException $e) {
             switch ($e->getCode()) {
+                case 200:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        'AnyType',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
             }
             throw $e;
         }
@@ -219,14 +256,25 @@ class ItemsHealthApi
      */
     public function itemsIdHealthActionsGetAsyncWithHttpInfo($id, $access_token)
     {
-        $returnType = '';
+        $returnType = 'AnyType';
         $request = $this->itemsIdHealthActionsGetRequest($id, $access_token);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
             ->then(
                 function ($response) use ($returnType) {
-                    return [null, $response->getStatusCode(), $response->getHeaders()];
+                    $responseBody = $response->getBody();
+                    if ($returnType === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = (string) $responseBody;
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, $returnType, []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
                 },
                 function ($exception) {
                     $response = $exception->getResponse();
@@ -262,20 +310,12 @@ class ItemsHealthApi
                 'Missing the required parameter $id when calling itemsIdHealthActionsGet'
             );
         }
-        if ($id < 1) {
-            throw new \InvalidArgumentException('invalid value for "$id" when calling ItemsHealthApi.itemsIdHealthActionsGet, must be bigger than or equal to 1.');
-        }
-
         // verify the required parameter 'access_token' is set
         if ($access_token === null || (is_array($access_token) && count($access_token) === 0)) {
             throw new \InvalidArgumentException(
                 'Missing the required parameter $access_token when calling itemsIdHealthActionsGet'
             );
         }
-        if ($access_token < 1) {
-            throw new \InvalidArgumentException('invalid value for "$access_token" when calling ItemsHealthApi.itemsIdHealthActionsGet, must be bigger than or equal to 1.');
-        }
-
 
         $resourcePath = '/items/{id}/health/actions';
         $formParams = [];
@@ -311,11 +351,11 @@ class ItemsHealthApi
 
         if ($multipart) {
             $headers = $this->headerSelector->selectHeadersForMultipart(
-                []
+                ['application/json']
             );
         } else {
             $headers = $this->headerSelector->selectHeaders(
-                [],
+                ['application/json'],
                 []
             );
         }
@@ -380,11 +420,12 @@ class ItemsHealthApi
      *
      * @throws \Meli\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return void
+     * @return AnyType
      */
     public function itemsIdHealthGet($id, $access_token)
     {
-        $this->itemsIdHealthGetWithHttpInfo($id, $access_token);
+        list($response) = $this->itemsIdHealthGetWithHttpInfo($id, $access_token);
+        return $response;
     }
 
     /**
@@ -397,7 +438,7 @@ class ItemsHealthApi
      *
      * @throws \Meli\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return array of null, HTTP status code, HTTP response headers (array of strings)
+     * @return array of AnyType, HTTP status code, HTTP response headers (array of strings)
      */
     public function itemsIdHealthGetWithHttpInfo($id, $access_token)
     {
@@ -431,10 +472,46 @@ class ItemsHealthApi
                 );
             }
 
-            return [null, $statusCode, $response->getHeaders()];
+            $responseBody = $response->getBody();
+            switch($statusCode) {
+                case 200:
+                    if ('AnyType' === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = (string) $responseBody;
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, 'AnyType', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+            }
+
+            $returnType = 'AnyType';
+            $responseBody = $response->getBody();
+            if ($returnType === '\SplFileObject') {
+                $content = $responseBody; //stream goes to serializer
+            } else {
+                $content = (string) $responseBody;
+            }
+
+            return [
+                ObjectSerializer::deserialize($content, $returnType, []),
+                $response->getStatusCode(),
+                $response->getHeaders()
+            ];
 
         } catch (ApiException $e) {
             switch ($e->getCode()) {
+                case 200:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        'AnyType',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
             }
             throw $e;
         }
@@ -474,14 +551,25 @@ class ItemsHealthApi
      */
     public function itemsIdHealthGetAsyncWithHttpInfo($id, $access_token)
     {
-        $returnType = '';
+        $returnType = 'AnyType';
         $request = $this->itemsIdHealthGetRequest($id, $access_token);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
             ->then(
                 function ($response) use ($returnType) {
-                    return [null, $response->getStatusCode(), $response->getHeaders()];
+                    $responseBody = $response->getBody();
+                    if ($returnType === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = (string) $responseBody;
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, $returnType, []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
                 },
                 function ($exception) {
                     $response = $exception->getResponse();
@@ -517,20 +605,12 @@ class ItemsHealthApi
                 'Missing the required parameter $id when calling itemsIdHealthGet'
             );
         }
-        if ($id < 1) {
-            throw new \InvalidArgumentException('invalid value for "$id" when calling ItemsHealthApi.itemsIdHealthGet, must be bigger than or equal to 1.');
-        }
-
         // verify the required parameter 'access_token' is set
         if ($access_token === null || (is_array($access_token) && count($access_token) === 0)) {
             throw new \InvalidArgumentException(
                 'Missing the required parameter $access_token when calling itemsIdHealthGet'
             );
         }
-        if ($access_token < 1) {
-            throw new \InvalidArgumentException('invalid value for "$access_token" when calling ItemsHealthApi.itemsIdHealthGet, must be bigger than or equal to 1.');
-        }
-
 
         $resourcePath = '/items/{id}/health';
         $formParams = [];
@@ -566,11 +646,11 @@ class ItemsHealthApi
 
         if ($multipart) {
             $headers = $this->headerSelector->selectHeadersForMultipart(
-                []
+                ['application/json']
             );
         } else {
             $headers = $this->headerSelector->selectHeaders(
-                [],
+                ['application/json'],
                 []
             );
         }
@@ -634,11 +714,12 @@ class ItemsHealthApi
      *
      * @throws \Meli\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return void
+     * @return AnyType
      */
     public function sitesSiteIdHealthLevelsGet($site_id)
     {
-        $this->sitesSiteIdHealthLevelsGetWithHttpInfo($site_id);
+        list($response) = $this->sitesSiteIdHealthLevelsGetWithHttpInfo($site_id);
+        return $response;
     }
 
     /**
@@ -650,7 +731,7 @@ class ItemsHealthApi
      *
      * @throws \Meli\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return array of null, HTTP status code, HTTP response headers (array of strings)
+     * @return array of AnyType, HTTP status code, HTTP response headers (array of strings)
      */
     public function sitesSiteIdHealthLevelsGetWithHttpInfo($site_id)
     {
@@ -684,10 +765,46 @@ class ItemsHealthApi
                 );
             }
 
-            return [null, $statusCode, $response->getHeaders()];
+            $responseBody = $response->getBody();
+            switch($statusCode) {
+                case 200:
+                    if ('AnyType' === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = (string) $responseBody;
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, 'AnyType', []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
+            }
+
+            $returnType = 'AnyType';
+            $responseBody = $response->getBody();
+            if ($returnType === '\SplFileObject') {
+                $content = $responseBody; //stream goes to serializer
+            } else {
+                $content = (string) $responseBody;
+            }
+
+            return [
+                ObjectSerializer::deserialize($content, $returnType, []),
+                $response->getStatusCode(),
+                $response->getHeaders()
+            ];
 
         } catch (ApiException $e) {
             switch ($e->getCode()) {
+                case 200:
+                    $data = ObjectSerializer::deserialize(
+                        $e->getResponseBody(),
+                        'AnyType',
+                        $e->getResponseHeaders()
+                    );
+                    $e->setResponseObject($data);
+                    break;
             }
             throw $e;
         }
@@ -725,14 +842,25 @@ class ItemsHealthApi
      */
     public function sitesSiteIdHealthLevelsGetAsyncWithHttpInfo($site_id)
     {
-        $returnType = '';
+        $returnType = 'AnyType';
         $request = $this->sitesSiteIdHealthLevelsGetRequest($site_id);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
             ->then(
                 function ($response) use ($returnType) {
-                    return [null, $response->getStatusCode(), $response->getHeaders()];
+                    $responseBody = $response->getBody();
+                    if ($returnType === '\SplFileObject') {
+                        $content = $responseBody; //stream goes to serializer
+                    } else {
+                        $content = (string) $responseBody;
+                    }
+
+                    return [
+                        ObjectSerializer::deserialize($content, $returnType, []),
+                        $response->getStatusCode(),
+                        $response->getHeaders()
+                    ];
                 },
                 function ($exception) {
                     $response = $exception->getResponse();
@@ -767,10 +895,6 @@ class ItemsHealthApi
                 'Missing the required parameter $site_id when calling sitesSiteIdHealthLevelsGet'
             );
         }
-        if ($site_id < 1) {
-            throw new \InvalidArgumentException('invalid value for "$site_id" when calling ItemsHealthApi.sitesSiteIdHealthLevelsGet, must be bigger than or equal to 1.');
-        }
-
 
         $resourcePath = '/sites/{site_id}/health_levels';
         $formParams = [];
@@ -795,11 +919,11 @@ class ItemsHealthApi
 
         if ($multipart) {
             $headers = $this->headerSelector->selectHeadersForMultipart(
-                []
+                ['application/json']
             );
         } else {
             $headers = $this->headerSelector->selectHeaders(
-                [],
+                ['application/json'],
                 []
             );
         }

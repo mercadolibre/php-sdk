@@ -13,7 +13,7 @@ Method | HTTP request | Description
 
 ## resourceDelete
 
-> AnyType resourceDelete($resource, $access_token)
+> object resourceDelete($resource, $access_token)
 
 Resource path DELETE
 
@@ -51,7 +51,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**AnyType**](../Model/AnyType.md)
+**object**
 
 ### Authorization
 
@@ -69,7 +69,7 @@ No authorization required
 
 ## resourceGet
 
-> AnyType resourceGet($resource, $access_token)
+> object resourceGet($resource, $access_token)
 
 Resource path GET
 
@@ -107,7 +107,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**AnyType**](../Model/AnyType.md)
+**object**
 
 ### Authorization
 
@@ -125,7 +125,7 @@ No authorization required
 
 ## resourcePost
 
-> AnyType resourcePost($resource, $access_token, $body)
+> object resourcePost($resource, $access_token, $body)
 
 Resourse path POST
 
@@ -165,7 +165,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**AnyType**](../Model/AnyType.md)
+**object**
 
 ### Authorization
 
@@ -183,7 +183,7 @@ No authorization required
 
 ## resourcePut
 
-> AnyType resourcePut($resource, $access_token, $body)
+> object resourcePut($resource, $access_token, $body)
 
 Resourse path PUT
 
@@ -223,7 +223,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**AnyType**](../Model/AnyType.md)
+**object**
 
 ### Authorization
 

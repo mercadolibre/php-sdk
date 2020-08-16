@@ -68,7 +68,7 @@ No authorization required
 
 ## getToken
 
-> AnyType getToken($grant_type, $client_id, $client_secret, $redirect_uri, $code, $refresh_token)
+> object getToken($grant_type, $client_id, $client_secret, $redirect_uri, $code, $refresh_token)
 
 Request Access Token
 
@@ -116,7 +116,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**AnyType**](../Model/AnyType.md)
+**object**
 
 ### Authorization
 

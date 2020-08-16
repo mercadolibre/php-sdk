@@ -125,7 +125,7 @@ class RestClientApi
      *
      * @throws \Meli\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return AnyType
+     * @return object
      */
     public function resourceDelete($resource, $access_token)
     {
@@ -143,7 +143,7 @@ class RestClientApi
      *
      * @throws \Meli\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return array of AnyType, HTTP status code, HTTP response headers (array of strings)
+     * @return array of object, HTTP status code, HTTP response headers (array of strings)
      */
     public function resourceDeleteWithHttpInfo($resource, $access_token)
     {
@@ -180,20 +180,20 @@ class RestClientApi
             $responseBody = $response->getBody();
             switch($statusCode) {
                 case 200:
-                    if ('AnyType' === '\SplFileObject') {
+                    if ('object' === '\SplFileObject') {
                         $content = $responseBody; //stream goes to serializer
                     } else {
                         $content = (string) $responseBody;
                     }
 
                     return [
-                        ObjectSerializer::deserialize($content, 'AnyType', []),
+                        ObjectSerializer::deserialize($content, 'object', []),
                         $response->getStatusCode(),
                         $response->getHeaders()
                     ];
             }
 
-            $returnType = 'AnyType';
+            $returnType = 'object';
             $responseBody = $response->getBody();
             if ($returnType === '\SplFileObject') {
                 $content = $responseBody; //stream goes to serializer
@@ -212,7 +212,7 @@ class RestClientApi
                 case 200:
                     $data = ObjectSerializer::deserialize(
                         $e->getResponseBody(),
-                        'AnyType',
+                        'object',
                         $e->getResponseHeaders()
                     );
                     $e->setResponseObject($data);
@@ -256,7 +256,7 @@ class RestClientApi
      */
     public function resourceDeleteAsyncWithHttpInfo($resource, $access_token)
     {
-        $returnType = 'AnyType';
+        $returnType = 'object';
         $request = $this->resourceDeleteRequest($resource, $access_token);
 
         return $this->client
@@ -420,7 +420,7 @@ class RestClientApi
      *
      * @throws \Meli\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return AnyType
+     * @return object
      */
     public function resourceGet($resource, $access_token)
     {
@@ -438,7 +438,7 @@ class RestClientApi
      *
      * @throws \Meli\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return array of AnyType, HTTP status code, HTTP response headers (array of strings)
+     * @return array of object, HTTP status code, HTTP response headers (array of strings)
      */
     public function resourceGetWithHttpInfo($resource, $access_token)
     {
@@ -475,20 +475,20 @@ class RestClientApi
             $responseBody = $response->getBody();
             switch($statusCode) {
                 case 200:
-                    if ('AnyType' === '\SplFileObject') {
+                    if ('object' === '\SplFileObject') {
                         $content = $responseBody; //stream goes to serializer
                     } else {
                         $content = (string) $responseBody;
                     }
 
                     return [
-                        ObjectSerializer::deserialize($content, 'AnyType', []),
+                        ObjectSerializer::deserialize($content, 'object', []),
                         $response->getStatusCode(),
                         $response->getHeaders()
                     ];
             }
 
-            $returnType = 'AnyType';
+            $returnType = 'object';
             $responseBody = $response->getBody();
             if ($returnType === '\SplFileObject') {
                 $content = $responseBody; //stream goes to serializer
@@ -507,7 +507,7 @@ class RestClientApi
                 case 200:
                     $data = ObjectSerializer::deserialize(
                         $e->getResponseBody(),
-                        'AnyType',
+                        'object',
                         $e->getResponseHeaders()
                     );
                     $e->setResponseObject($data);
@@ -551,7 +551,7 @@ class RestClientApi
      */
     public function resourceGetAsyncWithHttpInfo($resource, $access_token)
     {
-        $returnType = 'AnyType';
+        $returnType = 'object';
         $request = $this->resourceGetRequest($resource, $access_token);
 
         return $this->client
@@ -716,7 +716,7 @@ class RestClientApi
      *
      * @throws \Meli\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return AnyType
+     * @return object
      */
     public function resourcePost($resource, $access_token, $body)
     {
@@ -735,7 +735,7 @@ class RestClientApi
      *
      * @throws \Meli\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return array of AnyType, HTTP status code, HTTP response headers (array of strings)
+     * @return array of object, HTTP status code, HTTP response headers (array of strings)
      */
     public function resourcePostWithHttpInfo($resource, $access_token, $body)
     {
@@ -772,20 +772,20 @@ class RestClientApi
             $responseBody = $response->getBody();
             switch($statusCode) {
                 case 200:
-                    if ('AnyType' === '\SplFileObject') {
+                    if ('object' === '\SplFileObject') {
                         $content = $responseBody; //stream goes to serializer
                     } else {
                         $content = (string) $responseBody;
                     }
 
                     return [
-                        ObjectSerializer::deserialize($content, 'AnyType', []),
+                        ObjectSerializer::deserialize($content, 'object', []),
                         $response->getStatusCode(),
                         $response->getHeaders()
                     ];
             }
 
-            $returnType = 'AnyType';
+            $returnType = 'object';
             $responseBody = $response->getBody();
             if ($returnType === '\SplFileObject') {
                 $content = $responseBody; //stream goes to serializer
@@ -804,7 +804,7 @@ class RestClientApi
                 case 200:
                     $data = ObjectSerializer::deserialize(
                         $e->getResponseBody(),
-                        'AnyType',
+                        'object',
                         $e->getResponseHeaders()
                     );
                     $e->setResponseObject($data);
@@ -850,7 +850,7 @@ class RestClientApi
      */
     public function resourcePostAsyncWithHttpInfo($resource, $access_token, $body)
     {
-        $returnType = 'AnyType';
+        $returnType = 'object';
         $request = $this->resourcePostRequest($resource, $access_token, $body);
 
         return $this->client
@@ -1025,7 +1025,7 @@ class RestClientApi
      *
      * @throws \Meli\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return AnyType
+     * @return object
      */
     public function resourcePut($resource, $access_token, $body)
     {
@@ -1044,7 +1044,7 @@ class RestClientApi
      *
      * @throws \Meli\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return array of AnyType, HTTP status code, HTTP response headers (array of strings)
+     * @return array of object, HTTP status code, HTTP response headers (array of strings)
      */
     public function resourcePutWithHttpInfo($resource, $access_token, $body)
     {
@@ -1081,20 +1081,20 @@ class RestClientApi
             $responseBody = $response->getBody();
             switch($statusCode) {
                 case 200:
-                    if ('AnyType' === '\SplFileObject') {
+                    if ('object' === '\SplFileObject') {
                         $content = $responseBody; //stream goes to serializer
                     } else {
                         $content = (string) $responseBody;
                     }
 
                     return [
-                        ObjectSerializer::deserialize($content, 'AnyType', []),
+                        ObjectSerializer::deserialize($content, 'object', []),
                         $response->getStatusCode(),
                         $response->getHeaders()
                     ];
             }
 
-            $returnType = 'AnyType';
+            $returnType = 'object';
             $responseBody = $response->getBody();
             if ($returnType === '\SplFileObject') {
                 $content = $responseBody; //stream goes to serializer
@@ -1113,7 +1113,7 @@ class RestClientApi
                 case 200:
                     $data = ObjectSerializer::deserialize(
                         $e->getResponseBody(),
-                        'AnyType',
+                        'object',
                         $e->getResponseHeaders()
                     );
                     $e->setResponseObject($data);
@@ -1159,7 +1159,7 @@ class RestClientApi
      */
     public function resourcePutAsyncWithHttpInfo($resource, $access_token, $body)
     {
-        $returnType = 'AnyType';
+        $returnType = 'object';
         $request = $this->resourcePutRequest($resource, $access_token, $body);
 
         return $this->client

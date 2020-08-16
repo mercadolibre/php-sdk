@@ -185,7 +185,7 @@ class OAuth20Api
                 case 302:
                     $data = ObjectSerializer::deserialize(
                         $e->getResponseBody(),
-                        'AnyType',
+                        'object',
                         $e->getResponseHeaders()
                     );
                     $e->setResponseObject($data);
@@ -409,7 +409,7 @@ class OAuth20Api
      *
      * @throws \Meli\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return AnyType
+     * @return object
      */
     public function getToken($grant_type = null, $client_id = null, $client_secret = null, $redirect_uri = null, $code = null, $refresh_token = null)
     {
@@ -431,7 +431,7 @@ class OAuth20Api
      *
      * @throws \Meli\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return array of AnyType, HTTP status code, HTTP response headers (array of strings)
+     * @return array of object, HTTP status code, HTTP response headers (array of strings)
      */
     public function getTokenWithHttpInfo($grant_type = null, $client_id = null, $client_secret = null, $redirect_uri = null, $code = null, $refresh_token = null)
     {
@@ -468,20 +468,20 @@ class OAuth20Api
             $responseBody = $response->getBody();
             switch($statusCode) {
                 case 200:
-                    if ('AnyType' === '\SplFileObject') {
+                    if ('object' === '\SplFileObject') {
                         $content = $responseBody; //stream goes to serializer
                     } else {
                         $content = (string) $responseBody;
                     }
 
                     return [
-                        ObjectSerializer::deserialize($content, 'AnyType', []),
+                        ObjectSerializer::deserialize($content, 'object', []),
                         $response->getStatusCode(),
                         $response->getHeaders()
                     ];
             }
 
-            $returnType = 'AnyType';
+            $returnType = 'object';
             $responseBody = $response->getBody();
             if ($returnType === '\SplFileObject') {
                 $content = $responseBody; //stream goes to serializer
@@ -500,7 +500,7 @@ class OAuth20Api
                 case 200:
                     $data = ObjectSerializer::deserialize(
                         $e->getResponseBody(),
-                        'AnyType',
+                        'object',
                         $e->getResponseHeaders()
                     );
                     $e->setResponseObject($data);
@@ -552,7 +552,7 @@ class OAuth20Api
      */
     public function getTokenAsyncWithHttpInfo($grant_type = null, $client_id = null, $client_secret = null, $redirect_uri = null, $code = null, $refresh_token = null)
     {
-        $returnType = 'AnyType';
+        $returnType = 'object';
         $request = $this->getTokenRequest($grant_type, $client_id, $client_secret, $redirect_uri, $code, $refresh_token);
 
         return $this->client

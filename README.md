@@ -106,15 +106,16 @@ $apiInstance = new Meli\Api\OAuth20Api(
     // This is optional, `GuzzleHttp\Client` will be used as default.
     new GuzzleHttp\Client()
 );
-$grant_type = 'grant_type_example'; // string | 
-$client_id = 'client_id_example'; // string | 
-$client_secret = 'client_secret_example'; // string | 
-$redirect_uri = 'redirect_uri_example'; // string | 
-$code = 'code_example'; // string | 
-$refresh_token = 'refresh_token_example'; // string | 
+$grant_type = 'authorization_code';
+$client_id = 'client_id_example'; // Your client_id
+$client_secret = 'client_secret_example'; // Your client_secret
+$redirect_uri = 'redirect_uri_example'; // Your redirect_uri
+$code = 'code_example'; // The parameter CODE
+$refresh_token = 'refresh_token_example'; // Your refresh_token
 
 try {
-    $apiInstance->getToken($grant_type, $client_id, $client_secret, $redirect_uri, $code, $refresh_token);
+    $result = $apiInstance->getToken($grant_type, $client_id, $client_secret, $redirect_uri, $code, $refresh_token);
+    print_r($result);
 } catch (Exception $e) {
     echo 'Exception when calling OAuth20Api->getToken: ', $e->getMessage(), PHP_EOL;
 }

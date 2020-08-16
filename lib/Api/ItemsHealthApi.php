@@ -125,7 +125,7 @@ class ItemsHealthApi
      *
      * @throws \Meli\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return AnyType
+     * @return object
      */
     public function itemsIdHealthActionsGet($id, $access_token)
     {
@@ -143,7 +143,7 @@ class ItemsHealthApi
      *
      * @throws \Meli\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return array of AnyType, HTTP status code, HTTP response headers (array of strings)
+     * @return array of object, HTTP status code, HTTP response headers (array of strings)
      */
     public function itemsIdHealthActionsGetWithHttpInfo($id, $access_token)
     {
@@ -180,20 +180,20 @@ class ItemsHealthApi
             $responseBody = $response->getBody();
             switch($statusCode) {
                 case 200:
-                    if ('AnyType' === '\SplFileObject') {
+                    if ('object' === '\SplFileObject') {
                         $content = $responseBody; //stream goes to serializer
                     } else {
                         $content = (string) $responseBody;
                     }
 
                     return [
-                        ObjectSerializer::deserialize($content, 'AnyType', []),
+                        ObjectSerializer::deserialize($content, 'object', []),
                         $response->getStatusCode(),
                         $response->getHeaders()
                     ];
             }
 
-            $returnType = 'AnyType';
+            $returnType = 'object';
             $responseBody = $response->getBody();
             if ($returnType === '\SplFileObject') {
                 $content = $responseBody; //stream goes to serializer
@@ -212,7 +212,7 @@ class ItemsHealthApi
                 case 200:
                     $data = ObjectSerializer::deserialize(
                         $e->getResponseBody(),
-                        'AnyType',
+                        'object',
                         $e->getResponseHeaders()
                     );
                     $e->setResponseObject($data);
@@ -256,7 +256,7 @@ class ItemsHealthApi
      */
     public function itemsIdHealthActionsGetAsyncWithHttpInfo($id, $access_token)
     {
-        $returnType = 'AnyType';
+        $returnType = 'object';
         $request = $this->itemsIdHealthActionsGetRequest($id, $access_token);
 
         return $this->client
@@ -420,7 +420,7 @@ class ItemsHealthApi
      *
      * @throws \Meli\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return AnyType
+     * @return object
      */
     public function itemsIdHealthGet($id, $access_token)
     {
@@ -438,7 +438,7 @@ class ItemsHealthApi
      *
      * @throws \Meli\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return array of AnyType, HTTP status code, HTTP response headers (array of strings)
+     * @return array of object, HTTP status code, HTTP response headers (array of strings)
      */
     public function itemsIdHealthGetWithHttpInfo($id, $access_token)
     {
@@ -475,20 +475,20 @@ class ItemsHealthApi
             $responseBody = $response->getBody();
             switch($statusCode) {
                 case 200:
-                    if ('AnyType' === '\SplFileObject') {
+                    if ('object' === '\SplFileObject') {
                         $content = $responseBody; //stream goes to serializer
                     } else {
                         $content = (string) $responseBody;
                     }
 
                     return [
-                        ObjectSerializer::deserialize($content, 'AnyType', []),
+                        ObjectSerializer::deserialize($content, 'object', []),
                         $response->getStatusCode(),
                         $response->getHeaders()
                     ];
             }
 
-            $returnType = 'AnyType';
+            $returnType = 'object';
             $responseBody = $response->getBody();
             if ($returnType === '\SplFileObject') {
                 $content = $responseBody; //stream goes to serializer
@@ -507,7 +507,7 @@ class ItemsHealthApi
                 case 200:
                     $data = ObjectSerializer::deserialize(
                         $e->getResponseBody(),
-                        'AnyType',
+                        'object',
                         $e->getResponseHeaders()
                     );
                     $e->setResponseObject($data);
@@ -551,7 +551,7 @@ class ItemsHealthApi
      */
     public function itemsIdHealthGetAsyncWithHttpInfo($id, $access_token)
     {
-        $returnType = 'AnyType';
+        $returnType = 'object';
         $request = $this->itemsIdHealthGetRequest($id, $access_token);
 
         return $this->client
@@ -714,7 +714,7 @@ class ItemsHealthApi
      *
      * @throws \Meli\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return AnyType
+     * @return object
      */
     public function sitesSiteIdHealthLevelsGet($site_id)
     {
@@ -731,7 +731,7 @@ class ItemsHealthApi
      *
      * @throws \Meli\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return array of AnyType, HTTP status code, HTTP response headers (array of strings)
+     * @return array of object, HTTP status code, HTTP response headers (array of strings)
      */
     public function sitesSiteIdHealthLevelsGetWithHttpInfo($site_id)
     {
@@ -768,20 +768,20 @@ class ItemsHealthApi
             $responseBody = $response->getBody();
             switch($statusCode) {
                 case 200:
-                    if ('AnyType' === '\SplFileObject') {
+                    if ('object' === '\SplFileObject') {
                         $content = $responseBody; //stream goes to serializer
                     } else {
                         $content = (string) $responseBody;
                     }
 
                     return [
-                        ObjectSerializer::deserialize($content, 'AnyType', []),
+                        ObjectSerializer::deserialize($content, 'object', []),
                         $response->getStatusCode(),
                         $response->getHeaders()
                     ];
             }
 
-            $returnType = 'AnyType';
+            $returnType = 'object';
             $responseBody = $response->getBody();
             if ($returnType === '\SplFileObject') {
                 $content = $responseBody; //stream goes to serializer
@@ -800,7 +800,7 @@ class ItemsHealthApi
                 case 200:
                     $data = ObjectSerializer::deserialize(
                         $e->getResponseBody(),
-                        'AnyType',
+                        'object',
                         $e->getResponseHeaders()
                     );
                     $e->setResponseObject($data);
@@ -842,7 +842,7 @@ class ItemsHealthApi
      */
     public function sitesSiteIdHealthLevelsGetAsyncWithHttpInfo($site_id)
     {
-        $returnType = 'AnyType';
+        $returnType = 'object';
         $request = $this->sitesSiteIdHealthLevelsGetRequest($site_id);
 
         return $this->client

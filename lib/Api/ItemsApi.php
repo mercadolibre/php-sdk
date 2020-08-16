@@ -124,7 +124,7 @@ class ItemsApi
      *
      * @throws \Meli\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return AnyType
+     * @return object
      */
     public function itemsIdGet($id)
     {
@@ -141,7 +141,7 @@ class ItemsApi
      *
      * @throws \Meli\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return array of AnyType, HTTP status code, HTTP response headers (array of strings)
+     * @return array of object, HTTP status code, HTTP response headers (array of strings)
      */
     public function itemsIdGetWithHttpInfo($id)
     {
@@ -178,20 +178,20 @@ class ItemsApi
             $responseBody = $response->getBody();
             switch($statusCode) {
                 case 200:
-                    if ('AnyType' === '\SplFileObject') {
+                    if ('object' === '\SplFileObject') {
                         $content = $responseBody; //stream goes to serializer
                     } else {
                         $content = (string) $responseBody;
                     }
 
                     return [
-                        ObjectSerializer::deserialize($content, 'AnyType', []),
+                        ObjectSerializer::deserialize($content, 'object', []),
                         $response->getStatusCode(),
                         $response->getHeaders()
                     ];
             }
 
-            $returnType = 'AnyType';
+            $returnType = 'object';
             $responseBody = $response->getBody();
             if ($returnType === '\SplFileObject') {
                 $content = $responseBody; //stream goes to serializer
@@ -210,7 +210,7 @@ class ItemsApi
                 case 200:
                     $data = ObjectSerializer::deserialize(
                         $e->getResponseBody(),
-                        'AnyType',
+                        'object',
                         $e->getResponseHeaders()
                     );
                     $e->setResponseObject($data);
@@ -252,7 +252,7 @@ class ItemsApi
      */
     public function itemsIdGetAsyncWithHttpInfo($id)
     {
-        $returnType = 'AnyType';
+        $returnType = 'object';
         $request = $this->itemsIdGetRequest($id);
 
         return $this->client
@@ -399,7 +399,7 @@ class ItemsApi
      *
      * @throws \Meli\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return AnyType
+     * @return object
      */
     public function itemsIdPut($id, $access_token, $item)
     {
@@ -418,7 +418,7 @@ class ItemsApi
      *
      * @throws \Meli\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return array of AnyType, HTTP status code, HTTP response headers (array of strings)
+     * @return array of object, HTTP status code, HTTP response headers (array of strings)
      */
     public function itemsIdPutWithHttpInfo($id, $access_token, $item)
     {
@@ -455,20 +455,20 @@ class ItemsApi
             $responseBody = $response->getBody();
             switch($statusCode) {
                 case 200:
-                    if ('AnyType' === '\SplFileObject') {
+                    if ('object' === '\SplFileObject') {
                         $content = $responseBody; //stream goes to serializer
                     } else {
                         $content = (string) $responseBody;
                     }
 
                     return [
-                        ObjectSerializer::deserialize($content, 'AnyType', []),
+                        ObjectSerializer::deserialize($content, 'object', []),
                         $response->getStatusCode(),
                         $response->getHeaders()
                     ];
             }
 
-            $returnType = 'AnyType';
+            $returnType = 'object';
             $responseBody = $response->getBody();
             if ($returnType === '\SplFileObject') {
                 $content = $responseBody; //stream goes to serializer
@@ -487,7 +487,7 @@ class ItemsApi
                 case 200:
                     $data = ObjectSerializer::deserialize(
                         $e->getResponseBody(),
-                        'AnyType',
+                        'object',
                         $e->getResponseHeaders()
                     );
                     $e->setResponseObject($data);
@@ -533,7 +533,7 @@ class ItemsApi
      */
     public function itemsIdPutAsyncWithHttpInfo($id, $access_token, $item)
     {
-        $returnType = 'AnyType';
+        $returnType = 'object';
         $request = $this->itemsIdPutRequest($id, $access_token, $item);
 
         return $this->client
@@ -707,7 +707,7 @@ class ItemsApi
      *
      * @throws \Meli\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return AnyType
+     * @return object
      */
     public function itemsPost($access_token, $item)
     {
@@ -725,7 +725,7 @@ class ItemsApi
      *
      * @throws \Meli\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return array of AnyType, HTTP status code, HTTP response headers (array of strings)
+     * @return array of object, HTTP status code, HTTP response headers (array of strings)
      */
     public function itemsPostWithHttpInfo($access_token, $item)
     {
@@ -762,20 +762,20 @@ class ItemsApi
             $responseBody = $response->getBody();
             switch($statusCode) {
                 case 200:
-                    if ('AnyType' === '\SplFileObject') {
+                    if ('object' === '\SplFileObject') {
                         $content = $responseBody; //stream goes to serializer
                     } else {
                         $content = (string) $responseBody;
                     }
 
                     return [
-                        ObjectSerializer::deserialize($content, 'AnyType', []),
+                        ObjectSerializer::deserialize($content, 'object', []),
                         $response->getStatusCode(),
                         $response->getHeaders()
                     ];
             }
 
-            $returnType = 'AnyType';
+            $returnType = 'object';
             $responseBody = $response->getBody();
             if ($returnType === '\SplFileObject') {
                 $content = $responseBody; //stream goes to serializer
@@ -794,7 +794,7 @@ class ItemsApi
                 case 200:
                     $data = ObjectSerializer::deserialize(
                         $e->getResponseBody(),
-                        'AnyType',
+                        'object',
                         $e->getResponseHeaders()
                     );
                     $e->setResponseObject($data);
@@ -838,7 +838,7 @@ class ItemsApi
      */
     public function itemsPostAsyncWithHttpInfo($access_token, $item)
     {
-        $returnType = 'AnyType';
+        $returnType = 'object';
         $request = $this->itemsPostRequest($access_token, $item);
 
         return $this->client

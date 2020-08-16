@@ -12,7 +12,7 @@ Method | HTTP request | Description
 
 ## categoriesCategoryIdGet
 
-> AnyType categoriesCategoryIdGet($category_id)
+> object categoriesCategoryIdGet($category_id)
 
 Return by category.
 
@@ -48,7 +48,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**AnyType**](../Model/AnyType.md)
+**object**
 
 ### Authorization
 
@@ -66,7 +66,7 @@ No authorization required
 
 ## sitesSiteIdCategoriesGet
 
-> AnyType sitesSiteIdCategoriesGet($site_id)
+> object sitesSiteIdCategoriesGet($site_id)
 
 Return a categories by site.
 
@@ -102,7 +102,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**AnyType**](../Model/AnyType.md)
+**object**
 
 ### Authorization
 
@@ -120,7 +120,7 @@ No authorization required
 
 ## sitesSiteIdDomainDiscoverySearchGet
 
-> AnyType sitesSiteIdDomainDiscoverySearchGet($site_id, $q, $limit)
+> object sitesSiteIdDomainDiscoverySearchGet($site_id, $q, $limit)
 
 Predictor
 
@@ -160,7 +160,7 @@ Name | Type | Description  | Notes
 
 ### Return type
 
-[**AnyType**](../Model/AnyType.md)
+**object**
 
 ### Authorization
 

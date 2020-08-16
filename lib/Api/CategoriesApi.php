@@ -124,7 +124,7 @@ class CategoriesApi
      *
      * @throws \Meli\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return AnyType
+     * @return object
      */
     public function categoriesCategoryIdGet($category_id)
     {
@@ -141,7 +141,7 @@ class CategoriesApi
      *
      * @throws \Meli\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return array of AnyType, HTTP status code, HTTP response headers (array of strings)
+     * @return array of object, HTTP status code, HTTP response headers (array of strings)
      */
     public function categoriesCategoryIdGetWithHttpInfo($category_id)
     {
@@ -178,20 +178,20 @@ class CategoriesApi
             $responseBody = $response->getBody();
             switch($statusCode) {
                 case 200:
-                    if ('AnyType' === '\SplFileObject') {
+                    if ('object' === '\SplFileObject') {
                         $content = $responseBody; //stream goes to serializer
                     } else {
                         $content = (string) $responseBody;
                     }
 
                     return [
-                        ObjectSerializer::deserialize($content, 'AnyType', []),
+                        ObjectSerializer::deserialize($content, 'object', []),
                         $response->getStatusCode(),
                         $response->getHeaders()
                     ];
             }
 
-            $returnType = 'AnyType';
+            $returnType = 'object';
             $responseBody = $response->getBody();
             if ($returnType === '\SplFileObject') {
                 $content = $responseBody; //stream goes to serializer
@@ -210,7 +210,7 @@ class CategoriesApi
                 case 200:
                     $data = ObjectSerializer::deserialize(
                         $e->getResponseBody(),
-                        'AnyType',
+                        'object',
                         $e->getResponseHeaders()
                     );
                     $e->setResponseObject($data);
@@ -252,7 +252,7 @@ class CategoriesApi
      */
     public function categoriesCategoryIdGetAsyncWithHttpInfo($category_id)
     {
-        $returnType = 'AnyType';
+        $returnType = 'object';
         $request = $this->categoriesCategoryIdGetRequest($category_id);
 
         return $this->client
@@ -397,7 +397,7 @@ class CategoriesApi
      *
      * @throws \Meli\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return AnyType
+     * @return object
      */
     public function sitesSiteIdCategoriesGet($site_id)
     {
@@ -414,7 +414,7 @@ class CategoriesApi
      *
      * @throws \Meli\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return array of AnyType, HTTP status code, HTTP response headers (array of strings)
+     * @return array of object, HTTP status code, HTTP response headers (array of strings)
      */
     public function sitesSiteIdCategoriesGetWithHttpInfo($site_id)
     {
@@ -451,20 +451,20 @@ class CategoriesApi
             $responseBody = $response->getBody();
             switch($statusCode) {
                 case 200:
-                    if ('AnyType' === '\SplFileObject') {
+                    if ('object' === '\SplFileObject') {
                         $content = $responseBody; //stream goes to serializer
                     } else {
                         $content = (string) $responseBody;
                     }
 
                     return [
-                        ObjectSerializer::deserialize($content, 'AnyType', []),
+                        ObjectSerializer::deserialize($content, 'object', []),
                         $response->getStatusCode(),
                         $response->getHeaders()
                     ];
             }
 
-            $returnType = 'AnyType';
+            $returnType = 'object';
             $responseBody = $response->getBody();
             if ($returnType === '\SplFileObject') {
                 $content = $responseBody; //stream goes to serializer
@@ -483,7 +483,7 @@ class CategoriesApi
                 case 200:
                     $data = ObjectSerializer::deserialize(
                         $e->getResponseBody(),
-                        'AnyType',
+                        'object',
                         $e->getResponseHeaders()
                     );
                     $e->setResponseObject($data);
@@ -525,7 +525,7 @@ class CategoriesApi
      */
     public function sitesSiteIdCategoriesGetAsyncWithHttpInfo($site_id)
     {
-        $returnType = 'AnyType';
+        $returnType = 'object';
         $request = $this->sitesSiteIdCategoriesGetRequest($site_id);
 
         return $this->client
@@ -672,7 +672,7 @@ class CategoriesApi
      *
      * @throws \Meli\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return AnyType
+     * @return object
      */
     public function sitesSiteIdDomainDiscoverySearchGet($site_id, $q, $limit)
     {
@@ -691,7 +691,7 @@ class CategoriesApi
      *
      * @throws \Meli\ApiException on non-2xx response
      * @throws \InvalidArgumentException
-     * @return array of AnyType, HTTP status code, HTTP response headers (array of strings)
+     * @return array of object, HTTP status code, HTTP response headers (array of strings)
      */
     public function sitesSiteIdDomainDiscoverySearchGetWithHttpInfo($site_id, $q, $limit)
     {
@@ -728,20 +728,20 @@ class CategoriesApi
             $responseBody = $response->getBody();
             switch($statusCode) {
                 case 200:
-                    if ('AnyType' === '\SplFileObject') {
+                    if ('object' === '\SplFileObject') {
                         $content = $responseBody; //stream goes to serializer
                     } else {
                         $content = (string) $responseBody;
                     }
 
                     return [
-                        ObjectSerializer::deserialize($content, 'AnyType', []),
+                        ObjectSerializer::deserialize($content, 'object', []),
                         $response->getStatusCode(),
                         $response->getHeaders()
                     ];
             }
 
-            $returnType = 'AnyType';
+            $returnType = 'object';
             $responseBody = $response->getBody();
             if ($returnType === '\SplFileObject') {
                 $content = $responseBody; //stream goes to serializer
@@ -760,7 +760,7 @@ class CategoriesApi
                 case 200:
                     $data = ObjectSerializer::deserialize(
                         $e->getResponseBody(),
-                        'AnyType',
+                        'object',
                         $e->getResponseHeaders()
                     );
                     $e->setResponseObject($data);
@@ -806,7 +806,7 @@ class CategoriesApi
      */
     public function sitesSiteIdDomainDiscoverySearchGetAsyncWithHttpInfo($site_id, $q, $limit)
     {
-        $returnType = 'AnyType';
+        $returnType = 'object';
         $request = $this->sitesSiteIdDomainDiscoverySearchGetRequest($site_id, $q, $limit);
 
         return $this->client

@@ -38,7 +38,11 @@ Then run `composer install`
 
 ### Manual Installation
 
-Download the files and include `autoload.php`:
+Download the files
+
+Run `composer install`
+
+Include `autoload.php` in your code:
 
 ```php
     require_once('/path-to-integration-folder/vendor/autoload.php');

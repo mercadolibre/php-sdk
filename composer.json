@@ -1,21 +1,19 @@
 {
-    "name": "GIT_USER_ID/GIT_REPO_ID",
+    "name": "mercadolibre/php-sdk",
     "description": "This is a the codebase to generate a SDK for Open Platform Marketplace",
     "keywords": [
-        "openapitools",
-        "openapi-generator",
-        "openapi",
+        "mercadolibre",
         "php",
         "sdk",
         "rest",
         "api"
     ],
-    "homepage": "https://openapi-generator.tech",
+    "homepage": "https://developers.mercadolibre.com",
     "license": "unlicense",
     "authors": [
         {
-            "name": "OpenAPI-Generator contributors",
-            "homepage": "https://openapi-generator.tech"
+            "name": "Mercado Libre",
+            "homepage": "https://developers.mercadolibre.com"
         }
     ],
     "require": {
@@ -23,7 +21,7 @@
         "ext-curl": "*",
         "ext-json": "*",
         "ext-mbstring": "*",
-        "guzzlehttp/guzzle": "^6.2"
+        "guzzlehttp/guzzle": "^6.2.1"
     },
     "require-dev": {
         "phpunit/phpunit": "^7.4",

@@ -1,134 +1,163 @@
 <h1 align="center">
-  <a href="http://developers.mercadolibre.com/es/">
+  <a href="https://developers.mercadolibre.com">
     <img src="https://user-images.githubusercontent.com/1153516/29861072-689ec57e-8d3e-11e7-8368-dd923543258f.jpg" alt="Mercado Libre Developers" width="230"></a>
   </a>
-  <br>
+  <br><br>
   MercadoLibre's PHP SDK
   <br>
 </h1>
 
 <h4 align="center">This is the official PHP SDK for MercadoLibre's Platform.</h4>
 
-<p align="center">
-  <a href="https://heroku.com/deploy?template=https://github.com/mercadolibre/php-sdk">
-    <img src="https://www.herokucdn.com/deploy/button.svg" alt="Deploy">
-  </a>
-</p>
 
-<p align="center">
-  <a href="https://heroku.com/deploy?template=https://github.com/mercadolibre/php-sdk">
-    <img src="https://user-images.githubusercontent.com/1153516/29859906-9453b50c-8d3a-11e7-88b6-ab354d4a4908.png">
-  </a>
-</p>
+## Requirements
 
+PHP 5.5 and later
 
-## How do I install it?
+## Installation & Usage
 
-       clone repository
-       https://github.com/mercadolibre/php-sdk.git
+### Composer
 
-## How do I use it?
+To install the bindings via [Composer](http://getcomposer.org/), add the following to `composer.json`:
 
-The first thing to do is to instance a ```Meli``` class. You'll need to give a ```clientId``` and a ```clientSecret```. You can obtain both after creating your own application. For more information on this please read: [creating an application](http://developers.mercadolibre.com/application-manager/)
-
-### Including the Lib
-Include the lib meli in your project
-
-```php
-require '/Meli/meli.php';
-```
-Start the development!
-
-### Create an instance of Meli class
-Simple like this
-```php
-$meli = new Meli('1234', 'a secret');
-```
-With this instance you can start working on MercadoLibre's APIs.
-
-There are some design considerations worth to mention.
-
-1. This SDK is just a thin layer on top of an http client to handle all the OAuth WebServer flow for you.
-
-2. There is JSON parsing. this SDK will include [json](http://php.net/manual/en/book.json.php) for internal usage.
-
-3. This SDK will include [curl](http://php.net/manual/en/book.curl.php) for internal usage.
-
-4. If you already have the access_token and the refresh_token you can pass in the constructor
-
-```php
-$meli = new Meli('1234', 'a secret', 'Access_Token', 'Refresh_Token');
+```json
+{
+  "repositories": [
+    {
+      "type": "vcs",
+      "url": "https://github.com/mercadolibre/php-sdk.git"
+    }
+  ],
+  "require": {
+    "mercadolibre/php-sdk": "*@dev"
+  }
+}
 ```
 
-## How do I redirect users to authorize my application?
+Then run `composer install`
 
-This is a 2 step process.
+### Manual Installation
 
-First get the link to redirect the user. This is very easy! Just:
+Download the files
+
+Run `composer install`
+
+Include `autoload.php` in your code:
 
 ```php
-$redirectUrl = $meli->getAuthUrl("http://somecallbackurl",Meli::$AUTH_URL['MLB']); //  Don't forget to change the $AUTH_URL value to match your user's Site Id.
+    require_once('/path-to-integration-folder/vendor/autoload.php');
+```
+
+## Tests
+
+To run the unit tests:
+
+```bash
+composer install
+./vendor/bin/phpunit
+```
+
+## Usage
+
+```php
+<?php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+$config = new Meli\Configuration();
+$servers = $config->getHostSettings();
+// Auth URLs Options by country
+
+// 1:  "https://auth.mercadolibre.com.ar"
+// 2:  "https://auth.mercadolivre.com.br"
+// 3:  "https://auth.mercadolibre.com.co"
+// 4:  "https://auth.mercadolibre.com.mx"
+// 5:  "https://auth.mercadolibre.com.uy"
+// 6:  "https://auth.mercadolibre.cl"
+// 7:  "https://auth.mercadolibre.com.cr"
+// 8:  "https://auth.mercadolibre.com.ec"
+// 9:  "https://auth.mercadolibre.com.ve"
+// 10: "https://auth.mercadolibre.com.pa"
+// 11: "https://auth.mercadolibre.com.pe"
+// 12: "https://auth.mercadolibre.com.do"
+// 13: "https://auth.mercadolibre.com.bo"
+// 14: "https://auth.mercadolibre.com.py"
+
+// Use the correct auth URL
+$config->setHost($servers[1]["url"]);
+
+// Or Print all URLs
+print_r($servers);
+
+// Or Print or Put the following URL in your browser window to obtain authorization:
+// 
+// http://auth.mercadolibre.com.ar/authorization?response_type=code&client_id=$APP_ID&redirect_uri=$YOUR_URL
+?>
 ```
 
 This will give you the url to redirect the user. You need to specify a callback url which will be the one that the user will redirected after a successfull authrization process.
 
-Once the user is redirected to your callback url, you'll receive in the query string, a parameter named ```code```. You'll need this for the second part of the process.
+Once the user is redirected to your callback url, you'll receive in the query string, a parameter named code. You'll need this for the second part of the process
 
+
+## Examples for OAuth - get token
 ```php
-$user = $meli->authorize($_GET['code'], 'http://somecallbackurl');
+<?php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+
+$apiInstance = new Meli\Api\OAuth20Api(
+    // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
+    // This is optional, `GuzzleHttp\Client` will be used as default.
+    new GuzzleHttp\Client()
+);
+$grant_type = 'authorization_code';
+$client_id = 'client_id_example'; // Your client_id
+$client_secret = 'client_secret_example'; // Your client_secret
+$redirect_uri = 'redirect_uri_example'; // Your redirect_uri
+$code = 'code_example'; // The parameter CODE
+$refresh_token = 'refresh_token_example'; // Your refresh_token
+
+try {
+    $result = $apiInstance->getToken($grant_type, $client_id, $client_secret, $redirect_uri, $code, $refresh_token);
+    print_r($result);
+} catch (Exception $e) {
+    echo 'Exception when calling OAuth20Api->getToken: ', $e->getMessage(), PHP_EOL;
+}
+?>
 ```
 
-This will get an ```access_token``` and a ```refresh_token``` (is case your application has the ```offline_access```) for your application and your user.
-
-At this stage your are ready to make call to the API on behalf of the user.
-
-#### Making GET calls
-
+## Example using the RestClient with a POST Item
 ```php
-$params = array('access_token' => $access_token);
-$result = $meli->get('/users/me', $params); 
- #If you wish , you can get an associative array with param $assoc = true Example:
-$result = $meli->get('/users/me', $params, true); 
+<?php
+require_once(__DIR__ . '/vendor/autoload.php');
+
+
+$apiInstance = new Meli\Api\RestClientApi(
+    // If you want use custom http client, pass your client which implements `GuzzleHttp\ClientInterface`.
+    // This is optional, `GuzzleHttp\Client` will be used as default.
+    new GuzzleHttp\Client()
+);
+$resource = 'resource_example'; // string | for example: items
+$access_token = 'access_token_example'; // string | 
+$body = new \stdClass; // object | 
+
+try {
+    $apiInstance->resourcePost($resource, $access_token, $body);
+} catch (Exception $e) {
+    echo 'Exception when calling RestClientApi->resourcePost: ', $e->getMessage(), PHP_EOL;
+}
+?>
 ```
 
-#### Making POST calls
 
-```php
-$params = array('access_token' => $access_token);
+## Documentation & Important notes
 
-  #this body will be converted into json for you
-$body = array('foo' => 'bar', 'bar' => 'foo');
+##### The URIs are relative to https://api.mercadolibre.com
 
-$response = $meli->post('/items', $body, $params);
-```
+##### The Authorization URLs (set the correct country domain): https://auth.mercadolibre.{country_domain}
 
-#### Making PUT calls
+#####  All docs for the library are located [here](https://github.com/mercadolibre/php-sdk/tree/master/docs)
 
-```php
-$params = array('access_token' => $access_token);
+#####  Check out our examples codes in the folder [examples](https://github.com/mercadolibre/php-sdk/tree/master/examples)
 
-  #this body will be converted into json for you
-$body = array('foo' => 'bar', 'bar' => 'foo');
-
-$response = $meli->put('/items', $body, $params);
-```
-
-#### Making DELETE calls
-```php
-$params = array('access_token' => $access_token);
-$response = $meli->delete('/questions/123', $params)
-```
-
-## Examples
-
-Don't forget to check out our examples codes in the folder [examples](https://github.com/mercadolibre/php-sdk/tree/master/examples)
-
-## Community
-
-You can contact us if you have questions using the standard communication channels described in the [developer's site](http://developers.mercadolibre.com/community/)
-
-## I want to contribute!
-
-That is great! Just fork the project in github. Create a topic branch, write some code, and add some tests for your new code.
-
-Thanks for helping!
+##### Don’t forget to check out our [developer site](https://developers.mercadolibre.com/)

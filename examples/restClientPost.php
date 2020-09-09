@@ -1,5 +1,6 @@
 <?php
-// You can use this code in the examples folderrequire_once('../vendor/autoload.php');
+// You can use this code in the examples folder
+require_once('../vendor/autoload.php');
 // Or you can put them in to the main folder
 // require_once(__DIR__ . '/vendor/autoload.php');
 

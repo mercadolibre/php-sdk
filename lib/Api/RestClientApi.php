@@ -401,10 +401,20 @@ class RestClientApi
             $headers
         );
 
+        $encode_url = $resourcePath;
+        $resourcePath = str_replace('%3F', '?', $resourcePath);
+        $resourcePath = str_replace('%3D', '=', $resourcePath);
+        $resourcePath = str_replace('%26', '&', $resourcePath);
+        $resourcePath = str_replace('%7B', '{', $resourcePath);
+        $resourcePath = str_replace('%7D', '}', $resourcePath);
+        $resourcePath = str_replace('%2C', ',', $resourcePath);
+        $already_querys = ($encode_url != $resourcePath) ? true : false;
+        $resourcePath = str_replace('%2F', '/', $resourcePath);
+
         $query = \GuzzleHttp\Psr7\build_query($queryParams);
         return new Request(
             'DELETE',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
+            $this->config->getHost() . $resourcePath . ($already_querys ? "&{$query}" : "?{$query}"),
             $headers,
             $httpBody
         );
@@ -696,10 +706,20 @@ class RestClientApi
             $headers
         );
 
+        $encode_url = $resourcePath;
+        $resourcePath = str_replace('%3F', '?', $resourcePath);
+        $resourcePath = str_replace('%3D', '=', $resourcePath);
+        $resourcePath = str_replace('%26', '&', $resourcePath);
+        $resourcePath = str_replace('%7B', '{', $resourcePath);
+        $resourcePath = str_replace('%7D', '}', $resourcePath);
+        $resourcePath = str_replace('%2C', ',', $resourcePath);
+        $already_querys = ($encode_url != $resourcePath) ? true : false;
+        $resourcePath = str_replace('%2F', '/', $resourcePath);
+
         $query = \GuzzleHttp\Psr7\build_query($queryParams);
         return new Request(
             'GET',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
+            $this->config->getHost() . $resourcePath . ($already_querys ? "&{$query}" : "?{$query}"),
             $headers,
             $httpBody
         );
@@ -1005,10 +1025,20 @@ class RestClientApi
             $headers
         );
 
+        $encode_url = $resourcePath;
+        $resourcePath = str_replace('%3F', '?', $resourcePath);
+        $resourcePath = str_replace('%3D', '=', $resourcePath);
+        $resourcePath = str_replace('%26', '&', $resourcePath);
+        $resourcePath = str_replace('%7B', '{', $resourcePath);
+        $resourcePath = str_replace('%7D', '}', $resourcePath);
+        $resourcePath = str_replace('%2C', ',', $resourcePath);
+        $already_querys = ($encode_url != $resourcePath) ? true : false;
+        $resourcePath = str_replace('%2F', '/', $resourcePath);
+
         $query = \GuzzleHttp\Psr7\build_query($queryParams);
         return new Request(
             'POST',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
+            $this->config->getHost() . $resourcePath . ($already_querys ? "&{$query}" : "?{$query}"),
             $headers,
             $httpBody
         );
@@ -1314,10 +1344,20 @@ class RestClientApi
             $headers
         );
 
+        $encode_url = $resourcePath;
+        $resourcePath = str_replace('%3F', '?', $resourcePath);
+        $resourcePath = str_replace('%3D', '=', $resourcePath);
+        $resourcePath = str_replace('%26', '&', $resourcePath);
+        $resourcePath = str_replace('%7B', '{', $resourcePath);
+        $resourcePath = str_replace('%7D', '}', $resourcePath);
+        $resourcePath = str_replace('%2C', ',', $resourcePath);
+        $already_querys = ($encode_url != $resourcePath) ? true : false;
+        $resourcePath = str_replace('%2F', '/', $resourcePath);
+
         $query = \GuzzleHttp\Psr7\build_query($queryParams);
         return new Request(
             'PUT',
-            $this->config->getHost() . $resourcePath . ($query ? "?{$query}" : ''),
+            $this->config->getHost() . $resourcePath . ($already_querys ? "&{$query}" : "?{$query}"),
             $headers,
             $httpBody
         );

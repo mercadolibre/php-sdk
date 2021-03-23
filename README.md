@@ -1,3 +1,20 @@
+![No longer maintained](https://img.shields.io/badge/Maintenance-OFF-red.svg)
+
+### [DEPRECATED] This repository is no longer maintained
+
+> From the first week of April 2021 we will stop maintaining our SDKs.
+>
+> This project is not functional, the dependencies will not be updated to latest ones.
+>
+> We recommend you read our [documentation](https://developers.mercadolibre.com).
+
+  <a href="https://developers.mercadolibre.com">
+    <img src="https://user-images.githubusercontent.com/1153516/73021269-043c2d80-3e06-11ea-8d0e-6e91441c2900.png" alt="Mercado Libre Developers" width="200"></a>
+  </a>
+
+---
+
+<br>
 <h1 align="center">
   <a href="https://developers.mercadolibre.com">
     <img src="https://user-images.githubusercontent.com/1153516/29861072-689ec57e-8d3e-11e7-8368-dd923543258f.jpg" alt="Mercado Libre Developers" width="230"></a>
@@ -8,7 +25,6 @@
 </h1>
 
 <h4 align="center">This is the official PHP SDK for MercadoLibre's Platform.</h4>
-
 
 ## Requirements
 
@@ -89,7 +105,7 @@ $config->setHost($servers[1]["url"]);
 print_r($servers);
 
 // Or Print or Put the following URL in your browser window to obtain authorization:
-// 
+//
 // http://auth.mercadolibre.com.ar/authorization?response_type=code&client_id=$APP_ID&redirect_uri=$YOUR_URL
 ?>
 ```
@@ -98,8 +114,8 @@ This will give you the url to redirect the user. You need to specify a callback 
 
 Once the user is redirected to your callback url, you'll receive in the query string, a parameter named code. You'll need this for the second part of the process
 
-
 ## Examples for OAuth - get token
+
 ```php
 <?php
 require_once(__DIR__ . '/vendor/autoload.php');
@@ -127,6 +143,7 @@ try {
 ```
 
 ## Example using the RestClient with a POST Item
+
 ```php
 <?php
 require_once(__DIR__ . '/vendor/autoload.php');
@@ -138,8 +155,8 @@ $apiInstance = new Meli\Api\RestClientApi(
     new GuzzleHttp\Client()
 );
 $resource = 'resource_example'; // string | for example: items
-$access_token = 'access_token_example'; // string | 
-$body = new \stdClass; // object | 
+$access_token = 'access_token_example'; // string |
+$body = new \stdClass; // object |
 
 try {
     $apiInstance->resourcePost($resource, $access_token, $body);
@@ -149,15 +166,14 @@ try {
 ?>
 ```
 
-
 ## Documentation & Important notes
 
 ##### The URIs are relative to https://api.mercadolibre.com
 
 ##### The Authorization URLs (set the correct country domain): https://auth.mercadolibre.{country_domain}
 
-#####  All docs for the library are located [here](https://github.com/mercadolibre/php-sdk/tree/master/docs)
+##### All docs for the library are located [here](https://github.com/mercadolibre/php-sdk/tree/master/docs)
 
-#####  Check out our examples codes in the folder [examples](https://github.com/mercadolibre/php-sdk/tree/master/examples)
+##### Check out our examples codes in the folder [examples](https://github.com/mercadolibre/php-sdk/tree/master/examples)
 
 ##### Don’t forget to check out our [developer site](https://developers.mercadolibre.com/)

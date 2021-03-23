@@ -55,6 +55,7 @@ class HeaderSelector
             $headers['Accept'] = $accept;
         }
 
+        $headers['Authorization'] = 'Bearer '. $accessToken;
         $headers['Content-Type'] = $this->selectContentTypeHeader($contentTypes);
         return $headers;
     }

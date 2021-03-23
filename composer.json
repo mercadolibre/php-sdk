@@ -1,0 +1,37 @@
+{
+    "name": "mercadolibre/php-sdk",
+    "description": "This is a the codebase to generate a SDK for Open Platform Marketplace",
+    "keywords": [
+        "mercadolibre",
+        "php",
+        "sdk",
+        "rest",
+        "api"
+    ],
+    "homepage": "https://developers.mercadolibre.com",
+    "license": "unlicense",
+    "authors": [
+        {
+            "name": "Mercado Libre",
+            "homepage": "https://developers.mercadolibre.com"
+        }
+    ],
+    "require": {
+        "php": ">=7.1",
+        "ext-curl": "*",
+        "ext-json": "*",
+        "ext-mbstring": "*",
+        "guzzlehttp/guzzle": "^6.2.1"
+    },
+    "require-dev": {
+        "phpunit/phpunit": "^7.4",
+        "squizlabs/php_codesniffer": "~2.6",
+        "friendsofphp/php-cs-fixer": "~2.12"
+    },
+    "autoload": {
+        "psr-4": { "Meli\\" : "lib/" }
+    },
+    "autoload-dev": {
+        "psr-4": { "Meli\\" : "test/" }
+    }
+}

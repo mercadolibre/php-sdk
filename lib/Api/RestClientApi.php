@@ -351,12 +351,14 @@ class RestClientApi
 
         if ($multipart) {
             $headers = $this->headerSelector->selectHeadersForMultipart(
-                ['application/json']
+                ['application/json'],
+                $access_token
             );
         } else {
             $headers = $this->headerSelector->selectHeaders(
                 ['application/json'],
-                []
+                [],
+                $access_token
             );
         }
 
@@ -656,12 +658,14 @@ class RestClientApi
 
         if ($multipart) {
             $headers = $this->headerSelector->selectHeadersForMultipart(
-                ['application/json']
+                ['application/json'],
+                $access_token
             );
         } else {
             $headers = $this->headerSelector->selectHeaders(
                 ['application/json'],
-                []
+                [],
+                $access_token
             );
         }
 
@@ -975,12 +979,14 @@ class RestClientApi
 
         if ($multipart) {
             $headers = $this->headerSelector->selectHeadersForMultipart(
-                ['application/json']
+                ['application/json'],
+                $access_token
             );
         } else {
             $headers = $this->headerSelector->selectHeaders(
                 ['application/json'],
-                ['application/json']
+                ['application/json'],
+                $access_token
             );
         }
 
@@ -1294,12 +1300,14 @@ class RestClientApi
 
         if ($multipart) {
             $headers = $this->headerSelector->selectHeadersForMultipart(
-                ['application/json']
+                ['application/json'],
+                $access_token
             );
         } else {
             $headers = $this->headerSelector->selectHeaders(
                 ['application/json'],
-                ['application/json']
+                ['application/json'],
+                $access_token
             );
         }
 

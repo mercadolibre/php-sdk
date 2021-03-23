@@ -324,19 +324,6 @@ class RestClientApi
         $httpBody = '';
         $multipart = false;
 
-        // query params
-        if ($access_token !== null) {
-            if('form' === 'form' && is_array($access_token)) {
-                foreach($access_token as $key => $value) {
-                    $queryParams[$key] = $value;
-                }
-            }
-            else {
-                $queryParams['access_token'] = $access_token;
-            }
-        }
-
-
         // path params
         if ($resource !== null) {
             $resourcePath = str_replace(
@@ -630,19 +617,6 @@ class RestClientApi
         $headerParams = [];
         $httpBody = '';
         $multipart = false;
-
-        // query params
-        if ($access_token !== null) {
-            if('form' === 'form' && is_array($access_token)) {
-                foreach($access_token as $key => $value) {
-                    $queryParams[$key] = $value;
-                }
-            }
-            else {
-                $queryParams['access_token'] = $access_token;
-            }
-        }
-
 
         // path params
         if ($resource !== null) {
@@ -948,19 +922,6 @@ class RestClientApi
         $headerParams = [];
         $httpBody = '';
         $multipart = false;
-
-        // query params
-        if ($access_token !== null) {
-            if('form' === 'form' && is_array($access_token)) {
-                foreach($access_token as $key => $value) {
-                    $queryParams[$key] = $value;
-                }
-            }
-            else {
-                $queryParams['access_token'] = $access_token;
-            }
-        }
-
 
         // path params
         if ($resource !== null) {
@@ -1269,19 +1230,6 @@ class RestClientApi
         $headerParams = [];
         $httpBody = '';
         $multipart = false;
-
-        // query params
-        if ($access_token !== null) {
-            if('form' === 'form' && is_array($access_token)) {
-                foreach($access_token as $key => $value) {
-                    $queryParams[$key] = $value;
-                }
-            }
-            else {
-                $queryParams['access_token'] = $access_token;
-            }
-        }
-
 
         // path params
         if ($resource !== null) {

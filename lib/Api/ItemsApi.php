@@ -126,9 +126,9 @@ class ItemsApi
      * @throws \InvalidArgumentException
      * @return object
      */
-    public function itemsIdGet($id)
+    public function itemsIdGet($id, $access_token)
     {
-        list($response) = $this->itemsIdGetWithHttpInfo($id);
+        list($response) = $this->itemsIdGetWithHttpInfo($id, $access_token);
         return $response;
     }
 
@@ -138,14 +138,14 @@ class ItemsApi
      * Return a Item.
      *
      * @param  string $id (required)
-     *
+     * @param  string $access_token (required)
      * @throws \Meli\ApiException on non-2xx response
      * @throws \InvalidArgumentException
      * @return array of object, HTTP status code, HTTP response headers (array of strings)
      */
-    public function itemsIdGetWithHttpInfo($id)
+    public function itemsIdGetWithHttpInfo($id, $access_token)
     {
-        $request = $this->itemsIdGetRequest($id);
+        $request = $this->itemsIdGetRequest($id, $access_token);
 
         try {
             $options = $this->createHttpClientOption();
@@ -226,13 +226,13 @@ class ItemsApi
      * Return a Item.
      *
      * @param  string $id (required)
-     *
+     * @param  string $access_token (required)
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function itemsIdGetAsync($id)
+    public function itemsIdGetAsync($id, $access_token)
     {
-        return $this->itemsIdGetAsyncWithHttpInfo($id)
+        return $this->itemsIdGetAsyncWithHttpInfo($id, $access_token)
             ->then(
                 function ($response) {
                     return $response[0];
@@ -246,14 +246,14 @@ class ItemsApi
      * Return a Item.
      *
      * @param  string $id (required)
-     *
+     * @param  string $access_token (required)
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Promise\PromiseInterface
      */
-    public function itemsIdGetAsyncWithHttpInfo($id)
+    public function itemsIdGetAsyncWithHttpInfo($id, $access_token)
     {
         $returnType = 'object';
-        $request = $this->itemsIdGetRequest($id);
+        $request = $this->itemsIdGetRequest($id, $access_token);
 
         return $this->client
             ->sendAsync($request, $this->createHttpClientOption())
@@ -293,11 +293,11 @@ class ItemsApi
      * Create request for operation 'itemsIdGet'
      *
      * @param  string $id (required)
-     *
+     * @param  string $access_token (required)
      * @throws \InvalidArgumentException
      * @return \GuzzleHttp\Psr7\Request
      */
-    protected function itemsIdGetRequest($id)
+    protected function itemsIdGetRequest($id, $access_token)
     {
         // verify the required parameter 'id' is set
         if ($id === null || (is_array($id) && count($id) === 0)) {
@@ -329,12 +329,14 @@ class ItemsApi
 
         if ($multipart) {
             $headers = $this->headerSelector->selectHeadersForMultipart(
-                ['application/json']
+                ['application/json'],
+                $access_token
             );
         } else {
             $headers = $this->headerSelector->selectHeaders(
                 ['application/json'],
-                []
+                [],
+                $access_token
             );
         }
 
@@ -608,19 +610,6 @@ class ItemsApi
         $httpBody = '';
         $multipart = false;
 
-        // query params
-        if ($access_token !== null) {
-            if('form' === 'form' && is_array($access_token)) {
-                foreach($access_token as $key => $value) {
-                    $queryParams[$key] = $value;
-                }
-            }
-            else {
-                $queryParams['access_token'] = $access_token;
-            }
-        }
-
-
         // path params
         if ($id !== null) {
             $resourcePath = str_replace(
@@ -638,12 +627,14 @@ class ItemsApi
 
         if ($multipart) {
             $headers = $this->headerSelector->selectHeadersForMultipart(
-                ['application/json']
+                ['application/json'],
+                $access_token
             );
         } else {
             $headers = $this->headerSelector->selectHeaders(
                 ['application/json'],
-                ['application/json']
+                ['application/json'],
+                $access_token
             );
         }
 
@@ -906,20 +897,6 @@ class ItemsApi
         $httpBody = '';
         $multipart = false;
 
-        // query params
-        if ($access_token !== null) {
-            if('form' === 'form' && is_array($access_token)) {
-                foreach($access_token as $key => $value) {
-                    $queryParams[$key] = $value;
-                }
-            }
-            else {
-                $queryParams['access_token'] = $access_token;
-            }
-        }
-
-
-
         // body params
         $_tempBody = null;
         if (isset($item)) {
@@ -928,12 +905,14 @@ class ItemsApi
 
         if ($multipart) {
             $headers = $this->headerSelector->selectHeadersForMultipart(
-                ['application/json']
+                ['application/json'],
+                $access_token
             );
         } else {
             $headers = $this->headerSelector->selectHeaders(
                 ['application/json'],
-                ['application/json']
+                ['application/json'],
+                $access_token
             );
         }
 

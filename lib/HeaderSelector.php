@@ -46,7 +46,7 @@ class HeaderSelector
      * @param string[] $contentTypes
      * @return array
      */
-    public function selectHeaders($accept, $contentTypes)
+    public function selectHeaders($accept, $contentTypes, $accessToken)
     {
         $headers = [];
 
@@ -55,6 +55,7 @@ class HeaderSelector
             $headers['Accept'] = $accept;
         }
 
+        $headers['Authorization'] = 'Bearer '. $accessToken;
         $headers['Content-Type'] = $this->selectContentTypeHeader($contentTypes);
         return $headers;
     }
@@ -63,9 +64,9 @@ class HeaderSelector
      * @param string[] $accept
      * @return array
      */
-    public function selectHeadersForMultipart($accept)
+    public function selectHeadersForMultipart($accept, $accessToken)
     {
-        $headers = $this->selectHeaders($accept, []);
+        $headers = $this->selectHeaders($accept, [], $accessToken);
 
         unset($headers['Content-Type']);
         return $headers;

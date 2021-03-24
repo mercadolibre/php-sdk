@@ -1,10 +1,6 @@
-![No longer maintained](https://img.shields.io/badge/Maintenance-OFF-red.svg)
 
-### [DEPRECATED] This repository is no longer maintained
+### This repository pretends to be the community mainteined version of mercadolibre's php sdk
 
-> From the first week of April 2021 we will stop maintaining our SDKs.
->
-> This project is not functional, the dependencies will not be updated to latest ones.
 >
 > We recommend you read our [documentation](https://developers.mercadolibre.com).
 

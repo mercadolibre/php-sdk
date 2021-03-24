@@ -20,7 +20,7 @@
   <br>
 </h1>
 
-<h4 align="center">This is the official PHP SDK for MercadoLibre's Platform.</h4>
+<h4 align="center">This is the COMMUNITY PHP SDK for MercadoLibre's Platform.</h4>
 
 ## Requirements
 

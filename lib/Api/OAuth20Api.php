@@ -336,12 +336,14 @@ class OAuth20Api
 
         if ($multipart) {
             $headers = $this->headerSelector->selectHeadersForMultipart(
-                ['application/json']
+                ['application/json'],
+                ''
             );
         } else {
             $headers = $this->headerSelector->selectHeaders(
                 ['application/json'],
-                []
+                [],
+                ''
             );
         }
 
@@ -644,12 +646,14 @@ class OAuth20Api
 
         if ($multipart) {
             $headers = $this->headerSelector->selectHeadersForMultipart(
-                ['application/json']
+                ['application/json'],
+                ''
             );
         } else {
             $headers = $this->headerSelector->selectHeaders(
                 ['application/json'],
-                ['application/x-www-form-urlencoded']
+                ['application/x-www-form-urlencoded'],
+                ''
             );
         }
 

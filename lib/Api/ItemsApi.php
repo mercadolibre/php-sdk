@@ -610,19 +610,6 @@ class ItemsApi
         $httpBody = '';
         $multipart = false;
 
-        // query params
-        if ($access_token !== null) {
-            if('form' === 'form' && is_array($access_token)) {
-                foreach($access_token as $key => $value) {
-                    $queryParams[$key] = $value;
-                }
-            }
-            else {
-                $queryParams['access_token'] = $access_token;
-            }
-        }
-
-
         // path params
         if ($id !== null) {
             $resourcePath = str_replace(
